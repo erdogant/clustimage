@@ -1,0 +1,2 @@
+include clustimage/data/*.zip
+include clustimage/data/*.txt
