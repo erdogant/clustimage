@@ -180,10 +180,10 @@ class Clustimage():
         faces = {}
         for i, img in enumerate(X['I']):
             # Convert into grayscale
-            if len(img.shape)==2:
-                gray = img
-            else:
+            try:
                 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            except:
+                gray = img
                 
             # Detect faces
             face_coord = face_cascade.detectMultiScale(gray, 1.3, 5)
