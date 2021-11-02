@@ -37,10 +37,15 @@ class Clustimage():
 
     def __init__(self, method='pca', image_type='object', grayscale=False, dim=(128,128), verbose=20):
         """Initialize distfit with user-defined parameters."""
+        if not np.any(np.isin(image_type, ['object', 'faces'])): raise Exception(logger.error('image_type: "%s" is unknown', image_type))
+        
+        # If face detection, grayscale should be True.
+        if image_type=='faces': grayscale=True
         # Reads the image as grayscale and results in a 2D-array. In case of RGB, no transparency channel is included.
         self.method = method
         self.image_type = image_type
-        self.grayscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR # cv2.COLOR_BGR2RGB
+        # self.grayscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+        self.grayscale = cv2.COLOR_BGR2GRAY if grayscale else cv2.COLOR_BGR2RGB
         self.dim = dim
         set_logger(verbose=verbose)
 
@@ -66,7 +71,7 @@ class Clustimage():
         # Extact features
         logger.info("Reading images..")
         # Read and pre-proces the input images
-        out = self.preprocessing(pathnames)
+        out = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
         logger.info("New feature matrix: %s", str(out['I'].shape))
         # Return
         return out
@@ -77,7 +82,7 @@ class Clustimage():
         X = self.fit(pathnames)
         # Extract features using method
         if self.method=='pca':
-            self.model = pca(n_components=150)
+            self.model = pca(n_components=0.95)
             self.model.fit_transform(X['I'], row_labels=X['filenames'])
         # Store results
         self.results = {}
@@ -87,15 +92,15 @@ class Clustimage():
         # Return
         return self.results
 
-    def preprocessing(self, pathnames):
+    def preprocessing(self, pathnames, grayscale, dim, flatten=True):
         """Import example dataset from github source."""
         I, filenames = None, None
         if isinstance(pathnames, str):
             pathnames=[pathnames]
         if isinstance(pathnames, list):
             filenames = list(map(basename, pathnames))
-            I = list(map(lambda x: img_read_pipeline(x, grayscale=self.grayscale, dim=self.dim, flatten=True), pathnames))
-            I = np.vstack(I)
+            I = list(map(lambda x: img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), pathnames))
+            if flatten: I = np.vstack(I)
         # else:
         #     # Use the image values directly
         #     labels = np.arange(0, X.shape[0]).astype(str)
@@ -163,6 +168,63 @@ class Clustimage():
         # Return
         return out
 
+    def detect_faces(self, pathnames):
+        # Load the cascade
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        # eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+
+        logger.info("Reading images..")
+        # Read and pre-proces the input images
+        X = self.preprocessing(pathnames, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)
+
+        faces = {}
+        for i, img in enumerate(X['I']):
+            # Convert into grayscale
+            if len(img.shape)==2:
+                gray = img
+            else:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                
+            # Detect faces
+            face_coord = face_cascade.detectMultiScale(gray, 1.3, 5)
+            # Draw rectangle around the faces
+            face_img = []
+            for (x,y,w,h) in face_coord:
+                face_img.append(img[y:y+h, x:x+w])
+                # cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
+                # roi_gray = gray[y:y+h, x:x+w]
+                # roi_color = img[y:y+h, x:x+w]
+                # eyes = eye_cascade.detectMultiScale(roi_gray)
+                # for (ex,ey,ew,eh) in eyes:
+                    # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+
+            faces[i] = {}
+            faces[i]['pathnames'] = X['pathnames'][i]
+            faces[i]['filenames'] = X['filenames'][i]
+            faces[i]['img'] = face_img
+            faces[i]['coord'] = face_coord
+        self.faces = faces
+        # Return
+        return self.faces
+
+    def plot_faces(self):
+        for key in self.faces.keys():
+            plt.figure()
+            img = self.preprocessing(self.faces[key]['pathnames'], grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['I'][0]
+            face_coord = self.faces[key]['coord']
+
+            for (x,y,w,h) in face_coord:
+                cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
+                # roi_gray = gray[y:y+h, x:x+w]
+                # roi_color = img[y:y+h, x:x+w]
+                # eyes = eye_cascade.detectMultiScale(roi_gray)
+                # for (ex,ey,ew,eh) in eyes:
+                    # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+            if len(img.shape)==3:
+                plt.imshow(img[:,:,::-1]) # RGB-> BGR
+            else:
+                plt.imshow(img)
+
     def plot(self, legend=False):
         fig, ax = self.model.plot()
         # Show the first eigenvectors
@@ -218,7 +280,7 @@ class Clustimage():
         Parameters
         ----------
         data : str
-            'flower'
+            'flower', 'faces', 'scenes'
 
         Returns
         -------
@@ -248,7 +310,8 @@ def img_flatten(img):
 # %% Resize image
 def img_resize(img, dim=(128, 128)):
     if dim is not None:
-        return cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+        img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+    return img
 
 
 # %% Read image
@@ -289,7 +352,7 @@ def import_example(data='flower', url=None):
     Parameters
     ----------
     data : str
-        Name of datasets: 'flower'
+        Name of datasets: 'flower', 'faces'
     url : str
         url link to to dataset.
 
@@ -302,6 +365,10 @@ def import_example(data='flower', url=None):
     if url is None:
         if data=='flower':
             url='https://erdogant.github.io/datasets/flower_images.zip'
+        elif data=='faces':
+            url='https://erdogant.github.io/datasets/faces_images.zip'
+        elif data=='scenes':
+            url='https://erdogant.github.io/datasets/scenes.zip'
     else:
         logger.warning('Lets try your dataset from url: %s.', url)
 

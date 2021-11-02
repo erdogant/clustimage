@@ -7,6 +7,7 @@ rm -rf .pytest_cache
 rm -rf clustimage/__pycache__
 rm -rf tests/__pycache__
 rm -rf clustimage/utils/__pycache__
+rm -rf clustimage/.pylint.d
 rm -rf .pylint.d
 rm -rf clustimage/data/*.zip
 rm -rf clustimage/data/*.csv
@@ -17,3 +18,4 @@ rm -rf *.dot
 rm -rf *.png
 rm -rf .coverage*
 rm -rf .pkl
+
