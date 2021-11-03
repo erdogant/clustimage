@@ -10,10 +10,13 @@
 
 # %% Detect faces
 from clustimage import Clustimage
+# Init
 cl = Clustimage(image_type='faces')
+# Load examples
 pathnames = cl.import_example(data='faces')
-
+# Detect faces
 faces = cl.detect_faces(pathnames)
+# Plot faces
 cl.plot_faces()
 
 # %%
