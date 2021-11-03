@@ -13,7 +13,7 @@ else:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-     install_requires=['numpy','tqdm','matplotlib','opencv-python', 'colourmap'],
+     install_requires=['numpy','tqdm','matplotlib','opencv-python', 'colourmap', 'skimage', 'pandas'],
      python_requires='>=3',
      name='clustimage',
      version=new_version,

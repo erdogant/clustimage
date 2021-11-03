@@ -21,12 +21,14 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import distance
+from skimage.feature import hog
+from skimage import exposure
 
 logger = logging.getLogger('')
 for handler in logger.handlers[:]: #get rid of existing old handlers
     logger.removeHandler(handler)
 console = logging.StreamHandler()
-formatter = logging.Formatter('[%(asctime)s] [Clustimage]> %(levelname)s> %(message)s', datefmt='%H:%M:%S')
+formatter = logging.Formatter('[%(asctime)s] [clustimage]> %(levelname)s> %(message)s', datefmt='%H:%M:%S')
 console.setFormatter(formatter)
 logger.addHandler(console)
 logger = logging.getLogger()
@@ -35,10 +37,10 @@ logger = logging.getLogger()
 class Clustimage():
     """clustimage."""
 
-    def __init__(self, method='pca', image_type='object', grayscale=False, dim=(128,128), verbose=20):
+    def __init__(self, method='pca', image_type='object', grayscale=False, dim=(128,128), params_pca={'n_components':50, 'detect_outliers':None}, verbose=20):
         """Initialize distfit with user-defined parameters."""
         if not np.any(np.isin(image_type, ['object', 'faces'])): raise Exception(logger.error('image_type: "%s" is unknown', image_type))
-        
+
         # If face detection, grayscale should be True.
         if image_type=='faces': grayscale=True
         # Reads the image as grayscale and results in a 2D-array. In case of RGB, no transparency channel is included.
@@ -47,6 +49,7 @@ class Clustimage():
         # self.grayscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         self.grayscale = cv2.COLOR_BGR2GRAY if grayscale else cv2.COLOR_BGR2RGB
         self.dim = dim
+        self.params_pca = params_pca
         set_logger(verbose=verbose)
 
     def predict(self, pathnames, metric='euclidean', k=1, alpha=0.05):
@@ -55,7 +58,7 @@ class Clustimage():
             raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
         out = None
         # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
-        X = self.fit(pathnames)
+        X = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
 
         # Predict according PCA method
         if self.method=='pca':
@@ -67,23 +70,42 @@ class Clustimage():
         # Return
         return out
 
-    def fit(self, pathnames):
+    def fit(self, X):
         # Extact features
         logger.info("Reading images..")
         # Read and pre-proces the input images
-        out = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
-        logger.info("New feature matrix: %s", str(out['I'].shape))
+        # out = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
+        # logger.info("New feature matrix: %s", str(out['I'].shape))
+        # Extract features using method
+        if self.method=='pca':
+            self.model = pca(**self.params_pca)
+            self.model.fit_transform(X['I'], row_labels=X['filenames'])
+            logger.info("Feature matrix: %s", str(self.model.results['PC'].shape))
+
+        # if self.method=='hog':
+        #     fd, hog_image = hog(img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)
+        #     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
+        #     ax1.axis('off')
+        #     ax1.imshow(img, cmap=plt.cm.gray)
+        #     ax1.set_title('Input image')
+        #     # Rescale histogram for better display
+        #     hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
+        #     ax2.axis('off')
+        #     ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
+        #     ax2.set_title('Histogram of Oriented Gradients')
+        #     plt.show()
+
         # Return
-        return out
+        return self.model
 
     def fit_transform(self, pathnames):
         """Import example dataset from github source."""
         # Read images and preprocessing
-        X = self.fit(pathnames)
-        # Extract features using method
-        if self.method=='pca':
-            self.model = pca(n_components=0.95)
-            self.model.fit_transform(X['I'], row_labels=X['filenames'])
+        X = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
+        # Fit model
+        self.fit(X)
+
+
         # Store results
         self.results = {}
         self.results['feat'] = self.model.results['PC']
@@ -170,6 +192,8 @@ class Clustimage():
 
     def detect_faces(self, pathnames):
         # Load the cascade
+        # Find path of xml file containing haarcascade file and load in the cascade classifier
+        # face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
         face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
@@ -184,8 +208,8 @@ class Clustimage():
                 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             except:
                 gray = img
-
-            # Detect faces
+    
+            # Detect faces using the face_cascade
             coord_faces = face_cascade.detectMultiScale(gray, 1.3, 5)
             coord_eyes = []
             face_img = []
@@ -283,7 +307,7 @@ class Clustimage():
                         axes[i+1].imshow(I)
 
 
-    def import_example(self, data='flower', url=None):
+    def import_example(self, data='flowers', url=None):
         """Import example dataset from github source.
 
         Description
@@ -293,7 +317,7 @@ class Clustimage():
         Parameters
         ----------
         data : str
-            'flower', 'faces', 'scenes'
+            'flowers', 'faces', 'scenes'
 
         Returns
         -------
@@ -355,7 +379,7 @@ def set_logger(verbose=20):
 
 
 # %% Import example dataset from github.
-def import_example(data='flower', url=None):
+def import_example(data='flowers', url=None):
     """Import example dataset from github source.
 
     Description
@@ -365,7 +389,7 @@ def import_example(data='flower', url=None):
     Parameters
     ----------
     data : str
-        Name of datasets: 'flower', 'faces'
+        Name of datasets: 'flowers', 'faces'
     url : str
         url link to to dataset.
 
@@ -376,7 +400,7 @@ def import_example(data='flower', url=None):
 
     """
     if url is None:
-        if data=='flower':
+        if data=='flowers':
             url='https://erdogant.github.io/datasets/flower_images.zip'
         elif data=='faces':
             url='https://erdogant.github.io/datasets/faces_images.zip'
@@ -386,7 +410,7 @@ def import_example(data='flower', url=None):
         logger.warning('Lets try your dataset from url: %s.', url)
 
     if url is None:
-        logger.info('Nothing to download.')
+        logger.warning('Nothing to download.')
         return None
 
     curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')

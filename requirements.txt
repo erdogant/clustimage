@@ -6,3 +6,6 @@ wget
 numpy 
 pandas 
 tqdm
+skimage
+colourmap
+opencv-python
