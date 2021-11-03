@@ -12,7 +12,8 @@
 from clustimage import Clustimage
 cl = Clustimage(image_type='faces')
 pathnames = cl.import_example(data='faces')
-cl.detect_faces(pathnames)
+
+faces = cl.detect_faces(pathnames)
 cl.plot_faces()
 
 # %%
@@ -29,8 +30,6 @@ cl.plot()
 cl.model.plot()
 cl.model.scatter(legend=False)
 cl.model.results.keys()
-
-
 
 # %%
 from clusteval import clusteval

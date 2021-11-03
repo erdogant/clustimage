@@ -171,7 +171,7 @@ class Clustimage():
     def detect_faces(self, pathnames):
         # Load the cascade
         face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        # eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+        eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
         logger.info("Reading images..")
         # Read and pre-proces the input images
@@ -184,46 +184,59 @@ class Clustimage():
                 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             except:
                 gray = img
-                
+
             # Detect faces
-            face_coord = face_cascade.detectMultiScale(gray, 1.3, 5)
-            # Draw rectangle around the faces
+            coord_faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+            coord_eyes = []
             face_img = []
-            for (x,y,w,h) in face_coord:
+            # Collect the faces
+            for (x,y,w,h) in coord_faces:
                 face_img.append(img[y:y+h, x:x+w])
-                # cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
-                # roi_gray = gray[y:y+h, x:x+w]
-                # roi_color = img[y:y+h, x:x+w]
-                # eyes = eye_cascade.detectMultiScale(roi_gray)
-                # for (ex,ey,ew,eh) in eyes:
-                    # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+                roi_gray = gray[y:y+h, x:x+w]
+                eyes = eye_cascade.detectMultiScale(roi_gray)
+                if eyes == (): eyes=None
+                coord_eyes.append(eyes)
 
             faces[i] = {}
             faces[i]['pathnames'] = X['pathnames'][i]
             faces[i]['filenames'] = X['filenames'][i]
             faces[i]['img'] = face_img
-            faces[i]['coord'] = face_coord
+            faces[i]['coord_faces'] = coord_faces
+            faces[i]['coord_eyes'] = coord_eyes
+
+        # Store and Return
         self.faces = faces
-        # Return
         return self.faces
 
-    def plot_faces(self):
+    def plot_faces(self, faces=True, eyes=True):
+        # Walk over all detected faces
         for key in self.faces.keys():
-            plt.figure()
             img = self.preprocessing(self.faces[key]['pathnames'], grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['I'][0]
-            face_coord = self.faces[key]['coord']
 
-            for (x,y,w,h) in face_coord:
-                cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
-                # roi_gray = gray[y:y+h, x:x+w]
-                # roi_color = img[y:y+h, x:x+w]
-                # eyes = eye_cascade.detectMultiScale(roi_gray)
-                # for (ex,ey,ew,eh) in eyes:
-                    # cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
-            if len(img.shape)==3:
-                plt.imshow(img[:,:,::-1]) # RGB-> BGR
-            else:
-                plt.imshow(img)
+            # Face
+            if faces:
+                coord_faces = self.faces[key]['coord_faces']
+                plt.figure()
+                for i, (x,y,w,h) in enumerate(coord_faces):
+                    cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
+                if len(img.shape)==3:
+                    plt.imshow(img[:,:,::-1]) # RGB-> BGR
+                else:
+                    plt.imshow(img)
+
+            # Eyes
+            if eyes:
+                coord_eyes = self.faces[key]['coord_eyes']
+                for face in self.faces[key]['img']:
+                    plt.figure()
+                    if coord_eyes[i] is not None:
+                        for (ex,ey,ew,eh) in coord_eyes[i]:
+                            cv2.rectangle(face,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+                        if len(face.shape)==3:
+                            plt.imshow(face[:,:,::-1]) # RGB-> BGR
+                        else:
+                            plt.imshow(face)
+
 
     def plot(self, legend=False):
         fig, ax = self.model.plot()
