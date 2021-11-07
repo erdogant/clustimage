@@ -8,16 +8,43 @@
 # cl = Clustimage()
 # cl.fit_transform()
 
+# %% Detect faces
+from clustimage import Clustimage
+# Init
+cl = Clustimage(method='hog', grayscale=True, params_pca={'n_components':14})
+# Load example with faces
+pathnames = cl.import_example(data='faces')
+# Detect faces
+face_results = cl.detect_faces(pathnames)
+# Cluster
+results = cl.fit_transform(face_results['facepath'])
+
+cl.scatter()
+# Plot faces
+cl.plot_faces()
+
+# Cluster
+labx = cl.cluster()
+# Plot dendrogram
+cl.dendrogram()
+cl.plot(ncols=2, show_hog=True)
+
+cl.clean()
+
+# plt.imshow(face_results['img'][0][0,:].reshape(cl.dim_face), cmap=plt.cm.gray)
+
+
+
 # %%
 from sklearn.datasets import load_digits
 digits = load_digits(n_class=6)
 X, y = digits.data, digits.target
+# https://scikit-learn.org/stable/auto_examples/manifold/plot_lle_digits.html#sphx-glr-auto-examples-manifold-plot-lle-digits-py
 
 from clustimage import Clustimage
 # init
-cl = Clustimage(method=None, embedding='tsne', grayscale=True, params_pca={'n_components':50}, dim=(8,8), store_to_disk=True)
+cl = Clustimage(method='pca', embedding='tsne', grayscale=True, params_pca={'n_components':50}, dim=(8,8), store_to_disk=True)
 # Preprocessing and feature extraction
-results = cl.fit_transform(X)
 # Scatter
 cl.scatter()
 # Plotting
@@ -29,7 +56,7 @@ cl.plot(cmap='binary')
 # %%
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='pca', embedding='tsne', grayscale=True)
+cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
 # load example with flowers
 path_to_imgs = cl.import_example(data='flowers')
 # Extract images and the accompanying features
@@ -53,46 +80,19 @@ cl.scatter()
 # %%
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='hog', embedding='tsne', grayscale=False)
+cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
 # Collect samples
 # path_to_imgs = cl.get_images_from_path('D://magweg//101_ObjectCategories//')
 # Preprocessing and feature extraction
-results = cl.fit_transform('D://magweg//101_ObjectCategories//')
+results = cl.fit_transform('D://magweg//101_ObjectCategories//', min_clust=30, max_clust=50)
 # Cluster
-labx = cl.cluster(method='silhouette', min_clust=30, max_clust=50)
+# labx = cl.cluster(method='silhouette', min_clust=30, max_clust=50)
 # Scatter
 cl.scatter()
 # Plot the clustered images
 cl.plot()
 # Plotting
 cl.dendrogram()
-
-# %% Detect faces
-from clustimage import Clustimage
-# Init
-cl = Clustimage(method='pca', image_type='faces', grayscale=False, params_pca={'n_components':3})
-# Load example with faces
-pathnames = cl.import_example(data='faces')
-# Detect faces
-face_results = cl.detect_faces(pathnames)
-# Cluster
-results = cl.fit_transform(face_results['facepath'])
-
-cl.scatter()
-# Plot faces
-cl.plot_faces()
-
-# Cluster
-labx = cl.cluster()
-# Plot dendrogram
-cl.dendrogram()
-cl.plot()
-
-cl.clean()
-
-# plt.imshow(results['feat'][0,:].reshape(cl.dim), cmap=plt.cm.gray)
-# plt.imshow(face_results['img'][0][0,:].reshape(cl.dim_face), cmap=plt.cm.gray)
-results['feat'].shape
 
 
 

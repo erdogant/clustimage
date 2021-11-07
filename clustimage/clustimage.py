@@ -25,6 +25,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial import distance
 from skimage.feature import hog
+from skimage import exposure
 import tempfile
 import uuid
 import shutil
@@ -34,7 +35,7 @@ for handler in logger.handlers[:]: #get rid of existing old handlers
     logger.removeHandler(handler)
 console = logging.StreamHandler()
 # formatter = logging.Formatter('[%(asctime)s] [clustimage]> %(levelname)s> %(message)s', datefmt='%H:%M:%S')
-formatter = logging.Formatter('[[clustimage] >%(levelname)s> %(message)s')
+formatter = logging.Formatter('[clustimage] >%(levelname)s> %(message)s')
 console.setFormatter(formatter)
 logger.addHandler(console)
 logger = logging.getLogger()
@@ -43,24 +44,12 @@ logger = logging.getLogger()
 class Clustimage():
     """clustimage."""
 
-    def __init__(self, method='pca', embedding='tsne', image_type='object', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
         """Initialize distfit with user-defined parameters."""
-        if not np.any(np.isin(image_type, ['object', 'faces'])): raise Exception(logger.error('image_type: "%s" is unknown', image_type))
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
         if dirpath is None: dirpath = tempfile.mkdtemp()
         if not os.path.isdir(dirpath): raise Exception(logger.error('[%s] does not exists.', dirpath))
 
-        # If face detection, grayscale should be True.
-        # if image_type=='faces': grayscale=True
-        if (image_type=='faces') and (not grayscale): logger.warning('It is advisable to set "grayscale=True" when "image_type=faces".')
-        
-        # Set the dim correctly with 2 or channels
-        # if grayscale:
-            # dim = (dim[0], dim[1])
-            # dim_face = (64, 64)
-        # else:
-            # dim = (dim[0], dim[1])
-            # dim_face = (64, 64)
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -68,7 +57,6 @@ class Clustimage():
         # Reads the image as grayscale and results in a 2D-array. In case of RGB, no transparency channel is included.
         self.method = method
         self.embedding = embedding
-        self.image_type = image_type
         self.grayscale = grayscale
         self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         # self.cv2_imread_colorscale = cv2.COLOR_BGR2GRAY if grayscale else cv2.COLOR_BGR2RGB
@@ -90,7 +78,7 @@ class Clustimage():
             Xraw = self.get_images_from_path(Xraw, ext=self.ext)
             logger.info('Extracted images: [%s]', len(Xraw))
         # 2. Read images
-        if isinstance(Xraw, list) and isinstance(Xraw[0], str):
+        if isinstance(Xraw, list):
             # Make sure that list in lists are flattend
             Xraw = list(np.hstack(Xraw))
             # Read images and preprocessing
@@ -194,11 +182,13 @@ class Clustimage():
         if self.method=='pca':
             Y, dist, feat = self.compute_distances_pca(X, metric=metric, alpha=alpha)
             out = self.collect_pca(X, Y, dist, k, alpha, feat, todf=True)
+        else:
+            logger.warning('Nothing to predict. Prediction requires initialization with method="pca".')
 
         # Store
         self.results['predict'] = out
         # Return
-        return out
+        return self.results['predict']
 
     def preprocessing(self, pathnames, grayscale, dim, flatten=True):
         """Import example dataset from github source."""
@@ -230,6 +220,8 @@ class Clustimage():
         return X, feat
 
     def extract_pca(self, X):
+        # Check whether n_components is ok
+        if self.params_pca['n_components']>len(X['filenames']): raise Exception(logger.error('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(self.params_pca['n_components'], len(X['filenames']), len(X['filenames']))))
         # Fit model using PCA
         self.model = pca(**self.params_pca)
         self.model.fit_transform(X['img'], row_labels=X['filenames'])
@@ -291,6 +283,9 @@ class Clustimage():
         return out
 
     def detect_faces(self, pathnames):
+        # If face detection, grayscale should be True.
+        if (not self.grayscale): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
+
         # Read and pre-proces the input images
         logger.info("Read images>")
         # Create empty list
@@ -308,8 +303,8 @@ class Clustimage():
             faces['coord_eyes'].append(coord_eyes)
 
         # Return
-        self.results = faces
-        return self.results
+        self.results_faces = faces
+        return faces
     
     def extract_faces(self, pathname):
         # Set defaults
@@ -335,37 +330,38 @@ class Clustimage():
             # imgstore.append(imgface.flatten())
             imgstore.append(img_flatten(imgface))
             # Detect eyes
-            roi_gray = img[y:y+h, x:x+w]
-            eyes = self.eye_cascade.detectMultiScale(roi_gray)
+            eyes = self.eye_cascade.detectMultiScale(imgface)
             if eyes==(): eyes=None
             coord_eyes.append(eyes)
         # Return
         return facepath, np.array(imgstore), coord_faces, coord_eyes, X['filenames'][0], X['pathnames'][0]
+    
+    def plot_faces(self, faces=True, eyes=True, cmap=None):
+        cmap = _set_cmap(cmap, self.grayscale)
 
-    def plot_faces(self, faces=True, eyes=True):
         # Walk over all detected faces
-        if hasattr(self, 'results'):
-            for i, pathname in enumerate(self.results['pathnames']):
+        if hasattr(self, 'results_faces'):
+            for i, pathname in enumerate(self.results_faces['pathnames']):
                 # Import image
                 img = self.preprocessing(pathname, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['img'][0].copy()
 
                 # Plot the faces
                 if faces:
-                    coord_faces = self.results['coord_faces'][i]
+                    coord_faces = self.results_faces['coord_faces'][i]
                     plt.figure()
                     for (x,y,w,h) in coord_faces:
                         cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,0), 2)
                     if len(img.shape)==3:
-                        plt.imshow(img[:,:,::-1]) # RGB-> BGR
+                        plt.imshow(img[:,:,::-1], cmap=cmap) # RGB-> BGR
                     else:
-                        plt.imshow(img)
+                        plt.imshow(img, cmap=cmap)
 
                 # Plot the eyes
                 if eyes:
-                    coord_eyes = self.results['coord_eyes'][i]
-                    for k in np.arange(0, len(self.results['facepath'][i])):
-                        # face = self.results['img'][i][k].copy()
-                        facepath = self.results['facepath'][i][k]
+                    coord_eyes = self.results_faces['coord_eyes'][i]
+                    for k in np.arange(0, len(self.results_faces['facepath'][i])):
+                        # face = self.results_faces['img'][i][k].copy()
+                        facepath = self.results_faces['facepath'][i][k]
                         if os.path.isfile(facepath):
                             face = self.preprocessing(facepath, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['img'][0].copy()
                             if coord_eyes[k] is not None:
@@ -423,8 +419,8 @@ class Clustimage():
                     ax.text(x,y, key, color=colours[key])
                     ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
 
-    def plot_predict(self):
-        cmap = 'gray' if self.grayscale else None
+    def plot_predict(self, cmap=None, figsize=(15,10)):
+        cmap = _set_cmap(cmap, self.grayscale)
         # Plot the images that are similar to each other.
         if self.results.get('predict', None) is not None:
             for key in self.results['predict'].keys():
@@ -439,19 +435,26 @@ class Clustimage():
                     # Predicted label
                     I_predict = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), predict_img))
                     # Make the real plot
-                    fig, axes = plt.subplots(len(I_predict)+1,1,sharex=True,sharey=True,figsize=(8,10))
-                    axes[0].set_title('Input image')
-                    axes[0].imshow(I_input[0], cmap=cmap)
-                    axes[0].axis('off')
-                    for i, I in enumerate(I_predict):
-                        axes[i+1].set_title('Predicted: %s' %(i+1))
-                        axes[i+1].imshow(I, cmap=cmap)
-                        axes[i+1].axis('off')
+                    title='Top or top-left image is input. The others are predicted.'
+
+                    imgs=I_input+I_predict
+                    self._make_subplots(imgs, None, cmap, figsize, title)
+
+                    # fig, axes = plt.subplots(len(I_predict)+1,1,sharex=True,sharey=True,figsize=(8,10))
+                    # axes[0].set_title('Input image')
+                    # axes[0].imshow(I_input[0], cmap=cmap)
+                    # axes[0].axis('off')
+                    # for i, I in enumerate(I_predict):
+                    #     axes[i+1].set_title('Predicted: %s' %(i+1))
+                    #     axes[i+1].imshow(I, cmap=cmap)
+                    #     axes[i+1].axis('off')
 
     def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
+        dim = self.dim if self.grayscale else np.append(self.dim, 3)
+
         if ncols is None:
-            ncols = 10
-            if len(imgs)<25: ncols=5
+            ncols = 5
+            if len(imgs)>25: ncols=10
             if len(imgs)>=100: ncols=15
             if len(imgs)>=150: ncols=20
         
@@ -460,38 +463,42 @@ class Clustimage():
         fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
         for i, ax in enumerate(axs.ravel()):
             if i<len(imgs):
-                ax.imshow(imgs[i].reshape(self.dim), cmap=cmap)
+                ax.imshow(imgs[i].reshape(dim), cmap=cmap)
             ax.axis("off")
         _ = fig.suptitle(title, fontsize=16)
         plt.pause(0.1)
 
-    def plot(self, ncols=10, legend=False, cmap=None, figsize=(15,10)):
-        if cmap is None: 
-            cmap = 'gray' if self.grayscale else None
-
+    def plot(self, ncols=10, legend=False, cmap=None, show_hog=False, figsize=(15,10)):
+        # Set cmap
+        cmap = _set_cmap(cmap, self.grayscale)
         # Plot the clustered images
         if (self.results.get('labx', None) is not None) and (self.results.get('pathnames', None) is not None):
             uilabx = np.unique(self.results['labx'])
             for labx in tqdm(uilabx):
+                idx = np.where(self.results['labx']==labx)[0]
                 # Collect the images
-                getfiles = np.array(self.results['pathnames'])[self.results['labx']==labx]
+                getfiles = np.array(self.results['pathnames'])[idx]
                 # Get the images that cluster together
                 imgs = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), getfiles))
                 # Make subplots
                 self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(labx))))
+
+                # Make hog plots
+                if show_hog and (self.method=='hog'):
+                    hog_images = self.results['feat'][idx,:]
+                    fig, axs = plt.subplots(len(imgs), 2, figsize=(15,10), sharex=True, sharey=True)
+                    for i, ax in enumerate(axs):
+                        hog_image_rescaled = exposure.rescale_intensity(hog_images[i,:].reshape(self.dim), in_range=(0,10))
+                        ax[0].imshow(imgs[i], cmap=plt.cm.gray)
+                        ax[0].axis('off')
+                        ax[1].imshow(hog_image_rescaled, cmap=plt.cm.gray)
+                        ax[1].axis('off')
+
+                    _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
+                    plt.tight_layout()
+                    plt.show()
         else:
             logger.warning('Plotting is not possible if path locations are unknown. Your input may have been a data-array. Try to set "store_to_disk=True" during initialization.')
-
-        # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
-        # ax1.axis('off')
-        # ax1.imshow(img, cmap=plt.cm.gray)
-        # ax1.set_title('Input image')
-        # # Rescale histogram for better display
-        # hog_image_rescaled = exposure.rescale_intensity(hog_image, in_range=(0, 10))
-        # ax2.axis('off')
-        # ax2.imshow(hog_image_rescaled, cmap=plt.cm.gray)
-        # ax2.set_title('Histogram of Oriented Gradients')
-        # plt.show()
 
     def get_images_from_path(self, dirpath, ext=['png','tiff','jpg']):
         return _get_images_from_path(dirpath, ext=ext)
@@ -500,7 +507,7 @@ class Clustimage():
         # Cleaning
         from pathlib import Path
         out = []
-        for sublist in self.results['facepath']:
+        for sublist in self.results_faces['facepath']:
             out.extend(sublist)
 
         p = Path(out[0])
@@ -560,6 +567,12 @@ def img_resize(img, dim=(128, 128)):
 #     except:
 #         gray = img
 #     return gray
+
+# %% Set cmap
+def _set_cmap(cmap, grayscale):
+    if cmap is None:  cmap = 'gray' if grayscale else None
+    cmap = 'gray' if grayscale else None
+    return cmap
 
 # %% Read image
 def img_read(filepath, grayscale=1):
