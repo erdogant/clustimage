@@ -33,7 +33,8 @@ logger = logging.getLogger('')
 for handler in logger.handlers[:]: #get rid of existing old handlers
     logger.removeHandler(handler)
 console = logging.StreamHandler()
-formatter = logging.Formatter('[%(asctime)s] [clustimage]> %(levelname)s> %(message)s', datefmt='%H:%M:%S')
+# formatter = logging.Formatter('[%(asctime)s] [clustimage]> %(levelname)s> %(message)s', datefmt='%H:%M:%S')
+formatter = logging.Formatter('[[clustimage] >%(levelname)s> %(message)s')
 console.setFormatter(formatter)
 logger.addHandler(console)
 logger = logging.getLogger()
@@ -42,7 +43,7 @@ logger = logging.getLogger()
 class Clustimage():
     """clustimage."""
 
-    def __init__(self, method='pca', embedding='tsne', image_type='object', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', image_type='object', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
         """Initialize distfit with user-defined parameters."""
         if not np.any(np.isin(image_type, ['object', 'faces'])): raise Exception(logger.error('image_type: "%s" is unknown', image_type))
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
@@ -52,7 +53,14 @@ class Clustimage():
         # If face detection, grayscale should be True.
         # if image_type=='faces': grayscale=True
         if (image_type=='faces') and (not grayscale): logger.warning('It is advisable to set "grayscale=True" when "image_type=faces".')
-
+        
+        # Set the dim correctly with 2 or channels
+        # if grayscale:
+            # dim = (dim[0], dim[1])
+            # dim_face = (64, 64)
+        # else:
+            # dim = (dim[0], dim[1])
+            # dim_face = (64, 64)
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -61,32 +69,71 @@ class Clustimage():
         self.method = method
         self.embedding = embedding
         self.image_type = image_type
-        self.grayscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
-        # self.grayscale = cv2.COLOR_BGR2GRAY if grayscale else cv2.COLOR_BGR2RGB
+        self.grayscale = grayscale
+        self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+        # self.cv2_imread_colorscale = cv2.COLOR_BGR2GRAY if grayscale else cv2.COLOR_BGR2RGB
         self.dim = dim
-        self.dim_face = (64,64)
+        self.dim_face = (64, 64)
         self.params_pca = params_pca
         self.dirpath = dirpath
+        self.tempdir = tempfile.mkdtemp()
         self.ext = ext
+        self.store_to_disk = store_to_disk # Set if input in np.array with images.
         set_logger(verbose=verbose)
+    
+    def import_data(self, Xraw):
+        # Check whether input is directory, list or array-like
+        
+        # 1. Collect images from directory
+        if isinstance(Xraw, str) and os.path.isdir(Xraw):
+            logger.info('Extracting images from: [%s]', Xraw)
+            Xraw = self.get_images_from_path(Xraw, ext=self.ext)
+            logger.info('Extracted images: [%s]', len(Xraw))
+        # 2. Read images
+        if isinstance(Xraw, list) and isinstance(Xraw[0], str):
+            # Make sure that list in lists are flattend
+            Xraw = list(np.hstack(Xraw))
+            # Read images and preprocessing
+            X = self.preprocessing(Xraw, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
+        # 3. If input is array-like. Make sure X becomes compatible.
+        if isinstance(Xraw, np.ndarray):
+            # Check dimensions
+            pathnames, filenames = None, None
+            dim = np.sqrt(len(Xraw[0,:]))
+            if (dim!=self.dim[0]) or (dim!=self.dim[1]):
+                raise Exception(logger.error('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(self.dim), str([int(dim)]*2), str([int(dim)]*2) )))
 
-    def fit_transform(self, pathnames=None, X=None):
+            if self.store_to_disk:
+                # Store images to disk
+                pathnames, filenames = [], []
+                logger.info('Writing images to tempdir [%s]', self.tempdir)
+                for i in tqdm(np.arange(0, Xraw.shape[0])):
+                    filename = str(uuid.uuid4())+'.png'
+                    pathname = os.path.join(self.tempdir, filename)
+                    # Write to disk
+                    cv2.imwrite(pathname, Xraw[i,:].reshape(self.dim))
+                    filenames.append(filename)
+                    pathnames.append(pathname)
+
+            X = {'img': Xraw, 'pathnames':pathnames, 'filenames':filenames}
+        return X
+
+    def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25):
         """Import example dataset from github source."""
-        if X is None:
-            if (self.image_type=='faces') and (pathnames is None):
-                pathnames = list(np.hstack(self.results['facepath']))
-            # Extract features using method
-            raw, X = self.extract_feat(pathnames)
-
+        # Check whether in is dir, list of files or array-like
+        X = self.import_data(X)
+        # Extract features using method
+        raw, X = self.extract_feat(X)
         # Embedding using tSNE
         xycoord = self.compute_embedding(X)
-
         # Store results
         self.results = {}
         self.results['feat'] = X
         self.results['xycoord'] = xycoord
         self.results['pathnames'] = raw['pathnames']
         self.results['filenames'] = raw['filenames']
+        # Cluster
+        self.cluster(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, savemem=False)
         # Return
         return self.results
     
@@ -102,20 +149,22 @@ class Clustimage():
         # Return
         return xycoord
 
-    def extract_feat(self, pathnames):
+    def extract_feat(self, X):
         # If the input is a directory, first collect the images from path
-        logger.info('Extracting features using %s..', self.method)
-        if isinstance(pathnames, str) and os.path.isdir(pathnames):
-            pathnames = self.get_images_from_path(pathnames, ext=self.ext)
+        logger.info('Extracting features using method: [%s]', self.method)
         # Extract features
         if self.method=='pca':
-            raw, X = self.extract_pca(pathnames)
+            raw, X = self.extract_pca(X)
         elif self.method=='hog':
-            raw, X = self.extract_hog(pathnames)
+            raw, X = self.extract_hog(X)
         else:
             # Read images and preprocessing and flattening of images
-            raw = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
-            X = raw['img']
+            # raw = self.preprocessing(filenames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
+            raw = X.copy()
+            X = X['img']
+
+        # Message
+        logger.info("Extracted features using [%s]: %s" %(self.method, str(X.shape)))
         return raw, X
 
     def cluster(self, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25, savemem=False, verbose=3):
@@ -126,7 +175,7 @@ class Clustimage():
         # Fit
         ce.fit(self.results['feat'])
         # Store
-        logger.info('Cluster labels "labx" is added to the object.')
+        logger.info('Updating cluster labels and evaluated model!')
         self.results['labx'] = ce.results['labx']
         self.clusteval = ce
         # Return
@@ -137,8 +186,9 @@ class Clustimage():
         if (k is None) and (alpha is None):
             raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
         out = None
+
         # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
-        X = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
+        X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
 
         # Predict according PCA method
         if self.method=='pca':
@@ -167,29 +217,23 @@ class Clustimage():
         out['filenames'] = filenames
         return out
 
-    def extract_hog(self, pathnames):
-        # Read images and preprocessing
-        X = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=False)
+    def extract_hog(self, X):
+        # # Read images and preprocessing
+        # X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False)
+        # Set dim correctly for reshaping image
+        dim = self.dim if self.grayscale else np.append(self.dim, 3)
         # Extract hog features per image
-        feat = []
-        for img in X['img']:
-            fd, hog_image = hog(img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)
-            feat.append(hog_image.flatten())
-        # Stack all hog features
-        feat = np.vstack(feat)
-        # Message
-        logger.info("Extracted features with HOG: %s", str(feat.shape))
+        feat = list(map(lambda x: hog(x.reshape(dim), orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)[1].flatten(), tqdm(X['img'])))
         # Stack all hog features into one array and return
+        feat = np.vstack(feat)
+        # Return
         return X, feat
 
-    def extract_pca(self, pathnames):
-        # Read images and preprocessing and flattening of images
-        X = self.preprocessing(pathnames, grayscale=self.grayscale, dim=self.dim, flatten=True)
+    def extract_pca(self, X):
         # Fit model using PCA
         self.model = pca(**self.params_pca)
         self.model.fit_transform(X['img'], row_labels=X['filenames'])
-        logger.info("Extracted features with PCA: %s", str(self.model.results['PC'].shape))
-        # Return Principal Components (features)
+        # Return
         return X, self.model.results['PC'].values
 
     # Compute distances and probabilities after transforming the data using PCA.
@@ -248,7 +292,7 @@ class Clustimage():
 
     def detect_faces(self, pathnames):
         # Read and pre-proces the input images
-        logger.info("Reading images..")
+        logger.info("Read images>")
         # Create empty list
         faces = {'img':[], 'pathnames':[], 'filenames':[], 'facepath':[], 'coord_faces':[], 'coord_eyes':[]}
         # Extract faces and eyes from image
@@ -271,8 +315,7 @@ class Clustimage():
         # Set defaults
         coord_eyes, facepath, imgstore = [], [], []
         # Get image
-        # X = self.preprocessing(pathname, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)
-        X = self.preprocessing(pathname, grayscale=self.grayscale, dim=None, flatten=False)
+        X = self.preprocessing(pathname, grayscale=self.cv2_imread_colorscale, dim=None, flatten=False)
         # Get the image and Convert into grayscale if required
         img = X['img'][0]
         # img = to_gray(X['img'][0])
@@ -346,7 +389,7 @@ class Clustimage():
             # results = self.clusteval.dendrogram(X=feat, max_d=max_d, figsize=figsize)
         return results
 
-    def scatter(self, legend=False, figsize=(15,10)):
+    def scatter(self, dot_size=15, legend=False, figsize=(15,10)):
         # Set default settings
         labx = self.results.get('labx', None)
         if labx is None: labx=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
@@ -358,7 +401,7 @@ class Clustimage():
         if self.embedding=='tsne':
             from scatterd import scatterd
             colours=np.vstack(colourmap.fromlist(labx)[0])
-            fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=10, c=colours, label=labx, figsize=figsize, title='tSNE plot')
+            fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dot_size, c=colours, label=labx, figsize=figsize, title='tSNE plot')
 
         # Scatter all points
         if self.method=='pca':
@@ -381,6 +424,7 @@ class Clustimage():
                     ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
 
     def plot_predict(self):
+        cmap = 'gray' if self.grayscale else None
         # Plot the images that are similar to each other.
         if self.results.get('predict', None) is not None:
             for key in self.results['predict'].keys():
@@ -391,46 +435,52 @@ class Clustimage():
                     # Input label
                     if isinstance(input_img, str): input_img=[input_img]
                     # Input images
-                    I_input = list(map(lambda x: img_read_pipeline(x, grayscale=self.grayscale, dim=self.dim, flatten=False), input_img))
+                    I_input = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), input_img))
                     # Predicted label
-                    I_predict = list(map(lambda x: img_read_pipeline(x, grayscale=self.grayscale, dim=self.dim, flatten=False), predict_img))
+                    I_predict = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), predict_img))
                     # Make the real plot
                     fig, axes = plt.subplots(len(I_predict)+1,1,sharex=True,sharey=True,figsize=(8,10))
                     axes[0].set_title('Input image')
-                    axes[0].imshow(I_input[0])
+                    axes[0].imshow(I_input[0], cmap=cmap)
+                    axes[0].axis('off')
                     for i, I in enumerate(I_predict):
                         axes[i+1].set_title('Predicted: %s' %(i+1))
-                        axes[i+1].imshow(I)
+                        axes[i+1].imshow(I, cmap=cmap)
+                        axes[i+1].axis('off')
 
-    def plot(self, nrcols=None, legend=False):
+    def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
+        if ncols is None:
+            ncols = 10
+            if len(imgs)<25: ncols=5
+            if len(imgs)>=100: ncols=15
+            if len(imgs)>=150: ncols=20
+        
+        # Setup rows and columns
+        nrows = int(np.ceil(len(imgs)/ncols))
+        fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+        for i, ax in enumerate(axs.ravel()):
+            if i<len(imgs):
+                ax.imshow(imgs[i].reshape(self.dim), cmap=cmap)
+            ax.axis("off")
+        _ = fig.suptitle(title, fontsize=16)
+        plt.pause(0.1)
+
+    def plot(self, ncols=10, legend=False, cmap=None, figsize=(15,10)):
+        if cmap is None: 
+            cmap = 'gray' if self.grayscale else None
+
         # Plot the clustered images
-        if self.results.get('labx', None) is not None:
+        if (self.results.get('labx', None) is not None) and (self.results.get('pathnames', None) is not None):
             uilabx = np.unique(self.results['labx'])
             for labx in tqdm(uilabx):
-                idx = self.results['labx']==labx
-                getfiles = np.array(self.results['pathnames'])[idx]
+                # Collect the images
+                getfiles = np.array(self.results['pathnames'])[self.results['labx']==labx]
                 # Get the images that cluster together
-                imgs = list(map(lambda x: img_read_pipeline(x, grayscale=self.grayscale, dim=self.dim, flatten=False), getfiles))
-
-                if nrcols is None:
-                    nrcols = 4
-                    if len(getfiles)>=25: nrcols=5
-                    if len(getfiles)>=50: nrcols=10
-                    if len(getfiles)>=100: nrcols=15
-                    if len(getfiles)>=150: nrcols=20
-
-                # Setup rows and columns
-                nrows = int(np.ceil(len(imgs)/nrcols))
-                fig, axes = plt.subplots(nrows, nrcols, figsize=(15,10))
-                if len(axes.shape)==1: axes=[axes]
-                colnr=0
-                for i, img in enumerate(imgs):
-                    rownr = np.mod(i, nrows)
-                    if rownr==0: colnr = colnr+1
-                    axes[rownr][colnr-1].imshow(img)
-                    axes[rownr][colnr-1].set_axis_off()
-                plt.axis('off')
-                plt.pause(0.1)
+                imgs = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), getfiles))
+                # Make subplots
+                self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(labx))))
+        else:
+            logger.warning('Plotting is not possible if path locations are unknown. Your input may have been a data-array. Try to set "store_to_disk=True" during initialization.')
 
         # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
         # ax1.axis('off')
@@ -443,7 +493,7 @@ class Clustimage():
         # ax2.set_title('Histogram of Oriented Gradients')
         # plt.show()
 
-    def get_images_from_path(self, dirpath, ext):
+    def get_images_from_path(self, dirpath, ext=['png','tiff','jpg']):
         return _get_images_from_path(dirpath, ext=ext)
     
     def clean(self):
