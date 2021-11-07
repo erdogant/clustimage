@@ -11,7 +11,7 @@
 # %% Detect faces
 from clustimage import Clustimage
 # Init
-cl = Clustimage(method='hog', grayscale=True, params_pca={'n_components':14})
+cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':14})
 # Load example with faces
 pathnames = cl.import_example(data='faces')
 # Detect faces
@@ -29,10 +29,9 @@ labx = cl.cluster()
 cl.dendrogram()
 cl.plot(ncols=2, show_hog=True)
 
-cl.clean()
+cl.clean_files()
 
 # plt.imshow(face_results['img'][0][0,:].reshape(cl.dim_face), cmap=plt.cm.gray)
-
 
 
 # %%
