@@ -11,6 +11,8 @@ rm -rf clustimage/.pylint.d
 rm -rf .pylint.d
 rm -rf clustimage/data/*.zip
 rm -rf clustimage/data/*.csv
+rm -rf clustimage/data/*.png
+rm -rf clustimage/data
 rm -rf *.js
 rm -rf *.html
 rm -rf *.css
