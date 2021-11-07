@@ -42,10 +42,97 @@ logger = logging.getLogger()
 
 
 class Clustimage():
-    """clustimage."""
+    """Clustering of images.
+
+    Description
+    -----------
+    Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation. Taking all these steps requires setting various input parameters.
+    Not all input parameters can be changed across the different steps in clustimage. Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.
+    The following 4 steps are taken:
+        
+    Step 1. Pre-processing:
+        Images are imported with specific extention (['png','tiff','jpg']) and color-scaled if desired.
+        Setting the grayscale parameter to True can be especially usefull when clustering faces.
+        Each input images is subsequently scaled in the same dimension such as (128,128). Note that if an array-like dataset is given as an input, setting these dimensions is required to restore the image in case of plotting.
+    Step 2. Feature-extraction:
+        Features are extracted from the images using Principal component analysis (pca), Histogram of Oriented Gradients (hog) or the raw values are used.
+    Step 3. Embedding:
+        The feature-space non-lineair transformed using t-SNE and the coordinates are stored. The embedding is only used for visualization purposes.
+    Step 4. Cluster evaluation:
+        The feature-space is used as an input in the cluster-evaluation method. The cluster evaluation method determines the optimal number of clusters and return the cluster labels.
+    Step 5: Done.
+        The results are stored in the object and returned by the model. Various different (scatter) plots can be made to evaluate the results.
+
+    Parameters
+    ----------
+    method : str, (default: 'pca')
+        Method to be usd to extract features from images.
+        'pca' : PCA feature extraction
+        'hog' : hog features extraced
+         None : No feature extraction
+    embedding : str, (default: 'tsne')
+        Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
+        'tsne'
+        None
+    grayscale : Bool, (default: False)
+        Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
+    dim : tuple, (default: (128,128))
+        Rescale images. This is required because the feature-space need to be the same across samples.
+    dirpath : str, (default: None)
+        Directory to write images.
+    ext : list, (default: ['png','tiff','jpg'])
+        Images with the file extentions are used.
+    params_pca : dict, (default: {'n_components':50, 'detect_outliers':None}.)
+        Parameters to initialize the pca model.
+    store_to_disk : False, (default: False)
+        Required in case of face_detect() or when using an array-like input in fit_transform().
+        Images need to be stored on disk to avoid high memory usage.
+    verbose : int, (default: 20)
+        Print progress to screen. The default is 3.
+        60: None, 40: Error, 30: Warn, 20: Info, 10: Debug
+    
+    Returns
+    -------
+    object containing results dictionary.
+    
+    feat : array-like.
+        Features extracted from the input-images
+    xycoord : array-like.
+        x,y coordinates after embedding or alternatively the first 2 features.
+    pathnames : list of str.
+        Full path to images that are used in the model.
+    filenames : list of str.
+        Filename of the input images.
+    labx : list.
+        Cluster labels
+
+    Example
+    -------
+    >>> from clustimage import Clustimage
+    >>>
+    >>> # Init with default settings
+    >>> cl = Clustimage()
+    >>> # load example with flowers
+    >>> path_to_imgs = cl.import_example(data='flowers')
+    >>> # Detect cluster
+    >>> results = cl.fit_transform(path_to_imgs, min_clust=10)
+    >>>
+    >>> # Plot dendrogram
+    >>> cl.dendrogram()
+    >>> # Scatter
+    >>> cl.scatter(dot_size=50)
+    >>> # Plot clustered images
+    >>> cl.plot()
+    >>>
+    >>> # Make prediction
+    >>> results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
+    >>> cl.plot_predict()
+    >>> cl.scatter()
+    """
 
     def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
-        """Initialize distfit with user-defined parameters."""
+        """Initialize clustimage with user-defined parameters."""
+
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
         if dirpath is None: dirpath = tempfile.mkdtemp()
         if not os.path.isdir(dirpath): raise Exception(logger.error('[%s] does not exists.', dirpath))
@@ -68,7 +155,28 @@ class Clustimage():
         self.ext = ext
         self.store_to_disk = store_to_disk # Set if input in np.array with images.
         set_logger(verbose=verbose)
-    
+
+    def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25):
+        """Import example dataset from github source."""
+        # Clean readily fitted models to ensure correct results
+        self._clean()
+        # Check whether in is dir, list of files or array-like
+        X = self.import_data(X)
+        # Extract features using method
+        raw, X = self.extract_feat(X)
+        # Embedding using tSNE
+        xycoord = self.compute_embedding(X)
+        # Store results
+        self.results = {}
+        self.results['feat'] = X
+        self.results['xycoord'] = xycoord
+        self.results['pathnames'] = raw['pathnames']
+        self.results['filenames'] = raw['filenames']
+        # Cluster
+        self.cluster(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, savemem=False)
+        # Return
+        return self.results
+
     def import_data(self, Xraw):
         # Check whether input is directory, list or array-like
         
@@ -106,25 +214,14 @@ class Clustimage():
             X = {'img': Xraw, 'pathnames':pathnames, 'filenames':filenames}
         return X
 
-    def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25):
-        """Import example dataset from github source."""
-        # Check whether in is dir, list of files or array-like
-        X = self.import_data(X)
-        # Extract features using method
-        raw, X = self.extract_feat(X)
-        # Embedding using tSNE
-        xycoord = self.compute_embedding(X)
-        # Store results
-        self.results = {}
-        self.results['feat'] = X
-        self.results['xycoord'] = xycoord
-        self.results['pathnames'] = raw['pathnames']
-        self.results['filenames'] = raw['filenames']
-        # Cluster
-        self.cluster(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, savemem=False)
-        # Return
-        return self.results
-    
+    def _clean(self):
+        # Clean readily fitted models to ensure correct results.
+        if hasattr(self, 'results'):
+            logger.info('Cleaning previous fitted model results')
+            if hasattr(self, 'results'): del self.results
+            if hasattr(self, 'clusteval'): del self.clusteval
+            if hasattr(self, 'results_faces'): del self.results_faces
+
     def compute_embedding(self, X):
         # Embedding using tSNE
         if self.embedding=='tsne':
@@ -503,19 +600,22 @@ class Clustimage():
     def get_images_from_path(self, dirpath, ext=['png','tiff','jpg']):
         return _get_images_from_path(dirpath, ext=ext)
     
-    def clean(self):
+    def clean_files(self):
         # Cleaning
         from pathlib import Path
-        out = []
-        for sublist in self.results_faces['facepath']:
-            out.extend(sublist)
+        if hasattr(self, 'results_faces'):
+            out = []
+            for sublist in self.results_faces['facepath']:
+                out.extend(sublist)
 
-        p = Path(out[0])
-        dirpath = str(p.parent)
+            p = Path(out[0])
+            dirpath = str(p.parent)
 
-        if os.path.isdir(dirpath):
-            logger.info('Removing directory with all content: %s', dirpath)
-            shutil.rmtree(dirpath)
+            if os.path.isdir(dirpath):
+                logger.info('Removing directory with all content: %s', dirpath)
+                shutil.rmtree(dirpath)
+        else:
+            logger.info('Nothing to clean.')
 
     def import_example(self, data='flowers', url=None):
         """Import example dataset from github source.
