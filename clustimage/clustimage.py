@@ -1,4 +1,4 @@
-"""Clustimage"""
+"""Python package clustimage is determine stable clusters when using raw images as an input."""
 # --------------------------------------------------
 # Name        : clustimage.py
 # Author      : E.Taskesen
@@ -77,7 +77,7 @@ class Clustimage():
     cluster_space: str, (default: 'high')
         Selection of the features that are used for clustering. This can either be on high or low feature space.
             * 'high' : Original feature space.
-            * 'low' : This is either the xycoordinates of tSNE or the first two PCs or HOGH features.
+            * 'low' : Input are the xycoordinates that are determined by "embedding". Thus either tSNE coordinates or the first two PCs or HOGH features.
     grayscale : Bool, (default: False)
         Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
     dim : tuple, (default: (128,128))
@@ -88,9 +88,6 @@ class Clustimage():
         Images with the file extentions are used.
     params_pca : dict, (default: {'n_components':50, 'detect_outliers':None}.)
         Parameters to initialize the pca model.
-    store_to_disk : False, (default: False)
-        Required in case of face_detect() or when using an array-like input in fit_transform().
-        Images need to be stored on disk to avoid high memory usage.
     verbose : int, (default: 20)
         Print progress to screen. The default is 3.
         60: None, 40: Error, 30: Warn, 20: Info, 10: Debug
@@ -276,7 +273,7 @@ class Clustimage():
         cluster_space : str, (default: 'high')
             Selection of the features that are used for clustering. This can either be on high or low feature space.
                 * 'high' : Original feature space.
-                * 'low' : This is either the xycoordinates of tSNE or the first two PCs or HOGH features.
+                * 'low' : Input are the xycoordinates that are determined by "embedding". Thus either tSNE coordinates or the first two PCs or HOGH features.
         cluster : str, (default: 'agglomerative')
             Type of clustering.
                 * 'agglomerative'
@@ -577,7 +574,7 @@ class Clustimage():
             1. Images are imported with specific extention (['png','tiff','jpg']), 
             2. Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
             3. Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
-            4. If required, images can be saved to disk when store_to_disk=True and only in case a array-like input is given.
+            4. Images are saved to disk in case a array-like input is given.
             5. Independent of the input, a dict is returned in a consistent manner.
 
         Processing the input depends on the input:
