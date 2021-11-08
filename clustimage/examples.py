@@ -8,6 +8,27 @@
 # cl = Clustimage()
 # cl.fit_transform()
 
+# %%
+from clustimage import Clustimage
+# init
+cl = Clustimage(method='pca', embedding='tsne', cluster_space='high', grayscale=True, params_pca={'n_components':50}, dim=(8,8), store_to_disk=True)
+# Example data
+X = cl.import_example(data='digits')
+# Preprocessing and feature extraction
+results = cl.fit_transform(X, min_clust=10)
+# Scatter
+cl.scatter()
+
+# Cluster differently
+cl.cluster(cluster_space='low')
+# Scatter
+cl.scatter()
+# Plotting
+cl.dendrogram()
+# Plot the clustered images
+cl.plot(cmap='binary')
+
+
 # %% Detect faces
 from clustimage import Clustimage
 # Init
@@ -34,22 +55,6 @@ cl.clean_files()
 # plt.imshow(face_results['img'][0][0,:].reshape(cl.dim_face), cmap=plt.cm.gray)
 
 
-# %%
-from sklearn.datasets import load_digits
-digits = load_digits(n_class=6)
-X, y = digits.data, digits.target
-# https://scikit-learn.org/stable/auto_examples/manifold/plot_lle_digits.html#sphx-glr-auto-examples-manifold-plot-lle-digits-py
-
-from clustimage import Clustimage
-# init
-cl = Clustimage(method='pca', embedding='tsne', grayscale=True, params_pca={'n_components':50}, dim=(8,8), store_to_disk=True)
-# Preprocessing and feature extraction
-# Scatter
-cl.scatter()
-# Plotting
-cl.dendrogram()
-# Plot the clustered images
-cl.plot(cmap='binary')
 
 
 # %%

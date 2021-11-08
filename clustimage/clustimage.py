@@ -34,7 +34,6 @@ logger = logging.getLogger('')
 for handler in logger.handlers[:]: #get rid of existing old handlers
     logger.removeHandler(handler)
 console = logging.StreamHandler()
-# formatter = logging.Formatter('[%(asctime)s] [clustimage]> %(levelname)s> %(message)s', datefmt='%H:%M:%S')
 formatter = logging.Formatter('[clustimage] >%(levelname)s> %(message)s')
 console.setFormatter(formatter)
 logger.addHandler(console)
@@ -46,16 +45,17 @@ class Clustimage():
 
     Description
     -----------
-    Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation. Taking all these steps requires setting various input parameters.
-    Not all input parameters can be changed across the different steps in clustimage. Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.
+    Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
+    Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
+    Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.
     The following 4 steps are taken:
-        
+
     Step 1. Pre-processing:
-        Images are imported with specific extention (['png','tiff','jpg']) and color-scaled if desired.
-        Setting the grayscale parameter to True can be especially usefull when clustering faces.
-        Each input images is subsequently scaled in the same dimension such as (128,128). Note that if an array-like dataset is given as an input, setting these dimensions is required to restore the image in case of plotting.
+        Images are imported with specific extention (['png','tiff','jpg']), 
+        Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
+        Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
     Step 2. Feature-extraction:
-        Features are extracted from the images using Principal component analysis (pca), Histogram of Oriented Gradients (hog) or the raw values are used.
+        Features are extracted from the images using Principal component analysis (PCA), Histogram of Oriented Gradients (HOG) or the raw values are used.
     Step 3. Embedding:
         The feature-space non-lineair transformed using t-SNE and the coordinates are stored. The embedding is only used for visualization purposes.
     Step 4. Cluster evaluation:
@@ -67,13 +67,17 @@ class Clustimage():
     ----------
     method : str, (default: 'pca')
         Method to be usd to extract features from images.
-        'pca' : PCA feature extraction
-        'hog' : hog features extraced
-         None : No feature extraction
+            * 'pca' : PCA feature extraction
+            * 'hog' : hog features extraced
+            * None : No feature extraction
     embedding : str, (default: 'tsne')
         Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
-        'tsne'
-        None
+            * 'tsne'
+            * None
+    cluster_space: str, (default: 'high')
+        Selection of the features that are used for clustering. This can either be on high or low feature space.
+            * 'high' : Original feature space.
+            * 'low' : This is either the xycoordinates of tSNE or the first two PCs or HOGH features.
     grayscale : Bool, (default: False)
         Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
     dim : tuple, (default: (128,128))
@@ -90,21 +94,22 @@ class Clustimage():
     verbose : int, (default: 20)
         Print progress to screen. The default is 3.
         60: None, 40: Error, 30: Warn, 20: Info, 10: Debug
-    
+
     Returns
     -------
-    object containing results dictionary.
-    
-    feat : array-like.
-        Features extracted from the input-images
-    xycoord : array-like.
-        x,y coordinates after embedding or alternatively the first 2 features.
-    pathnames : list of str.
-        Full path to images that are used in the model.
-    filenames : list of str.
-        Filename of the input images.
-    labx : list.
-        Cluster labels
+    Object.
+    model : dict
+        dict containing keys with results.
+        feat : array-like.
+            Features extracted from the input-images
+        xycoord : array-like.
+            x,y coordinates after embedding or alternatively the first 2 features.
+        pathnames : list of str.
+            Full path to images that are used in the model.
+        filenames : list of str.
+            Filename of the input images.
+        labx : list.
+            Cluster labels
 
     Example
     -------
@@ -128,9 +133,9 @@ class Clustimage():
     >>> results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
     >>> cl.plot_predict()
     >>> cl.scatter()
-    """
 
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
+    """
+    def __init__(self, method='pca', embedding='tsne', cluster_space='high', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
         """Initialize clustimage with user-defined parameters."""
 
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
@@ -141,10 +146,10 @@ class Clustimage():
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-        # Reads the image as grayscale and results in a 2D-array. In case of RGB, no transparency channel is included.
         self.method = method
         self.embedding = embedding
         self.grayscale = grayscale
+        self.cluster_space = cluster_space
         self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         # self.cv2_imread_colorscale = cv2.COLOR_BGR2GRAY if grayscale else cv2.COLOR_BGR2RGB
         self.dim = dim
@@ -157,15 +162,97 @@ class Clustimage():
         set_logger(verbose=verbose)
 
     def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25):
-        """Import example dataset from github source."""
+        """Group samples into clusters that are similar in their feature space.
+
+        Parameters
+        ----------
+        X : str, list or array-like.
+            The input can be:
+                * "c://temp//" : Path to directory with images
+                * ['c://temp//image1.png', 'c://image2.png', ...] : List of exact pathnames.
+                * [[.., ..], [.., ..], ...] : Array-like matrix in the form of [sampels x features]
+        cluster : str, (default: 'agglomerative')
+            Type of clustering.
+                * 'agglomerative'
+                * 'kmeans'
+                * 'dbscan'
+                * 'hdbscan'
+        method : str, (default: 'silhouette')
+            Method type for cluster validation.
+                * 'silhouette'
+                * 'dbindex'
+                * 'derivative'
+        metric : str, (default: 'euclidean').
+            Distance measures. All metrics from sklearn can be used such as:
+                * 'euclidean'
+                * 'hamming'
+                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
+        linkage : str, (default: 'ward')
+            Linkage type for the clustering.
+                * 'ward'
+                * 'single'
+                * 'complete'
+                * 'average'
+                * 'weighted'
+                * 'centroid'
+                * 'median'
+        min_clust : int, (default: 2)
+            Number of clusters that is evaluated greater or equals to min_clust.
+        max_clust : int, (default: 25)
+            Number of clusters that is evaluated smaller or equals to max_clust.
+
+        Returns
+        -------
+        Object.
+        model : dict
+            dict containing keys with results.
+            feat : array-like.
+                Features extracted from the input-images
+            xycoord : array-like.
+                x,y coordinates after embedding or alternatively the first 2 features.
+            pathnames : list of str.
+                Full path to images that are used in the model.
+            filenames : list of str.
+                Filename of the input images.
+            labx : list.
+                Cluster labels
+
+        Example
+        -------
+        >>> from clustimage import Clustimage
+        >>>
+        >>> # Init with default settings
+        >>> cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':10})
+        >>> # load example with faces
+        >>> pathnames = cl.import_example(data='faces')
+        >>> # Detect faces
+        >>> face_results = cl.detect_faces(pathnames)
+        >>> # Cluster extracted faces
+        >>> results = cl.fit_transform(face_results['facepath'])
+        >>>
+        >>> # Plot dendrogram
+        >>> cl.dendrogram()
+        >>> # Scatter
+        >>> cl.scatter(dot_size=100)
+        >>> # Plot clustered images
+        >>> cl.plot(ncols=2)
+        >>> # Plot facces
+        >>> cl.plot_faces()
+        >>>
+        >>> # Make prediction
+        >>> results_predict = cl.predict(face_results['facepath'][2][0], k=None, alpha=0.05)
+        >>> cl.plot_predict()
+        >>> cl.scatter()
+
+        """
         # Clean readily fitted models to ensure correct results
         self._clean()
         # Check whether in is dir, list of files or array-like
-        X = self.import_data(X)
+        X = self._import_data(X)
         # Extract features using method
-        raw, X = self.extract_feat(X)
+        raw, X = self._extract_feat(X)
         # Embedding using tSNE
-        xycoord = self.compute_embedding(X)
+        xycoord = self._compute_embedding(X)
         # Store results
         self.results = {}
         self.results['feat'] = X
@@ -173,13 +260,350 @@ class Clustimage():
         self.results['pathnames'] = raw['pathnames']
         self.results['filenames'] = raw['filenames']
         # Cluster
-        self.cluster(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, savemem=False)
+        self.cluster(cluster=cluster, method=method, cluster_space=self.cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, savemem=False)
         # Return
         return self.results
 
-    def import_data(self, Xraw):
-        # Check whether input is directory, list or array-like
+    def cluster(self, cluster_space='high', cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25):
+        """Detection of the optimal number of clusters given the input set of features.
         
+        Description
+        -----------
+        This function is build on clusteval, which is a python package that provides various methods for unsupervised cluster validation.
+
+        Parameters
+        ----------
+        cluster_space : str, (default: 'high')
+            Selection of the features that are used for clustering. This can either be on high or low feature space.
+                * 'high' : Original feature space.
+                * 'low' : This is either the xycoordinates of tSNE or the first two PCs or HOGH features.
+        cluster : str, (default: 'agglomerative')
+            Type of clustering.
+                * 'agglomerative'
+                * 'kmeans'
+                * 'dbscan'
+                * 'hdbscan'
+        method : str, (default: 'silhouette')
+            Method type for cluster validation.
+                * 'silhouette'
+                * 'dbindex'
+                * 'derivative'
+        metric : str, (default: 'euclidean').
+            Distance measures. All metrics from sklearn can be used such as:
+                * 'euclidean'
+                * 'hamming'
+                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
+        linkage : str, (default: 'ward')
+            Linkage type for the clustering.
+                * 'ward'
+                * 'single'
+                * 'complete'
+                * 'average'
+                * 'weighted'
+                * 'centroid'
+                * 'median'
+        min_clust : int, (default: 2)
+            Number of clusters that is evaluated greater or equals to min_clust.
+        max_clust : int, (default: 25)
+            Number of clusters that is evaluated smaller or equals to max_clust.
+        savemem : bool, (default: False)
+            Save memmory when working with large datasets. Note that htis option only in case of KMeans.
+
+        Returns
+        -------
+        array-like
+            .results['labx'] : Cluster labels.
+            .clusteval : model parameters for cluster-evaluation and plotting.
+
+        Example
+        -------
+        >>> from clustimage import Clustimage
+        >>>
+        >>> # Init with default settings
+        >>> cl = Clustimage(method='pca')
+        >>> # load example with digits
+        >>> X = cl.import_example(data='digits')
+        >>> # Find clusters
+        >>> results = cl.fit_transform(X)
+        >>> # Scatter
+        >>> cl.scatter(dot_size=25)
+        >>>
+        >>> # Change the clustering method, metric, minimum expected nr. of clusters etc.
+        >>> labx = cl.cluster(cluster='agglomerative', method='dbindex', metric='euclidean', linkage='ward', min_clust=2, max_clust=25)
+        >>>
+        >>> # Scatter
+        >>> cl.scatter(dot_size=25)
+        >>>
+        >>> # Plot clustered images
+        >>> cl.plot(cmap='binary')
+        >>> # Plot dendrogram
+        >>> cl.dendrogram()
+
+        """
+        if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
+        logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.method)
+        # Init
+        ce = clusteval(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
+        # Fit
+        if cluster_space=='low':
+            feat = self.results['xycoord']
+        else:
+            feat = self.results['feat']
+        # Fit model
+        ce.fit(feat)
+        # Store
+        logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
+        self.results['labx'] = ce.results['labx']
+        self.clusteval = ce
+        # Return
+        return ce.results['labx']
+
+    def predict(self, pathnames, metric='euclidean', k=1, alpha=0.05):
+        """Predict the similarity of the input image with all other fitted images.
+
+        Description
+        -----------
+        Computes K-nearest neighbour and P-values for pathnames [y] based on the fitted distribution from X.
+        The empirical distribution of X is used to estimate the loc/scale/arg parameters for a theoretical distribution.
+        For each image, it computes the probability for input variables y, and returns the images that are <= alpha
+
+        Parameters
+        ----------
+        pathnames : list of str.
+            Full path to images that are used in the model.
+        metric : str, (default: 'euclidean').
+            Distance measures. All metrics from sklearn can be used such as:
+                * 'euclidean'
+                * 'hamming'
+                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
+        k : int, (default: 1)
+            The k-nearest neighbour.
+        alpha : float, default: 0.05
+            Significance alpha.
+
+        Returns
+        -------
+        dict.
+            Images are returned that are either k-nearest neighbour or significant.
+
+        """
+        if (k is None) and (alpha is None):
+            raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
+        out = None
+
+        # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
+        X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
+
+        # Predict according PCA method
+        if self.method=='pca':
+            Y, dist, feat = self._compute_distances_pca(X, metric=metric, alpha=alpha)
+            out = self._collect_pca(X, Y, dist, k, alpha, feat, todf=True)
+        else:
+            logger.warning('Nothing to predict. Prediction requires initialization with method="pca".')
+
+        # Store
+        self.results['predict'] = out
+        # Return
+        return self.results['predict']
+
+    def detect_faces(self, pathnames):
+        """Detect and extract faces from images.
+
+        Parameters
+        ----------
+        pathnames : list of str.
+            Full path to images that are used in the model.
+
+        Returns
+        -------
+        Object.
+        model : dict
+            dict containing keys with results.
+            pathnames : list of str.
+                Full path to images that are used in the model.
+            filenames : list of str.
+                Filename of the input images.
+            facepath : list of str.
+                Filename of the extracted faces that are stored to disk.
+            img : array-like.
+                NxMxC for which N are the Samples, M the features and C the number of channels.
+            coord_faces : array-like.
+                list of lists containing coordinates fo the faces in the original image.
+            coord_eyes : array-like.
+                list of lists containing coordinates fo the eyes in the extracted (img and facepath) image.
+
+        Example
+        -------
+
+        >>> from clustimage import Clustimage
+        >>>
+        >>> # Init with default settings
+        >>> cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':10})
+        >>> # load example with faces
+        >>> pathnames = cl.import_example(data='faces')
+        >>> # Detect faces
+        >>> face_results = cl.detect_faces(pathnames)
+        >>> # Cluster extracted faces
+        >>> results = cl.fit_transform(face_results['facepath'])
+        >>>
+        >>> # Plot dendrogram
+        >>> cl.dendrogram()
+        >>> # Scatter
+        >>> cl.scatter(dot_size=100)
+        >>> # Plot clustered images
+        >>> cl.plot(ncols=2)
+        >>> # Plot facces
+        >>> cl.plot_faces()
+        >>>
+        >>> # Make prediction
+        >>> results_predict = cl.predict(face_results['facepath'][2], k=None, alpha=0.05)
+        >>> cl.plot_predict()
+        >>> cl.scatter()
+
+        """
+        # If face detection, grayscale should be True.
+        if (not self.grayscale): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
+
+        # Read and pre-proces the input images
+        logger.info("Read images>")
+        # Create empty list
+        faces = {'img':[], 'pathnames':[], 'filenames':[], 'facepath':[], 'coord_faces':[], 'coord_eyes':[]}
+        # Extract faces and eyes from image
+        for pathname in pathnames:
+            # Extract faces
+            facepath, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self._extract_faces(pathname)
+            # Store
+            faces['pathnames'].append(path_to_image)
+            faces['filenames'].append(filename)
+            faces['facepath'].append(facepath)
+            faces['img'].append(imgfaces)
+            faces['coord_faces'].append(coord_faces)
+            faces['coord_eyes'].append(coord_eyes)
+
+        # Return
+        self.results_faces = faces
+        return faces
+
+    def preprocessing(self, pathnames, grayscale, dim, flatten=True):
+        """Pre-processing the input images and returning consistent output.
+
+        Parameters
+        ----------
+        pathnames : list of str.
+            Full path to images that are used in the model.
+        grayscale : Bool, (default: False)
+            Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
+        dim : tuple, (default: (128,128))
+            Rescale images. This is required because the feature-space need to be the same across samples.
+        flatten : Bool, (default: True)
+            Flatten the processed NxMxC array to a 1D-vector
+
+        Returns
+        -------
+        Xraw : dict containing keys:
+            img : array-like.
+            pathnames : list of str.
+            filenames : list of str.
+
+        """
+        logger.info("Reading images..")
+        img, filenames = None, None
+        if isinstance(pathnames, str):
+            pathnames=[pathnames]
+        if isinstance(pathnames, list):
+            filenames = list(map(basename, pathnames))
+            img = list(map(lambda x: img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames)))
+            if flatten: img = np.vstack(img)
+
+        out = {}
+        out['img'] = img
+        out['pathnames'] = pathnames
+        out['filenames'] = filenames
+        return out
+
+    def extract_hog(self, X):
+        """Extract HOG features.
+
+        Parameters
+        ----------
+        X : array-like
+            NxM array for which N are the samples and M the features.
+
+        Returns
+        -------
+        feat : array-like
+            NxF array for which N are the samples and F the reduced feature space.
+
+        """
+        # Set dim correctly for reshaping image
+        dim = self.dim if self.grayscale else np.append(self.dim, 3)
+        # Extract hog features per image
+        feat = list(map(lambda x: hog(x.reshape(dim), orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)[1].flatten(), tqdm(X['img'])))
+        # Stack all hog features into one array and return
+        feat = np.vstack(feat)
+        # Return
+        return feat
+
+    def extract_pca(self, X):
+        """Extract Principal Components.
+
+        Parameters
+        ----------
+        X : array-like
+            NxM array for which N are the samples and M the features.
+
+        Returns
+        -------
+        feat : array-like
+            NxF array for which N are the samples and F the reduced feature space.
+
+        """
+        # Check whether n_components is ok
+        if self.params_pca['n_components']>len(X['filenames']): raise Exception(logger.error('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(self.params_pca['n_components'], len(X['filenames']), len(X['filenames']))))
+        # Fit model using PCA
+        self.model = pca(**self.params_pca)
+        self.model.fit_transform(X['img'], row_labels=X['filenames'])
+        # Return
+        return self.model.results['PC'].values
+
+    def _import_data(self, Xraw):
+        """Import images and return in an consistent manner.
+
+        Description
+        -----------
+        The input for the fit_transform() can have multiple forms; path to directory, list of strings and and array-like input.
+        This requires that each of the input needs to be processed in its own manner but each should return the same structure to make it compatible across all functions.
+        The following steps are used for the import:
+            1. Images are imported with specific extention (['png','tiff','jpg']), 
+            2. Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
+            3. Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
+            4. If required, images can be saved to disk when store_to_disk=True and only in case a array-like input is given.
+            5. Independent of the input, a dict is returned in a consistent manner.
+
+        Processing the input depends on the input:
+
+        Parameters
+        ----------
+        Xraw : str, list or array-like.
+            The input can be:
+                * "c://temp//" : Path to directory with images
+                * ['c://temp//image1.png', 'c://image2.png', ...] : List of exact pathnames.
+                * [[.., ..], [.., ..], ...] : Array-like matrix in the form of [sampels x features]
+
+        Returns
+        -------
+        Object.
+        model : dict
+            dict containing keys with results.
+            img : array-like.
+                Pre-processed images
+            pathnames : list of str.
+                Full path to images that are used in the model.
+            filenames : list of str.
+                Filename of the input images.
+
+        """
+        # Check whether input is directory, list or array-like
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
             logger.info('Extracting images from: [%s]', Xraw)
@@ -215,14 +639,26 @@ class Clustimage():
         return X
 
     def _clean(self):
-        # Clean readily fitted models to ensure correct results.
+        """Clean or removing previous results and models to ensure correct working."""
         if hasattr(self, 'results'):
             logger.info('Cleaning previous fitted model results')
             if hasattr(self, 'results'): del self.results
             if hasattr(self, 'clusteval'): del self.clusteval
             if hasattr(self, 'results_faces'): del self.results_faces
 
-    def compute_embedding(self, X):
+    def _compute_embedding(self, X):
+        """Compute the embedding for the extracted features.
+
+        Parameters
+        ----------
+        X : array-like
+            NxM array for which N are the samples and M the features.
+
+        Returns
+        -------
+        xycoord : array-like.
+            x,y coordinates after embedding or alternatively the first 2 features.
+        """
         # Embedding using tSNE
         if self.embedding=='tsne':
             logger.info('Computing embedding using %s..', self.embedding)
@@ -234,101 +670,60 @@ class Clustimage():
         # Return
         return xycoord
 
-    def extract_feat(self, X):
+    def _extract_feat(self, Xraw):
+        """Extract features based on the input data X.
+
+        Parameters
+        ----------
+        Xinput : dict containing keys:
+            img : array-like.
+            pathnames : list of str.
+            filenames : list of str.
+
+        Returns
+        -------
+        Xraw : dict containing keys:
+            img : array-like.
+            pathnames : list of str.
+            filenames : list of str.
+        X : array-like
+            Extracted features.
+
+        """
         # If the input is a directory, first collect the images from path
         logger.info('Extracting features using method: [%s]', self.method)
         # Extract features
         if self.method=='pca':
-            raw, X = self.extract_pca(X)
+            X = self.extract_pca(Xraw)
         elif self.method=='hog':
-            raw, X = self.extract_hog(X)
+            X = self.extract_hog(Xraw)
         else:
             # Read images and preprocessing and flattening of images
-            # raw = self.preprocessing(filenames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
-            raw = X.copy()
-            X = X['img']
+            X = Xraw['img'].copy()
 
         # Message
         logger.info("Extracted features using [%s]: %s" %(self.method, str(X.shape)))
-        return raw, X
+        return Xraw, X
 
-    def cluster(self, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25, savemem=False, verbose=3):
-        if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
-        logger.info('Cluster evaluation using dataset %s.' %(self.method))
-        # Init
-        ce = clusteval(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, savemem=False, verbose=3)
-        # Fit
-        ce.fit(self.results['feat'])
-        # Store
-        logger.info('Updating cluster labels and evaluated model!')
-        self.results['labx'] = ce.results['labx']
-        self.clusteval = ce
-        # Return
-        return ce.results['labx']
+    def _compute_distances_pca(self, X, metric, alpha):
+        """Compute distances and probabilities for new unseen samples.
+        In case of PCA, a transformation needs to take place first.
 
-    def predict(self, pathnames, metric='euclidean', k=1, alpha=0.05):
-        """Import example dataset from github source."""
-        if (k is None) and (alpha is None):
-            raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
-        out = None
+        Parameters
+        ----------
+        X : array-like
+            NxM array for which N are the samples and M the features.
+        metric : str, (default: 'euclidean').
+            Distance measures. All metrics from sklearn can be used such as:
+                * 'euclidean'
+                * 'hamming'
+                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
+        alpha : float, default: 0.05
+            Significance alpha.
 
-        # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
-        X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
-
-        # Predict according PCA method
-        if self.method=='pca':
-            Y, dist, feat = self.compute_distances_pca(X, metric=metric, alpha=alpha)
-            out = self.collect_pca(X, Y, dist, k, alpha, feat, todf=True)
-        else:
-            logger.warning('Nothing to predict. Prediction requires initialization with method="pca".')
-
-        # Store
-        self.results['predict'] = out
-        # Return
-        return self.results['predict']
-
-    def preprocessing(self, pathnames, grayscale, dim, flatten=True):
-        """Import example dataset from github source."""
-        logger.info("Reading images..")
-        img, filenames = None, None
-        if isinstance(pathnames, str):
-            pathnames=[pathnames]
-        if isinstance(pathnames, list):
-            filenames = list(map(basename, pathnames))
-            img = list(map(lambda x: img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames)))
-            if flatten: img = np.vstack(img)
-
-        out = {}
-        out['img'] = img
-        out['pathnames'] = pathnames
-        out['filenames'] = filenames
-        return out
-
-    def extract_hog(self, X):
-        # # Read images and preprocessing
-        # X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False)
-        # Set dim correctly for reshaping image
-        dim = self.dim if self.grayscale else np.append(self.dim, 3)
-        # Extract hog features per image
-        feat = list(map(lambda x: hog(x.reshape(dim), orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)[1].flatten(), tqdm(X['img'])))
-        # Stack all hog features into one array and return
-        feat = np.vstack(feat)
-        # Return
-        return X, feat
-
-    def extract_pca(self, X):
-        # Check whether n_components is ok
-        if self.params_pca['n_components']>len(X['filenames']): raise Exception(logger.error('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(self.params_pca['n_components'], len(X['filenames']), len(X['filenames']))))
-        # Fit model using PCA
-        self.model = pca(**self.params_pca)
-        self.model.fit_transform(X['img'], row_labels=X['filenames'])
-        # Return
-        return X, self.model.results['PC'].values
-
-    # Compute distances and probabilities after transforming the data using PCA.
-    def compute_distances_pca(self, X, metric, alpha):
+        """
         dist = None
-        # Transform new "unseen" data. Note that these datapoints are not really unseen as they are readily fitted above.
+        # Transform new unseen datapoint into feature space
         PCnew = self.model.transform(X['img'], row_labels=X['filenames'])
         # Compute distance to all samples
         Y = distance.cdist(self.results['feat'], PCnew, metric=metric)
@@ -344,9 +739,64 @@ class Clustimage():
         # Return
         return Y, dist, PCnew
 
-    # Collect data
-    def collect_pca(self, X, Y, dist, k, alpha, feat, todf=True):
-        # Collect the samples that are closest in according the metric
+    def _extract_faces(self, pathname):
+        """Extract the faces from the image.
+
+        Parameters
+        ----------
+        pathname : str.
+            Full path to a single image.
+
+        Returns
+        -------
+        facepath : list of str.
+            Filename of the extracted faces that are stored to disk.
+        img : array-like.
+            NxMxC for which N are the Samples, M the features and C the number of channels.
+        pathnames : list of str.
+            Full path to images that are used in the model.
+        coord_faces : array-like.
+            list of lists containing coordinates fo the faces in the original image.
+        coord_eyes : array-like.
+            list of lists containing coordinates fo the eyes in the extracted (img and facepath) image.
+        filenames : list of str.
+            Filename of the input images.
+        pathnames : list of str.
+            Pathnames of the input images.
+
+        """
+        # Set defaults
+        coord_eyes, facepath, imgstore = [], [], []
+        # Get image
+        X = self.preprocessing(pathname, grayscale=self.cv2_imread_colorscale, dim=None, flatten=False)
+        # Get the image and Convert into grayscale if required
+        img = X['img'][0]
+        # img = to_gray(X['img'][0])
+        # Detect faces using the face_cascade
+        coord_faces = self.face_cascade.detectMultiScale(img, 1.3, 5)
+
+        # Collect the faces from the image
+        for (x,y,w,h) in coord_faces:
+            # Create filename for face
+            filename = os.path.join(self.dirpath, str(uuid.uuid4()))+'.png'
+            facepath.append(filename)
+            # Store faces seperately
+            imgface = img_resize(img[y:y+h, x:x+w], dim=self.dim_face)
+            # Write to disk
+            cv2.imwrite(filename, imgface)
+            # Store face image
+            # imgstore.append(imgface.flatten())
+            imgstore.append(img_flatten(imgface))
+            # Detect eyes
+            eyes = self.eye_cascade.detectMultiScale(imgface)
+            if eyes==(): eyes=None
+            coord_eyes.append(eyes)
+        # Return
+        return facepath, np.array(imgstore), coord_faces, coord_eyes, X['filenames'][0], X['pathnames'][0]
+
+    def _collect_pca(self, X, Y, dist, k, alpha, feat, todf=True):
+        """Collect the samples that are closest in according the metric."""
+
         filenames = X['filenames']
         out = {}
         out['feat'] = feat
@@ -379,61 +829,28 @@ class Clustimage():
         # Return
         return out
 
-    def detect_faces(self, pathnames):
-        # If face detection, grayscale should be True.
-        if (not self.grayscale): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
-
-        # Read and pre-proces the input images
-        logger.info("Read images>")
-        # Create empty list
-        faces = {'img':[], 'pathnames':[], 'filenames':[], 'facepath':[], 'coord_faces':[], 'coord_eyes':[]}
-        # Extract faces and eyes from image
-        for pathname in pathnames:
-            # Extract faces
-            facepath, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self.extract_faces(pathname)
-            # Store
-            faces['pathnames'].append(path_to_image)
-            faces['filenames'].append(filename)
-            faces['facepath'].append(facepath)
-            faces['img'].append(imgfaces)
-            faces['coord_faces'].append(coord_faces)
-            faces['coord_eyes'].append(coord_eyes)
-
-        # Return
-        self.results_faces = faces
-        return faces
-    
-    def extract_faces(self, pathname):
-        # Set defaults
-        coord_eyes, facepath, imgstore = [], [], []
-        # Get image
-        X = self.preprocessing(pathname, grayscale=self.cv2_imread_colorscale, dim=None, flatten=False)
-        # Get the image and Convert into grayscale if required
-        img = X['img'][0]
-        # img = to_gray(X['img'][0])
-        # Detect faces using the face_cascade
-        coord_faces = self.face_cascade.detectMultiScale(img, 1.3, 5)
-
-        # Collect the faces from the image
-        for (x,y,w,h) in coord_faces:
-            # Create filename for face
-            filename = os.path.join(self.dirpath, str(uuid.uuid4()))+'.png'
-            facepath.append(filename)
-            # Store faces seperately
-            imgface = img_resize(img[y:y+h, x:x+w], dim=self.dim_face)
-            # Write to disk
-            cv2.imwrite(filename, imgface)
-            # Store face image
-            # imgstore.append(imgface.flatten())
-            imgstore.append(img_flatten(imgface))
-            # Detect eyes
-            eyes = self.eye_cascade.detectMultiScale(imgface)
-            if eyes==(): eyes=None
-            coord_eyes.append(eyes)
-        # Return
-        return facepath, np.array(imgstore), coord_faces, coord_eyes, X['filenames'][0], X['pathnames'][0]
-    
     def plot_faces(self, faces=True, eyes=True, cmap=None):
+        """Plot detected faces.
+
+        Description
+        -----------
+        Plot the detected faces in images after using the fit_transform() function.
+        * For each input image, rectangles are drawn over the detected faces.
+        * Each face is plotted seperately for which rectlangles are drawn over the detected eyes.
+
+        Parameters
+        ----------
+        faces : Bool, (default: True)
+            Plot the seperate faces.
+        eyes : Bool, (default: True)
+            Plot rectangles over the detected eyes.
+        cmap : str, (default: None)
+            Colorscheme for the images.
+                * 'gray'
+                * 'binary'
+                * None : uses rgb colorscheme
+
+        """
         cmap = _set_cmap(cmap, self.grayscale)
 
         # Walk over all detected faces
@@ -475,6 +892,25 @@ class Clustimage():
             logger.warning('Nothing to plot. First detect faces with ".detect_faces(pathnames)"')
 
     def dendrogram(self, max_d=None, figsize=(15,10)):
+        """Plot Dendrogram.
+
+        Parameters
+        ----------
+        max_d : Float, (default: None)
+            Height of the dendrogram to make a horizontal cut-off line.
+        figsize : tuple, (default: (15, 10).
+            Size of the figure (height,width).
+
+        Returns
+        -------
+        results : list
+            Cluster labels.
+
+        Returns
+        -------
+        None.
+
+        """
         if hasattr(self, 'clusteval'):
             self.clusteval.plot()
             results = self.clusteval.dendrogram(max_d=max_d, figsize=figsize)
@@ -483,6 +919,22 @@ class Clustimage():
         return results
 
     def scatter(self, dot_size=15, legend=False, figsize=(15,10)):
+        """Plot the samples using a scatterplot.
+
+        Parameters
+        ----------
+        dot_size : int, (default: 15)
+            Dot size of the scatterpoints.
+        legend : bool, (default: False)
+            Plot the legend.
+        figsize : tuple, (default: (15, 10).
+            Size of the figure (height,width).
+
+        Returns
+        -------
+        None.
+
+        """
         # Set default settings
         labx = self.results.get('labx', None)
         if labx is None: labx=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
@@ -494,13 +946,13 @@ class Clustimage():
         if self.embedding=='tsne':
             from scatterd import scatterd
             colours=np.vstack(colourmap.fromlist(labx)[0])
-            fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dot_size, c=colours, label=labx, figsize=figsize, title='tSNE plot')
+            title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.cluster_space))
+            fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dot_size, c=colours, label=labx, figsize=figsize, title=title)
 
         # Scatter all points
         if self.method=='pca':
-            fig, ax = self.model.plot(figsize=figsize)
-            fig, ax = self.model.scatter(y=labx, legend=legend, label=False, figsize=figsize)
-            # fig, ax = self.model.scatter3d(y=1, legend=legend, label=False, figsize=figsize)
+            _, ax = self.model.plot(figsize=figsize)
+            _, ax = self.model.scatter(y=labx, legend=legend, label=False, figsize=figsize)
 
         # Scatter the predicted cases
         if self.results.get('predict', None) is not None:
@@ -509,7 +961,7 @@ class Clustimage():
             colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
             for key in self.results['predict'].keys():
                 if self.results['predict'].get(key).get('y_idx', None) is not None:
-                    x,y,z = self.results['predict']['feat'].iloc[:,0:3].loc[key]
+                    x,y = self.results['predict']['feat'].iloc[:,0:2].loc[key]
                     idx = self.results['predict'][key]['y_idx']
                     # Scatter
                     ax.scatter(x, y, color=colours[key], edgecolors=[0,0,0])
@@ -517,6 +969,21 @@ class Clustimage():
                     ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
 
     def plot_predict(self, cmap=None, figsize=(15,10)):
+        """Plot the input image together with the predicted images.
+
+        Parameters
+        ----------
+        cmap : str, (default: None)
+            Colorscheme for the images.
+            'gray', 'binary',  None (uses rgb colorscheme)
+        figsize : tuple, (default: (15, 10).
+            Size of the figure (height,width).
+
+        Returns
+        -------
+        None.
+
+        """
         cmap = _set_cmap(cmap, self.grayscale)
         # Plot the images that are similar to each other.
         if self.results.get('predict', None) is not None:
@@ -533,39 +1000,29 @@ class Clustimage():
                     I_predict = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), predict_img))
                     # Make the real plot
                     title='Top or top-left image is input. The others are predicted.'
-
+                    # Show images into subplots
                     imgs=I_input+I_predict
                     self._make_subplots(imgs, None, cmap, figsize, title)
 
-                    # fig, axes = plt.subplots(len(I_predict)+1,1,sharex=True,sharey=True,figsize=(8,10))
-                    # axes[0].set_title('Input image')
-                    # axes[0].imshow(I_input[0], cmap=cmap)
-                    # axes[0].axis('off')
-                    # for i, I in enumerate(I_predict):
-                    #     axes[i+1].set_title('Predicted: %s' %(i+1))
-                    #     axes[i+1].imshow(I, cmap=cmap)
-                    #     axes[i+1].axis('off')
+    def plot(self, ncols=10, cmap=None, show_hog=False, figsize=(15,10)):
+        """Plot the results.
 
-    def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
-        dim = self.dim if self.grayscale else np.append(self.dim, 3)
+        Parameters
+        ----------
+        ncols : int, (default: 10)
+            Number of columns to use in the subplot. The number of rows are estimated based on the columns.
+        Colorscheme for the images.
+            'gray', 'binary',  None (uses rgb colorscheme)
+        show_hog : bool, (default: False)
+            Plot the hog features next to the input image.
+        figsize : tuple, (default: (15, 10).
+            Size of the figure (height,width).
 
-        if ncols is None:
-            ncols = 5
-            if len(imgs)>25: ncols=10
-            if len(imgs)>=100: ncols=15
-            if len(imgs)>=150: ncols=20
-        
-        # Setup rows and columns
-        nrows = int(np.ceil(len(imgs)/ncols))
-        fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
-        for i, ax in enumerate(axs.ravel()):
-            if i<len(imgs):
-                ax.imshow(imgs[i].reshape(dim), cmap=cmap)
-            ax.axis("off")
-        _ = fig.suptitle(title, fontsize=16)
-        plt.pause(0.1)
+        Returns
+        -------
+        None.
 
-    def plot(self, ncols=10, legend=False, cmap=None, show_hog=False, figsize=(15,10)):
+        """
         # Set cmap
         cmap = _set_cmap(cmap, self.grayscale)
         # Plot the clustered images
@@ -596,6 +1053,27 @@ class Clustimage():
                     plt.show()
         else:
             logger.warning('Plotting is not possible if path locations are unknown. Your input may have been a data-array. Try to set "store_to_disk=True" during initialization.')
+
+    def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
+        """Make subplots."""
+
+        dim = self.dim if self.grayscale else np.append(self.dim, 3)
+
+        if ncols is None:
+            ncols = 5
+            if len(imgs)>25: ncols=10
+            if len(imgs)>=100: ncols=15
+            if len(imgs)>=150: ncols=20
+        
+        # Setup rows and columns
+        nrows = int(np.ceil(len(imgs)/ncols))
+        fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+        for i, ax in enumerate(axs.ravel()):
+            if i<len(imgs):
+                ax.imshow(imgs[i].reshape(dim), cmap=cmap)
+            ax.axis("off")
+        _ = fig.suptitle(title, fontsize=16)
+        plt.pause(0.1)
 
     def get_images_from_path(self, dirpath, ext=['png','tiff','jpg']):
         return _get_images_from_path(dirpath, ext=ext)
@@ -640,38 +1118,33 @@ class Clustimage():
 
 # %% Unique without sort
 def unique_no_sort(x):
+    """Unique without sort."""
     x = x[x!=None]
     indexes = np.unique(x, return_index=True)[1]
     return [x[index] for index in sorted(indexes)]
 
 # %% Resize image
 def basename(label):
+    """Extract basename from path."""
     return os.path.basename(label)
 
 # %% Resize image
 def img_flatten(img):
+    """Flatten image."""
     return img.flatten()
 
 # %% Resize image
 def img_resize(img, dim=(128, 128)):
+    """Resize image."""
     if dim is not None:
         img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
-    # assert img.shape[0:2]==dim
     return img
-
-
-# %% Convert into grayscale
-# def to_gray(img):
-#     try:
-#         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#     except:
-#         gray = img
-#     return gray
 
 # %% Set cmap
 def _set_cmap(cmap, grayscale):
-    if cmap is None:  cmap = 'gray' if grayscale else None
-    cmap = 'gray' if grayscale else None
+    """Set the colourmap."""
+    if cmap is None:
+        cmap = 'gray' if grayscale else None
     return cmap
 
 # %% Read image
@@ -708,6 +1181,26 @@ def img_read(filepath, grayscale=1):
 
 # %% Read image
 def img_read_pipeline(filepath, grayscale=1, dim=(128, 128), flatten=True):
+    """Read and pre-processing of images.
+
+    Parameters
+    ----------
+    filepath : str
+        Full path to the image that needs to be imported.
+    grayscale : int, default: 1 (gray)
+        colour-scaling from opencv.
+        * cv2.COLOR_GRAY2RGB
+    dim : tuple, (default: (128,128))
+        Rescale images. This is required because the feature-space need to be the same across samples.
+    flatten : Bool, (default: True)
+        Flatten the processed NxMxC array to a 1D-vector
+
+    Returns
+    -------
+    img : array-like
+        Imported and processed image.
+
+    """
     # Read the image
     img = img_read(filepath, grayscale=grayscale)
     # Resize the image
@@ -718,6 +1211,7 @@ def img_read_pipeline(filepath, grayscale=1, dim=(128, 128), flatten=True):
 
 # %%
 def set_logger(verbose=20):
+    """Set the logger for verbosity messages."""
     logger.setLevel(verbose)
 
 
@@ -732,7 +1226,7 @@ def import_example(data='flowers', url=None):
     Parameters
     ----------
     data : str
-        Name of datasets: 'flowers', 'faces'
+        Name of datasets: 'flowers', 'faces', 'digits'
     url : str
         url link to to dataset.
 
@@ -749,6 +1243,11 @@ def import_example(data='flowers', url=None):
             url='https://erdogant.github.io/datasets/faces_images.zip'
         elif data=='scenes':
             url='https://erdogant.github.io/datasets/scenes.zip'
+        elif data=='digits':
+            from sklearn.datasets import load_digits
+            digits = load_digits(n_class=6)
+            X, _ = digits.data, digits.target
+            return X            
     else:
         logger.warning('Lets try your dataset from url: %s.', url)
 
@@ -800,12 +1299,25 @@ def _get_images_from_path(dirpath, ext=['png','tiff','jpg']):
         for root, _, filenames in os.walk(dirpath):
             for filename in fnmatch.filter(filenames, '*.'+iext):
                 getfiles.append(os.path.join(root, filename))
-    logger.info('[%s] files are collected recursively from path: [%s]' %(len(getfiles), dirpath))
+    logger.info('[%s] files are collected recursively from path: [%s]', len(getfiles), dirpath)
     return getfiles
 
 
 # %% unzip
 def _unzip(path_to_zip):
+    """Unzip files.
+
+    Parameters
+    ----------
+    path_to_zip : str
+        Path of the zip file.
+
+    Returns
+    -------
+    getpath : str
+        Path containing the unzipped files.
+
+    """
     getpath = None
     if path_to_zip[-4:]=='.zip':
         if not os.path.isdir(path_to_zip):
@@ -827,6 +1339,20 @@ def _unzip(path_to_zip):
 
 # %% Download files from github source
 def wget(url, writepath):
+    """ Retrieve file from url.
+
+    Parameters
+    ----------
+    url : str.
+        Internet source.
+    writepath : str.
+        Directory to write the file.
+
+    Returns
+    -------
+    None.
+
+    """
     r = requests.get(url, stream=True)
     with open(writepath, "wb") as fd:
         for chunk in r.iter_content(chunk_size=1024):
