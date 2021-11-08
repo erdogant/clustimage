@@ -12,56 +12,61 @@
 [![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
-* clustimage is Python package
+* clustimage is a python package for unsupervised clustering of images.
 
-### Contents
-- [Installation](#-installation)
-- [Contribute](#-contribute)
-- [Citation](#-citation)
-- [Maintainers](#-maintainers)
-- [License](#-copyright)
 
 ### Installation
 * Install clustimage from PyPI (recommended). clustimage is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
 * A new environment can be created as following:
 
 ```bash
-conda create -n env_clustimage python=3.7
+conda create -n env_clustimage python=3.8
 conda activate env_clustimage
 ```
 
+* Install from pypi
 ```bash
-pip install clustimage            # normal install
-pip install --upgrade clustimage # or update if needed
-```
-
-* Alternatively, you can install from the GitHub source:
-```bash
-# Directly install from github source
-pip install -e git://github.com/erdogant/clustimage.git@0.1.0#egg=master
-pip install git+https://github.com/erdogant/clustimage#egg=master
-pip install git+https://github.com/erdogant/clustimage
-
-# By cloning
-git clone https://github.com/erdogant/clustimage.git
-cd clustimage
-pip install -U .
+pip install -U clustimage
 ```  
 
-#### Import clustimage package
+#### Import the clustimage package
 ```python
-import clustimage as clustimage
+from clustimage import Clustimage
 ```
 
-#### Example:
+#### When input is data-array.
 ```python
-df = pd.read_csv('https://github.com/erdogant/hnet/blob/master/clustimage/data/example_data.csv')
-model = clustimage.fit(df)
-G = clustimage.plot(model)
+# Load library
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+# init
+cl = Clustimage()
+# Load example digit data
+X = cl.import_example(data='digits')
+
+print(X)
+# Each row is an image that can be plotted after reshaping:
+plt.imshow(X[0,:].reshape(8,8), cmap='binary')
+# array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],
+#        [ 0.,  0.,  0., ..., 10.,  0.,  0.],
+#        [ 0.,  0.,  0., ..., 16.,  9.,  0.],
+#        ...,
+#        [ 0.,  0.,  0., ...,  9.,  0.,  0.],
+#        [ 0.,  0.,  0., ...,  4.,  0.,  0.],
+#        [ 0.,  0.,  6., ...,  6.,  0.,  0.]])
+
+# Preprocessing and feature extraction
+results = cl.fit_transform(X)
+
+# Scatter
+cl.scatter()
+
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/fig1.png" width="600" />
-  
+  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_fig1.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_explained_var.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_pca.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_fig2_tsne.png" width="600" />
 </p>
 
 
