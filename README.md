@@ -134,13 +134,11 @@ results = cl.fit_transform(face_results['facepath'])
 
 # Plot faces
 cl.plot_faces()
-# Plot dendrogram
+# Dendrogram depicts the clustering of the faces
 cl.dendrogram()
 
 # Make various other plots
 cl.scatter()
-# Cluster
-labx = cl.cluster()
 # Make plot
 cl.plot(ncols=2, show_hog=True)
 ```
@@ -148,8 +146,9 @@ cl.plot(ncols=2, show_hog=True)
 <p align="center">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces1.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_dendrogram.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_cluster0.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_cluster3.png" width="400" />
 </p>
-
 
 #### References
 * https://github.com/erdogant/clustimage
