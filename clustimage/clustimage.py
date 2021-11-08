@@ -257,7 +257,7 @@ class Clustimage():
         self.results['pathnames'] = raw['pathnames']
         self.results['filenames'] = raw['filenames']
         # Cluster
-        self.cluster(cluster=cluster, method=method, cluster_space=self.cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, savemem=False)
+        self.cluster(cluster=cluster, method=method, cluster_space=self.cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
         # Return
         return self.results
 
