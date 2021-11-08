@@ -10,6 +10,6 @@ pandas
 tqdm
 sklearn
 matplotlib
-skimage
+scikit-image
 scipy
 opencv-python

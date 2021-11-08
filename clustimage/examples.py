@@ -11,11 +11,14 @@
 # %%
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='pca', embedding='tsne', cluster_space='high', grayscale=True, params_pca={'n_components':50}, dim=(8,8), store_to_disk=True)
+cl = Clustimage()
+cl = Clustimage(method='pca', embedding='tsne', cluster_space='high', grayscale=True, params_pca={'n_components':50}, store_to_disk=True)
+# cl = Clustimage(method='hog', embedding='tsne', cluster_space='high', grayscale=False, params_pca={'n_components':50})
+# cl = Clustimage(method='hog', embedding='tsne', cluster_space='high', grayscale=False, dim=(8,8), params_pca={'n_components':50})
 # Example data
 X = cl.import_example(data='digits')
 # Preprocessing and feature extraction
-results = cl.fit_transform(X, min_clust=10)
+results = cl.fit_transform(X)
 # Scatter
 cl.scatter()
 
@@ -43,15 +46,14 @@ results = cl.fit_transform(face_results['facepath'])
 cl.scatter()
 # Plot faces
 cl.plot_faces()
-
 # Cluster
 labx = cl.cluster()
 # Plot dendrogram
 cl.dendrogram()
+# Make plot
 cl.plot(ncols=2, show_hog=True)
-
+# Cleaning files
 cl.clean_files()
-
 # plt.imshow(face_results['img'][0][0,:].reshape(cl.dim_face), cmap=plt.cm.gray)
 
 
