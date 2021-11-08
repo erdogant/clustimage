@@ -57,8 +57,6 @@ cl.clean_files()
 # plt.imshow(face_results['img'][0][0,:].reshape(cl.dim_face), cmap=plt.cm.gray)
 
 
-
-
 # %%
 from clustimage import Clustimage
 # init

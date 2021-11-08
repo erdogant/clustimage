@@ -102,8 +102,8 @@ cl.scatter()
 
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot1.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot2.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot1.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot2.png" width="400" />
 </p>
 
 
@@ -115,9 +115,41 @@ cl.plot_predict()
 cl.scatter()
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/scatter_predict.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flower_predict_example.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/scatter_predict.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flower_predict_example.png" width="400" />
 </p>
+
+
+#### Make prediction with unknown input image.
+```python
+from clustimage import Clustimage
+# Init
+cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':14})
+# Load example with faces
+pathnames = cl.import_example(data='faces')
+# Detect faces
+face_results = cl.detect_faces(pathnames)
+# Cluster
+results = cl.fit_transform(face_results['facepath'])
+
+# Plot faces
+cl.plot_faces()
+# Plot dendrogram
+cl.dendrogram()
+
+# Make various other plots
+cl.scatter()
+# Cluster
+labx = cl.cluster()
+# Make plot
+cl.plot(ncols=2, show_hog=True)
+```
+
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces1.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_dendrogram.png" width="400" />
+</p>
+
 
 #### References
 * https://github.com/erdogant/clustimage
