@@ -148,14 +148,13 @@ class Clustimage():
         self.grayscale = grayscale
         self.cluster_space = cluster_space
         self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
-        # self.cv2_imread_colorscale = cv2.COLOR_BGR2GRAY if grayscale else cv2.COLOR_BGR2RGB
         self.dim = dim
         self.dim_face = (64, 64)
         self.params_pca = params_pca
         self.dirpath = dirpath
         self.tempdir = tempfile.mkdtemp()
         self.ext = ext
-        self.store_to_disk = store_to_disk # Set if input in np.array with images.
+        self.store_to_disk = store_to_disk
         set_logger(verbose=verbose)
 
     def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25):
