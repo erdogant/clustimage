@@ -13,13 +13,13 @@ else:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-     install_requires=['numpy','tqdm','matplotlib','opencv-python', 'colourmap', 'skimage', 'pandas'],
+     install_requires=['pca', 'distfit', 'clusteval', 'colourmap', 'numpy', 'pandas', 'tqdm', 'sklearn', 'matplotlib', 'skimage', 'scipy', 'opencv-python'],
      python_requires='>=3',
      name='clustimage',
      version=new_version,
      author="Erdogan Taskesen",
      author_email="erdogant@gmail.com",
-     description="Python package clustimage",
+     description="Python package clustimage is determine stable clusters when using raw images as an input.",
      long_description=long_description,
      long_description_content_type="text/markdown",
      url="https://github.com/erdogant/clustimage",
