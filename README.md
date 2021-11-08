@@ -34,7 +34,7 @@ pip install -U clustimage
 from clustimage import Clustimage
 ```
 
-#### When input is data-array.
+#### Simple example using data-array as an input.
 ```python
 # Load library
 import matplotlib.pyplot as plt
@@ -66,8 +66,13 @@ cl.scatter()
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig1.png" width="600" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_pca.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_clusters.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_dendrogram.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster1.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster4.png" width="600" />
 </p>
+
 
 
 #### References
