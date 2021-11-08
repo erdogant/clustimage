@@ -622,7 +622,7 @@ class Clustimage():
             self.dim = _check_dim(Xraw, self.dim)
             # Store to disk
             if self.store_to_disk:
-                self.dim = store_to_disk(Xraw, self.dim, self.tempdir)
+                pathnames, filenames = store_to_disk(Xraw, self.dim, self.tempdir)
             # Make dict
             X = {'img': Xraw, 'pathnames':pathnames, 'filenames':filenames}
         return X
@@ -1151,11 +1151,11 @@ def _check_dim(Xraw, dim, grayscale=None):
 
     return dim
 
-
 # %% Store images to disk
 def store_to_disk(Xraw, dim, tempdir):
     """Store to disk."""
     # Determine the dimension based on the length of the vector.
+    dim = _check_dim(Xraw, dim)
     # Store images to disk
     pathnames, filenames = [], []
     logger.info('Writing images to tempdir [%s]', tempdir)
@@ -1166,7 +1166,7 @@ def store_to_disk(Xraw, dim, tempdir):
         cv2.imwrite(pathname, Xraw[i,:].reshape(dim))
         filenames.append(filename)
         pathnames.append(pathname)
-
+    return pathnames, filenames
 
 # %% Unique without sort
 def unique_no_sort(x):

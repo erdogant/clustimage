@@ -11,7 +11,7 @@
 # %%
 from clustimage import Clustimage
 # init
-cl = Clustimage()
+cl = Clustimage(store_to_disk=True)
 cl = Clustimage(method='pca', embedding='tsne', cluster_space='high', grayscale=True, params_pca={'n_components':50}, store_to_disk=True)
 # cl = Clustimage(method='hog', embedding='tsne', cluster_space='high', grayscale=False, params_pca={'n_components':50})
 # cl = Clustimage(method='hog', embedding='tsne', cluster_space='high', grayscale=False, dim=(8,8), params_pca={'n_components':50})
