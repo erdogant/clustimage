@@ -63,10 +63,10 @@ cl.scatter()
 
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_fig1.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_explained_var.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_pca.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/master/docs/figs/digits_fig2_tsne.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig1.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_pca.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="600" />
 </p>
 
 
