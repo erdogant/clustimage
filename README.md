@@ -54,12 +54,16 @@ plt.imshow(X[0,:].reshape(8,8), cmap='binary')
 #        [ 0.,  0.,  0., ...,  9.,  0.,  0.],
 #        [ 0.,  0.,  0., ...,  4.,  0.,  0.],
 #        [ 0.,  0.,  6., ...,  6.,  0.,  0.]])
-
+# 
 # Preprocessing and feature extraction
 results = cl.fit_transform(X)
 
 # Scatter
 cl.scatter()
+# Plot dendrogram
+cl.dendrogram()
+# Plot the clustered images
+cl.plot(cmap='binary')
 
 ```
 <p align="center">
@@ -74,6 +78,46 @@ cl.scatter()
 </p>
 
 
+#### images with flowers to cluster.
+```python
+# Load library
+from clustimage import Clustimage
+# init
+cl = Clustimage(method='pca', embedding='tsne')
+# load example with flowers
+path_to_imgs = cl.import_example(data='flowers')
+# Preprocessing and feature extraction
+results = cl.fit_transform(path_to_imgs, min_clust=10)
+# Scatter
+cl.scatter(dot_size=50)
+# Plot dendrogram
+cl.dendrogram()
+# Plot clustered images
+cl.plot(ncols=5)
+
+# Predict
+results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
+cl.plot_predict()
+cl.scatter()
+
+```
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot1.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot2.png" width="600" />
+</p>
+
+
+#### Make prediction with unknown input image.
+```python
+# Predict
+results_predict = cl.predict(path_to_imgs[0:5], alpha=0.05)
+cl.plot_predict()
+cl.scatter()
+```
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/scatter_predict.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flower_predict_example.png" width="600" />
+</p>
 
 #### References
 * https://github.com/erdogant/clustimage

@@ -62,7 +62,7 @@ cl.clean_files()
 # %%
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
+cl = Clustimage(method='pca', embedding='tsne')
 # load example with flowers
 path_to_imgs = cl.import_example(data='flowers')
 # Extract images and the accompanying features
