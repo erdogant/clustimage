@@ -1,4 +1,4 @@
-"""Python package clustimage is determine stable clusters when using raw images as an input."""
+"""Python package clustimage is for unsupervised clustering of images."""
 # --------------------------------------------------
 # Name        : clustimage.py
 # Author      : E.Taskesen

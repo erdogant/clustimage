@@ -6,13 +6,18 @@ authors:
     given-names: Erdogan
     orcid: "https://orcid.org/0000-0002-3430-9618"
 cff-version: "1.1.0"
-date-released: 2020-10-07
+date-released: 2021-11-08
 keywords: 
   - "python"
-  - "clustimage"
+  - "clustering"
+  - "images"
+  - "hog"
+  - "pca"
+  - "cluster evaluation"
+  - "unsupervised"
 license: "MIT"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/erdogant/clustimage"
-title: "clustimage"
-version: "0.1.0"
+title: "Python package clustimage is for unsupervised clustering of images."
+version: "1.0.0"
 ...
