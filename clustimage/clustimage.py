@@ -533,7 +533,7 @@ class Clustimage():
 
         """
         # Set dim correctly for reshaping image
-        dim = self.dim if self.grayscale else np.append(self.dim, 3)
+        dim = _check_dim(X['img'], self.dim, grayscale=self.grayscale)
         # Extract hog features per image
         feat = list(map(lambda x: hog(x.reshape(dim), orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)[1].flatten(), tqdm(X['img'])))
         # Stack all hog features into one array and return
@@ -556,7 +556,10 @@ class Clustimage():
 
         """
         # Check whether n_components is ok
-        if self.params_pca['n_components']>len(X['filenames']): raise Exception(logger.error('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(self.params_pca['n_components'], len(X['filenames']), len(X['filenames']))))
+        if self.params_pca['n_components']>X['img'].shape[0]:
+            logger.warning('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(X['img'].shape[0], self.params_pca['n_components'], X['img'].shape[0]))
+            self.params_pca['n_components'] = X['img'].shape[0]
+
         # Fit model using PCA
         self.model = pca(**self.params_pca)
         self.model.fit_transform(X['img'], row_labels=X['filenames'])
@@ -616,22 +619,12 @@ class Clustimage():
         if isinstance(Xraw, np.ndarray):
             # Check dimensions
             pathnames, filenames = None, None
-            dim = np.sqrt(len(Xraw[0,:]))
-            if (dim!=self.dim[0]) or (dim!=self.dim[1]):
-                raise Exception(logger.error('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(self.dim), str([int(dim)]*2), str([int(dim)]*2) )))
-
+            # Check dim
+            self.dim = _check_dim(Xraw, self.dim)
+            # Store to disk
             if self.store_to_disk:
-                # Store images to disk
-                pathnames, filenames = [], []
-                logger.info('Writing images to tempdir [%s]', self.tempdir)
-                for i in tqdm(np.arange(0, Xraw.shape[0])):
-                    filename = str(uuid.uuid4())+'.png'
-                    pathname = os.path.join(self.tempdir, filename)
-                    # Write to disk
-                    cv2.imwrite(pathname, Xraw[i,:].reshape(self.dim))
-                    filenames.append(filename)
-                    pathnames.append(pathname)
-
+                self.dim = store_to_disk(Xraw, self.dim, self.tempdir)
+            # Make dict
             X = {'img': Xraw, 'pathnames':pathnames, 'filenames':filenames}
         return X
 
@@ -1111,6 +1104,69 @@ class Clustimage():
 
         """
         return import_example(data=data, url=url)
+
+
+# %% Store images to disk
+def _check_dim(Xraw, dim, grayscale=None):
+    dimOK=False
+    # Determine the dimension based on the length of the 1D-vector.
+    dimX = int(np.sqrt(len(Xraw[0,:])))
+    if (dimX!=dim[0]) or (dimX!=dim[1]):
+        logger.warning('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(dim), str([int(dimX)]*2), str([int(dimX)]*2) ))
+
+    if not dimOK:
+        try:
+            Xraw[0,:].reshape(dim)
+            dimOK=True
+        except:
+            pass
+
+    if not dimOK:
+        try:
+            Xraw[0,:].reshape(np.append(dim, 3))
+            dim=np.append(dim, 3)
+            dimOK=True
+        except:
+            pass
+
+
+    if not dimOK:
+        try:
+            Xraw[0,:].reshape([dimX, dimX])
+            dim = [dimX, dimX]
+            dimOK=True
+        except:
+            pass
+
+    if not dimOK:
+        try:
+            Xraw[0,:].reshape([dimX, dimX, 3])
+            dim = [dimX, dimX, 3]
+        except:
+            pass
+
+    if not dimOK:
+        raise Exception(logger.error('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(dim), str([int(dimX)]*2), str([int(dimX)]*2) )))
+    else:
+        logger.info('The dim is changed into: %s', str(dim))
+
+    return dim
+
+
+# %% Store images to disk
+def store_to_disk(Xraw, dim, tempdir):
+    """Store to disk."""
+    # Determine the dimension based on the length of the vector.
+    # Store images to disk
+    pathnames, filenames = [], []
+    logger.info('Writing images to tempdir [%s]', tempdir)
+    for i in tqdm(np.arange(0, Xraw.shape[0])):
+        filename = str(uuid.uuid4())+'.png'
+        pathname = os.path.join(tempdir, filename)
+        # Write to disk
+        cv2.imwrite(pathname, Xraw[i,:].reshape(dim))
+        filenames.append(filename)
+        pathnames.append(pathname)
 
 
 # %% Unique without sort
