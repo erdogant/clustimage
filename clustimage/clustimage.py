@@ -10,6 +10,7 @@
 from pca import pca
 from distfit import distfit
 from clusteval import clusteval
+from scatterd import scatterd
 import pandas as pd
 import colourmap
 from tqdm import tqdm
@@ -74,10 +75,6 @@ class Clustimage():
         Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
             * 'tsne'
             * None
-    cluster_space: str, (default: 'high')
-        Selection of the features that are used for clustering. This can either be on high or low feature space.
-            * 'high' : Original feature space.
-            * 'low' : Input are the xycoordinates that are determined by "embedding". Thus either tSNE coordinates or the first two PCs or HOGH features.
     grayscale : Bool, (default: False)
         Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
     dim : tuple, (default: (128,128))
@@ -122,7 +119,7 @@ class Clustimage():
     >>> # Plot dendrogram
     >>> cl.dendrogram()
     >>> # Scatter
-    >>> cl.scatter(dot_size=50)
+    >>> cl.scatter(dotsize=50)
     >>> # Plot clustered images
     >>> cl.plot()
     >>>
@@ -132,7 +129,7 @@ class Clustimage():
     >>> cl.scatter()
 
     """
-    def __init__(self, method='pca', embedding='tsne', cluster_space='high', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
         """Initialize clustimage with user-defined parameters."""
 
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
@@ -146,7 +143,6 @@ class Clustimage():
         self.method = method
         self.embedding = embedding
         self.grayscale = grayscale
-        self.cluster_space = cluster_space
         self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         self.dim = dim
         self.dim_face = (64, 64)
@@ -157,7 +153,7 @@ class Clustimage():
         self.store_to_disk = store_to_disk
         set_logger(verbose=verbose)
 
-    def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25):
+    def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
         """Group samples into clusters that are similar in their feature space.
 
         Parameters
@@ -196,6 +192,10 @@ class Clustimage():
             Number of clusters that is evaluated greater or equals to min_clust.
         max_clust : int, (default: 25)
             Number of clusters that is evaluated smaller or equals to max_clust.
+        cluster_space: str, (default: 'high')
+            Selection of the features that are used for clustering. This can either be on high or low feature space.
+                * 'high' : Original feature space.
+                * 'low' : Input are the xycoordinates that are determined by "embedding". Thus either tSNE coordinates or the first two PCs or HOGH features.
 
         Returns
         -------
@@ -229,7 +229,7 @@ class Clustimage():
         >>> # Plot dendrogram
         >>> cl.dendrogram()
         >>> # Scatter
-        >>> cl.scatter(dot_size=100)
+        >>> cl.scatter(dotsize=100)
         >>> # Plot clustered images
         >>> cl.plot(ncols=2)
         >>> # Plot facces
@@ -256,7 +256,7 @@ class Clustimage():
         self.results['pathnames'] = raw['pathnames']
         self.results['filenames'] = raw['filenames']
         # Cluster
-        self.cluster(cluster=cluster, method=method, cluster_space=self.cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
+        self.cluster(cluster=cluster, method=method, cluster_space=cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
         # Return
         return self.results
 
@@ -322,13 +322,13 @@ class Clustimage():
         >>> # Find clusters
         >>> results = cl.fit_transform(X)
         >>> # Scatter
-        >>> cl.scatter(dot_size=25)
+        >>> cl.scatter(dotsize=25)
         >>>
         >>> # Change the clustering method, metric, minimum expected nr. of clusters etc.
         >>> labx = cl.cluster(cluster='agglomerative', method='dbindex', metric='euclidean', linkage='ward', min_clust=2, max_clust=25)
         >>>
         >>> # Scatter
-        >>> cl.scatter(dot_size=25)
+        >>> cl.scatter(dotsize=25)
         >>>
         >>> # Plot clustered images
         >>> cl.plot(cmap='binary')
@@ -337,14 +337,16 @@ class Clustimage():
 
         """
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
-        logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.method)
+        self.cluster_space = cluster_space
         # Init
         ce = clusteval(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
         # Fit
         if cluster_space=='low':
             feat = self.results['xycoord']
+            logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.embedding)
         else:
             feat = self.results['feat']
+            logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.method)
         # Fit model
         ce.fit(feat)
         # Store
@@ -445,7 +447,7 @@ class Clustimage():
         >>> # Plot dendrogram
         >>> cl.dendrogram()
         >>> # Scatter
-        >>> cl.scatter(dot_size=100)
+        >>> cl.scatter(dotsize=100)
         >>> # Plot clustered images
         >>> cl.plot(ncols=2)
         >>> # Plot facces
@@ -946,12 +948,12 @@ class Clustimage():
             # results = self.clusteval.dendrogram(X=feat, max_d=max_d, figsize=figsize)
         return results
 
-    def scatter(self, dot_size=15, legend=False, figsize=(15,10)):
+    def scatter(self, dotsize=15, legend=False, figsize=(15,10)):
         """Plot the samples using a scatterplot.
 
         Parameters
         ----------
-        dot_size : int, (default: 15)
+        dotsize : int, (default: 15)
             Dot size of the scatterpoints.
         legend : bool, (default: False)
             Plot the legend.
@@ -969,13 +971,17 @@ class Clustimage():
 
         # Scatter cluster evaluation
         if hasattr(self, 'clusteval'):
-            self.clusteval.scatter(self.results['feat'])
+            if self.cluster_space=='low':
+                xycoord = self.results['xycoord']
+                self.clusteval.scatter(self.results['xycoord'])
+            else:
+                xycoord = self.results['feat']
+                self.clusteval.scatter(self.results['feat'])
 
         if self.embedding=='tsne':
-            from scatterd import scatterd
             colours=np.vstack(colourmap.fromlist(labx)[0])
             title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.cluster_space))
-            fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dot_size, c=colours, label=labx, figsize=figsize, title=title)
+            fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labx, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0])
 
         # Scatter all points
         if self.method=='pca':
@@ -1032,11 +1038,13 @@ class Clustimage():
                     imgs=I_input+I_predict
                     self._make_subplots(imgs, None, cmap, figsize, title)
 
-    def plot(self, ncols=10, cmap=None, show_hog=False, figsize=(15,10)):
+    def plot(self, labx=None, ncols=10, cmap=None, show_hog=False, figsize=(15,10)):
         """Plot the results.
 
         Parameters
         ----------
+        labx : int, (default: None)
+            Cluster label to plot. In case of None, all cluster labels are plotted.
         ncols : int, (default: 10)
             Number of columns to use in the subplot. The number of rows are estimated based on the columns.
         Colorscheme for the images.
@@ -1055,7 +1063,12 @@ class Clustimage():
         cmap = _set_cmap(cmap, self.grayscale)
         # Plot the clustered images
         if (self.results.get('labx', None) is not None) and (self.results.get('pathnames', None) is not None):
-            uilabx = np.unique(self.results['labx'])
+            if labx is None:
+                uilabx = np.unique(self.results['labx'])
+            else:
+                uilabx = [labx]
+            
+            # Run over all labels.
             for labx in tqdm(uilabx):
                 idx = np.where(self.results['labx']==labx)[0]
                 # Collect the images
@@ -1339,9 +1352,9 @@ def import_example(data='flowers', url=None):
             url='https://erdogant.github.io/datasets/scenes.zip'
         elif data=='digits':
             from sklearn.datasets import load_digits
-            digits = load_digits(n_class=6)
-            X, _ = digits.data, digits.target
-            return X            
+            digits = load_digits(n_class=10)
+            # y = digits.target
+            return digits.data  
     else:
         logger.warning('Lets try your dataset from url: %s.', url)
 
