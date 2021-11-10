@@ -43,16 +43,38 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Installation.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Installation.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#quickstart">Quickstart</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Methods</span></p>
+<p class="caption" role="heading"><span class="caption-text">Pre-processing</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Algorithm.html">Algorithm</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cross%20validation%20and%20hyperparameter%20tuning.html">Cross validation and hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#colorscale">Colorscale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#scale">Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#resize">Resize</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Feature Extraction/Embedding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html">PCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#hog">HOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#tsne">tSNE</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">dbindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">dbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#hdbscan">hdbscan</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Performance</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html#results">Results</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Save and Load</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
@@ -61,7 +83,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a></li>
 </ul>
@@ -389,7 +410,7 @@ pathnames : list of str.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.extract_hog">
-<span class="sig-name descname"><span class="pre">extract_hog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.extract_hog" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extract_hog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixels_per_cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">16)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cells_per_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.extract_hog" title="Permalink to this definition"></a></dt>
 <dd><p>Extract HOG features.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -538,6 +559,29 @@ feat : array-like.</p>
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.get_images_from_path">
 <span class="sig-name descname"><span class="pre">get_images_from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.get_images_from_path" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.img_read_pipeline">
+<span class="sig-name descname"><span class="pre">img_read_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.img_read_pipeline" title="Permalink to this definition"></a></dt>
+<dd><p>Read and pre-processing of images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Full path to the image that needs to be imported.</p></li>
+<li><p><strong>grayscale</strong> (<em>int</em><em>, </em><em>default: 1</em><em> (</em><em>gray</em><em>)</em>) – colour-scaling from opencv.
+* cv2.COLOR_GRAY2RGB</p></li>
+<li><p><strong>dim</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>128</em><em>,</em><em>128</em><em>)</em><em>)</em>) – Rescale images. This is required because the feature-space need to be the same across samples.</p></li>
+<li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>img</strong> – Imported and processed image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.import_example">
@@ -740,32 +784,27 @@ filenames : list of str.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="clustimage.clustimage.img_read_pipeline">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">img_read_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.img_read_pipeline" title="Permalink to this definition"></a></dt>
-<dd><p>Read and pre-processing of images.</p>
+<dt class="sig sig-object py" id="clustimage.clustimage.img_resize">
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">img_resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.img_resize" title="Permalink to this definition"></a></dt>
+<dd><p>Resize image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="clustimage.clustimage.img_scale">
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">img_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.img_scale" title="Permalink to this definition"></a></dt>
+<dd><p>Normalize image by scaling.</p>
+<p>Scaling in range [0-255] by img*(255/max(img))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>str</em>) – Full path to the image that needs to be imported.</p></li>
-<li><p><strong>grayscale</strong> (<em>int</em><em>, </em><em>default: 1</em><em> (</em><em>gray</em><em>)</em>) – colour-scaling from opencv.
-* cv2.COLOR_GRAY2RGB</p></li>
-<li><p><strong>dim</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>128</em><em>,</em><em>128</em><em>)</em><em>)</em>) – Rescale images. This is required because the feature-space need to be the same across samples.</p></li>
-<li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
-</ul>
+<dd class="field-odd"><p><strong>img</strong> (<em>array-like</em>) – Input image data.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>img</strong> – Imported and processed image.</p>
+<dd class="field-even"><p><strong>img</strong> – Scaled image.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>array-like</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="clustimage.clustimage.img_resize">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">img_resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.img_resize" title="Permalink to this definition"></a></dt>
-<dd><p>Resize image.</p>
 </dd></dl>
 
 <dl class="py function">

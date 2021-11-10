@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Save and Load &mdash; clustimage clustimage documentation</title>
+  <title>Hyperparameter tuning &mdash; clustimage clustimage documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="Examples.html" />
-    <link rel="prev" title="Performance" href="Performance.html" /> 
+    <link rel="next" title="Performance" href="Performance.html" />
+    <link rel="prev" title="PCA" href="Feature%20Extraction.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -62,12 +62,12 @@
 <li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#tsne">tSNE</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Hyperparameter tuning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">dbindex</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">dbscan</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#hdbscan">hdbscan</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#silhouette">Silhouette</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#dbindex">dbindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#dbscan">dbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#hdbscan">hdbscan</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Performance</span></p>
 <ul>
@@ -75,12 +75,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Performance.html#results">Results</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Save and Load</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#saving">Saving</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#loading">Loading</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Save and Load</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
@@ -106,9 +102,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Save and Load</li>
+      <li>Hyperparameter tuning</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/Save and Load.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/Cluster Evaluation.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,45 +113,55 @@
            <div itemprop="articleBody">
              
   <hr class="docutils" id="code-directive" />
-<section id="save-and-load">
-<h1>Save and Load<a class="headerlink" href="#save-and-load" title="Permalink to this headline"></a></h1>
-<p>Saving and loading models is desired as the learning proces of a model for <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> can take up to hours.
-In order to accomplish this, we created two functions: function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.save()</span></code> and function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.load()</span></code>
-Below we illustrate how to save and load models.</p>
-<section id="saving">
-<h2>Saving<a class="headerlink" href="#saving" title="Permalink to this headline"></a></h2>
-<p>Saving a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.save()</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">clustimage</span>
-
-<span class="c1"># Load example data</span>
-<span class="n">X</span><span class="p">,</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">load_example</span><span class="p">()</span>
-
-<span class="c1"># Learn model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">)</span>
-
-<span class="n">Save</span> <span class="n">model</span>
-<span class="n">status</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;learned_model_v1&#39;</span><span class="p">)</span>
+<section id="hyperparameter-tuning">
+<h1>Hyperparameter tuning<a class="headerlink" href="#hyperparameter-tuning" title="Permalink to this headline"></a></h1>
+<p>By gridsearch</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">urldetect</span></code> we incorporated hyperparameter optimization using a gridseach <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect._gridsearch()</span></code>. The goal is to evaluate the value of the combination of parameters in the learning process.
+The use of gridsearch is set True as default by a boolean value <code class="docutils literal notranslate"><span class="pre">gridsearch=True</span></code> in the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit_transform()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit()</span></code>.
+You may want to set this value at <code class="docutils literal notranslate"><span class="pre">gridsearch=False</span></code> if the number of samples is very low which would lead in a poorly trained model.</p>
+</section>
+<section id="silhouette">
+<h1>Silhouette<a class="headerlink" href="#silhouette" title="Permalink to this headline"></a></h1>
+<p>To measure the goodness of fit we use various evaluation metrics to check the classification model’s performance.
+The performance scores can be derived in <code class="docutils literal notranslate"><span class="pre">urldetect</span></code> using in the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.plot()</span></code>.</p>
+<p>The performance of the model can deviate based on the threshold being used but the theshold this will not affect the learning process <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit_transform()</span></code>.
+After learning a model, and predicting new samples with it, each sample will get a probability belowing to the class. In case of our two-class approach the simple rule account: <strong>P(class malicous) = 1-P(class normal)</strong>
+The threshold is used on the probabilities to devide samples into the malicous or normal class.</p>
+</section>
+<section id="dbindex">
+<h1>dbindex<a class="headerlink" href="#dbindex" title="Permalink to this headline"></a></h1>
+<p>A confusion matrix is a table that is often used to describe the performance of a classification model (or “classifier”)
+on a set of test data for which the true values are known. It allows the visualization of the performance of an algorithm.</p>
+<p>Cohen’s kappa coefficient is a statistic that is used to measure inter-rated reliability for qualitative (categorical) items.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scoring</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="loading">
-<h2>Loading<a class="headerlink" href="#loading" title="Permalink to this headline"></a></h2>
-<p>Loading a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.load()</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">clustimage</span>
-
-<span class="c1"># Load model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;learned_model_v1&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<section id="dbscan">
+<h1>dbscan<a class="headerlink" href="#dbscan" title="Permalink to this headline"></a></h1>
+<p>The probability graph plots the probabilities of the samples being classified.</p>
 </section>
+<section id="hdbscan">
+<h1>hdbscan<a class="headerlink" href="#hdbscan" title="Permalink to this headline"></a></h1>
+<p>The classification performance can be derived using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.plot()</span></code>.
+Results for the malicous URLs, using a 5-fold crossvalidation with gridsearch is as follows:</p>
+<figure class="align-default" id="figure-1">
+<a class="reference internal image-reference" href="../figs/Figure_1.png"><img alt="../figs/Figure_1.png" src="../figs/Figure_1.png" /></a>
+</figure>
+<figure class="align-default" id="figure-2">
+<a class="reference internal image-reference" href="../figs/Figure_2.png"><img alt="../figs/Figure_2.png" src="../figs/Figure_2.png" /></a>
+</figure>
+<figure class="align-default" id="figure-3">
+<a class="reference internal image-reference" href="../figs/Figure_3.png"><img alt="../figs/Figure_3.png" src="../figs/Figure_3.png" /></a>
+</figure>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Performance.html" class="btn btn-neutral float-left" title="Performance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Feature%20Extraction.html" class="btn btn-neutral float-left" title="PCA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Performance.html" class="btn btn-neutral float-right" title="Performance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

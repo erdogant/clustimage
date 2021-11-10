@@ -14,7 +14,7 @@ Such conventions are helpfull to improve the quality, make the code cleaner and 
 
 
 library
--------
+--------
 
 The file structure of the generated package looks like:
 
@@ -48,7 +48,7 @@ The file structure of the generated package looks like:
 
 
 Style
------
+-------
 
 This library is compliant with the PEP-8 standards.
 PEP stands for Python Enhancement Proposal and sets a baseline for the readability of Python code.
@@ -56,7 +56,7 @@ Each public function contains a docstring that is based on numpy standards.
     
 
 Complexity
-----------
+------------
 
 This library has been developed by using measures that help decreasing technical debt.
 Version 0.1.0 of the ``clustimage`` library scored, according the code analyzer: **VALUE**, for which values > 0 are good and 10 is a maximum score.
@@ -69,7 +69,7 @@ Developing software with low(er) technical dept may take extra development time,
 
 
 Unit tests
-----------
+------------
 
 The use of unit tests is essential to garantee a consistent output of developed functions.
 The following tests are secured using :func:`tests.test_clustimage`:

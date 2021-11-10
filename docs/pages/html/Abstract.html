@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quickstart" href="Installation.html" />
+    <link rel="next" title="Installation" href="Installation.html" />
     <link rel="prev" title="clustimage’s documentation!" href="index.html" /> 
 </head>
 
@@ -44,16 +44,38 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Installation.html">Quickstart</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Installation.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#quickstart">Quickstart</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Methods</span></p>
+<p class="caption" role="heading"><span class="caption-text">Pre-processing</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Algorithm.html">Algorithm</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cross%20validation%20and%20hyperparameter%20tuning.html">Cross validation and hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#colorscale">Colorscale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#scale">Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#resize">Resize</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Feature Extraction/Embedding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html">PCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#hog">HOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#tsne">tSNE</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">dbindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">dbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#hdbscan">hdbscan</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Performance</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html#results">Results</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Save and Load</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
@@ -62,7 +84,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clustimage.clustimage.html">API References</a></li>
 </ul>
@@ -94,22 +115,26 @@
   <hr class="docutils" id="code-directive" />
 <section id="abstract">
 <h1>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h1>
-<dl class="simple">
-<dt>Background</dt><dd><p>clustimage</p>
-</dd>
-<dt>Aim</dt><dd><p>clustimage</p>
-</dd>
-<dt>Results</dt><dd><p>clustimage</p>
-</dd>
-<dt>Business cases</dt><dd><p>clustimage</p>
-</dd>
-</dl>
+<p>Background</p>
+<p>Image recognition is a computer vision task for identifying and verifying objects/persons on a photograph.
+We can seperate the image recognition task into the two broad tasks, namely the supervised and unsupervised task.
+In case of the supervised task, we have to classify an image into a fixed number of learned categories.
+In case of the unsupervised task, we do not depend on the fact that training data is required but we can interpret the input data and find natural groups or clusters.</p>
+<p>Aim</p>
+<p>The aim of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clustering across the the high-dimensional feature space.
+The optimal number of clusters can be determined using the three well known methods; silhouette, dbindex, and derivatives in combination with four clustering methods; agglomerative, kmeans, dbscan and hdbscan.
+With <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> we aim to determine the most robust clustering by efficiently searching across the parameter and evaluation the clusters.
+Besides clustering of images, the final optimized model can also be used to predict the most similar image for a new unseen samples.</p>
+<p>Results</p>
+<p><code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is Python package for unsupervised clustering of images after carefully pre-processing the images, extracting the features, and evaluating the optimal number of clustering in the high-dimensional feature space.
+<code class="docutils literal notranslate"><span class="pre">clustimage</span></code> does not depend on complex pre-trained neural networks with many package-dependencies but simply extract features using Principal component analysis (PCA), and/or Histogram of Oriented Gradients (HOG).
+The input for the model can be a NxM array for which each rows is a flattened rgb/gray image, or it can be a target directory or the full path to a list of images.</p>
 </section>
 <section id="schematic-overview">
 <h1>Schematic overview<a class="headerlink" href="#schematic-overview" title="Permalink to this headline"></a></h1>
 <p>The schematic overview of our approach is as following:</p>
 <figure class="align-default" id="id1">
-<img alt="../figs/schematic_overview.png" src="../figs/schematic_overview.png" />
+<img alt="_images/schematic_overview.png" src="_images/schematic_overview.png" />
 </figure>
 </section>
 
@@ -118,7 +143,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="clustimage’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Installation.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
