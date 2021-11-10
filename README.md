@@ -107,7 +107,7 @@ cl.scatter()
 </p>
 
 
-#### Make prediction with unknown input image.
+#### Make prediction for unseen input image.
 ```python
 # Predict
 results_predict = cl.predict(path_to_imgs[0:5], alpha=0.05)
@@ -120,7 +120,8 @@ cl.scatter()
 </p>
 
 
-#### Make prediction with unknown input image.
+#### images with faces to cluster.
+
 ```python
 from clustimage import Clustimage
 # Init
