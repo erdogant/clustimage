@@ -826,6 +826,37 @@ class Clustimage():
         # Return
         return out
 
+    def img_read_pipeline(self, filepath, grayscale=1, dim=(128, 128), flatten=True):
+        """Read and pre-processing of images.
+    
+        Parameters
+        ----------
+        filepath : str
+            Full path to the image that needs to be imported.
+        grayscale : int, default: 1 (gray)
+            colour-scaling from opencv.
+            * cv2.COLOR_GRAY2RGB
+        dim : tuple, (default: (128,128))
+            Rescale images. This is required because the feature-space need to be the same across samples.
+        flatten : Bool, (default: True)
+            Flatten the processed NxMxC array to a 1D-vector
+    
+        Returns
+        -------
+        img : array-like
+            Imported and processed image.
+    
+        """
+        # Read the image
+        img = img_read(filepath, grayscale=grayscale)
+        # Scale the image
+        img = img_scale(img)
+        # Resize the image
+        img = img_resize(img, dim=dim)
+        # Flatten the image
+        if flatten: img = img_flatten(img)
+        return img
+
     def plot_faces(self, faces=True, eyes=True, cmap=None):
         """Plot detected faces.
 
