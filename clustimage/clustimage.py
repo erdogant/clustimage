@@ -1023,9 +1023,9 @@ class Clustimage():
                     # Input label
                     if isinstance(input_img, str): input_img=[input_img]
                     # Input images
-                    I_input = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), input_img))
+                    I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), input_img))
                     # Predicted label
-                    I_predict = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), predict_img))
+                    I_predict = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), predict_img))
                     # Make the real plot
                     title='Top or top-left image is input. The others are predicted.'
                     # Show images into subplots
@@ -1061,7 +1061,7 @@ class Clustimage():
                 # Collect the images
                 getfiles = np.array(self.results['pathnames'])[idx]
                 # Get the images that cluster together
-                imgs = list(map(lambda x: img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), getfiles))
+                imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), getfiles))
                 # Make subplots
                 self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(labx))))
 
@@ -1148,7 +1148,12 @@ class Clustimage():
 def _check_dim(Xraw, dim, grayscale=None):
     dimOK=False
     # Determine the dimension based on the length of the 1D-vector.
-    dimX = int(np.sqrt(len(Xraw[0,:])))
+    if len(Xraw.shape)==1:
+        Xraw=np.c_[Xraw, Xraw].T
+
+    # Compute dim based on vector length
+    dimX = int(np.sqrt(Xraw.shape[1]))
+
     if (dimX!=dim[0]) or (dimX!=dim[1]):
         logger.warning('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(dim), str([int(dimX)]*2), str([int(dimX)]*2) ))
 
@@ -1166,7 +1171,6 @@ def _check_dim(Xraw, dim, grayscale=None):
             dimOK=True
         except:
             pass
-
 
     if not dimOK:
         try:
@@ -1238,6 +1242,36 @@ def _set_cmap(cmap, grayscale):
         cmap = 'gray' if grayscale else None
     return cmap
 
+# %% Scaling
+def img_scale(img):
+    """Normalize image by scaling.
+
+    Description
+    -----------
+    Scaling in range [0-255] by img*(255/max(img))
+
+    Parameters
+    ----------
+    img : array-like
+        Input image data.
+
+    Returns
+    -------
+    img : array-like
+        Scaled image.
+    """
+    try:
+        # Normalizing between 0-255
+        img = img - img.min()
+        img = img / img.max()
+        img = img * 255
+        # Downscale typing
+        img = np.uint8(img)
+    except:
+        logger.warning('Scaling not possible.')
+    return img
+
+
 # %% Read image
 def img_read(filepath, grayscale=1):
     """Read image from filepath using colour-scaling.
@@ -1267,37 +1301,6 @@ def img_read(filepath, grayscale=1):
     if ((grayscale!=0) and (grayscale!=6)) and (len(img.shape)<3):
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
-    return img
-
-
-# %% Read image
-def img_read_pipeline(filepath, grayscale=1, dim=(128, 128), flatten=True):
-    """Read and pre-processing of images.
-
-    Parameters
-    ----------
-    filepath : str
-        Full path to the image that needs to be imported.
-    grayscale : int, default: 1 (gray)
-        colour-scaling from opencv.
-        * cv2.COLOR_GRAY2RGB
-    dim : tuple, (default: (128,128))
-        Rescale images. This is required because the feature-space need to be the same across samples.
-    flatten : Bool, (default: True)
-        Flatten the processed NxMxC array to a 1D-vector
-
-    Returns
-    -------
-    img : array-like
-        Imported and processed image.
-
-    """
-    # Read the image
-    img = img_read(filepath, grayscale=grayscale)
-    # Resize the image
-    img = img_resize(img, dim=dim)
-    # Flatten the image
-    if flatten: img = img_flatten(img)
     return img
 
 # %%
