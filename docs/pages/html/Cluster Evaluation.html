@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hyperparameter tuning &mdash; clustimage clustimage documentation</title>
+  <title>Gridsearch &mdash; clustimage clustimage documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Performance" href="Performance.html" />
+    <link rel="next" title="Prediction" href="prediction.html" />
     <link rel="prev" title="PCA" href="Feature%20Extraction.html" /> 
 </head>
 
@@ -63,16 +63,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Hyperparameter tuning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Gridsearch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#silhouette">Silhouette</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#dbindex">dbindex</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#dbscan">dbscan</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#hdbscan">hdbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#dbindex">DBindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#dbscan">DBSCAN</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Prediction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Performance</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Performance.html#results">Results</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
 <ul>
@@ -102,7 +104,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Hyperparameter tuning</li>
+      <li>Gridsearch</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Cluster Evaluation.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -113,47 +115,149 @@
            <div itemprop="articleBody">
              
   <hr class="docutils" id="code-directive" />
-<section id="hyperparameter-tuning">
-<h1>Hyperparameter tuning<a class="headerlink" href="#hyperparameter-tuning" title="Permalink to this headline"></a></h1>
-<p>By gridsearch</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">urldetect</span></code> we incorporated hyperparameter optimization using a gridseach <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect._gridsearch()</span></code>. The goal is to evaluate the value of the combination of parameters in the learning process.
-The use of gridsearch is set True as default by a boolean value <code class="docutils literal notranslate"><span class="pre">gridsearch=True</span></code> in the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit_transform()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit()</span></code>.
-You may want to set this value at <code class="docutils literal notranslate"><span class="pre">gridsearch=False</span></code> if the number of samples is very low which would lead in a poorly trained model.</p>
-</section>
-<section id="silhouette">
-<h1>Silhouette<a class="headerlink" href="#silhouette" title="Permalink to this headline"></a></h1>
-<p>To measure the goodness of fit we use various evaluation metrics to check the classification model’s performance.
-The performance scores can be derived in <code class="docutils literal notranslate"><span class="pre">urldetect</span></code> using in the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.plot()</span></code>.</p>
-<p>The performance of the model can deviate based on the threshold being used but the theshold this will not affect the learning process <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit_transform()</span></code>.
-After learning a model, and predicting new samples with it, each sample will get a probability belowing to the class. In case of our two-class approach the simple rule account: <strong>P(class malicous) = 1-P(class normal)</strong>
-The threshold is used on the probabilities to devide samples into the malicous or normal class.</p>
-</section>
-<section id="dbindex">
-<h1>dbindex<a class="headerlink" href="#dbindex" title="Permalink to this headline"></a></h1>
-<p>A confusion matrix is a table that is often used to describe the performance of a classification model (or “classifier”)
-on a set of test data for which the true values are known. It allows the visualization of the performance of an algorithm.</p>
-<p>Cohen’s kappa coefficient is a statistic that is used to measure inter-rated reliability for qualitative (categorical) items.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scoring</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<section id="gridsearch">
+<h1>Gridsearch<a class="headerlink" href="#gridsearch" title="Permalink to this headline"></a></h1>
+<p>For the detection of the optimal number of clusters, the python library <code class="docutils literal notranslate"><span class="pre">clusteval</span></code> is utilized to evaluate the <strong>goodness</strong> of clusters.
+The clustering approaches can be set to <em>agglomerative</em>, <em>kmeans</em>, <em>dbscan</em> and <em>hdbscan</em>, for which the <code class="docutils literal notranslate"><span class="pre">clusteval</span></code> library then searches across the space of clusters and method-parameters to determine the optimal number of clusters given the input dataset.</p>
+<p><strong>Cluster evaluation can be performed based on:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Silhouette scores</p></li>
+<li><p>DBindex</p></li>
+<li><p>Derivative method</p></li>
+</ul>
+</div></blockquote>
+<p>Lets load the <strong>digits</strong> dataset and see how the different methods detects the optimal number of clusters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="c1"># init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="s1">&#39;tsne&#39;</span><span class="p">,</span> <span class="n">cluster_space</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">grayscale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_to_disk</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Example data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;digits&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="dbscan">
-<h1>dbscan<a class="headerlink" href="#dbscan" title="Permalink to this headline"></a></h1>
-<p>The probability graph plots the probabilities of the samples being classified.</p>
+<section id="silhouette">
+<h1>Silhouette<a class="headerlink" href="#silhouette" title="Permalink to this headline"></a></h1>
+<p>The silhouette value is a measure of how similar a sample is to its own cluster (cohesion) compared to other clusters (separation).
+The scores ranges between [−1, 1], where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters.
+The silhouette approach is thus a sample-wise approach, which means that for each sample, a silhouette score is computed and if most samples have a high value, then the clustering configuration is appropriate.
+If many points have a low or negative value, then the clustering configuration may have too many or too few clusters.
+The silhouette can be calculated with any distance metric, such as the Euclidean distance or the Manhattan distance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Feature extraction and cluster evaluation</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;silhouette&#39;</span><span class="p">,</span> <span class="n">cluster</span><span class="o">=</span><span class="s1">&#39;agglomerative&#39;</span><span class="p">)</span>
+
+<span class="c1"># Cluster differently using directly the extracted features.</span>
+<span class="c1"># results = cl.cluster(, cluster=&#39;agglomerative&#39;, method=&#39;silhouette&#39;, cluster_space=&#39;low&#39;)</span>
+
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">()</span>
+<span class="c1"># Dendrogram with cluster evalution</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id1">
+<caption><span class="caption-text">Left: The number of clusters vs silhouette scores. Right: tSNE plot coloured on the cluster-labels.</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figCE0" src="_images/digits_clusters.png" /></p></td>
+<td><p><img alt="figCE6" src="_images/silhouette_tsne.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<p>The silhouette plot shows that the <em>#clusters</em> value of 11 is the best pick for the given data as the majority of clusters are above the average silhouette scores and does not widely fluctuate in the size of the silhouette plots.
+Note that the cluster evaluation is peformed on the high-dimensional feature space, in this case the top 50PCs. For illustration purposes, the 2D-space is shown and coloured on the detected cluster-labels.</p>
+<table class="docutils align-center" id="id2">
+<caption><span class="caption-text">Left: the sample-wise silhouette scores. Rright: First 2 PCs coloured on the cluster-labels.</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figCE1" src="_images/digits_fig1.png" /></p></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="hdbscan">
-<h1>hdbscan<a class="headerlink" href="#hdbscan" title="Permalink to this headline"></a></h1>
-<p>The classification performance can be derived using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.plot()</span></code>.
-Results for the malicous URLs, using a 5-fold crossvalidation with gridsearch is as follows:</p>
-<figure class="align-default" id="figure-1">
-<a class="reference internal image-reference" href="../figs/Figure_1.png"><img alt="../figs/Figure_1.png" src="../figs/Figure_1.png" /></a>
-</figure>
-<figure class="align-default" id="figure-2">
-<a class="reference internal image-reference" href="../figs/Figure_2.png"><img alt="../figs/Figure_2.png" src="../figs/Figure_2.png" /></a>
-</figure>
-<figure class="align-default" id="figure-3">
-<a class="reference internal image-reference" href="../figs/Figure_3.png"><img alt="../figs/Figure_3.png" src="../figs/Figure_3.png" /></a>
-</figure>
+<section id="dbindex">
+<h1>DBindex<a class="headerlink" href="#dbindex" title="Permalink to this headline"></a></h1>
+<p>The Davies–Bouldin index (DBI), is a metric for evaluating clustering algorithms.
+This is an internal evaluation scheme, which means that the clustering result is evaluated based on the data clustered itself (internal information).
+The lower the value, the tighter the clusters and the seperation between clusters.</p>
+<table class="docutils align-center" id="id3">
+<caption><span class="caption-text">The DB index for k number of clusters is defined as :</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figCE2" src="_images/dbindex_eq1.png" /></p></td>
+<td><p><img alt="figCE3" src="_images/dbindex_eq2.jpg" /></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Feature extraction and cluster evaluation</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dbindex&#39;</span><span class="p">,</span> <span class="n">cluster</span><span class="o">=</span><span class="s1">&#39;agglomerative&#39;</span><span class="p">)</span>
+
+<span class="c1"># Cluster differently using directly the extracted features.</span>
+<span class="c1"># results = cl.cluster(cluster=&#39;agglomerative&#39;, method=&#39;dbindex&#39;, cluster_space=&#39;low&#39;)</span>
+
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">()</span>
+<span class="c1"># Dendrogram with cluster evalution</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id4">
+<caption><span class="caption-text">Left: the DBindex cluster evaluation. Right: The tSNE plot coloured based on the cluster-labels.</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figCE4" src="_images/dbindex.png" /></p></td>
+<td><p><img alt="figCE5" src="_images/dbindex_tsne.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<p>The DBindex scores lowers gradually and stops at 24 clusters. This limit is the maximum search space by default. The search space can be altered using <code class="docutils literal notranslate"><span class="pre">min_clust</span></code> and <code class="docutils literal notranslate"><span class="pre">max_clust</span></code> in the function function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a>.
+Note that the cluster evaluation is peformed on the high-dimensional feature space, in this case the top 50PCs. For illustration purposes, the 2D-space is coloured on the detected cluster-labels.</p>
+</section>
+<section id="dbscan">
+<h1>DBSCAN<a class="headerlink" href="#dbscan" title="Permalink to this headline"></a></h1>
+<p>Density-Based Spatial Clustering of Applications with Noise is an clustering approach that finds core samples of high density and expands clusters from them.
+This works especially good when having samples which contains clusters of similar density. This approach is recommended in combination with a low-dimensional space, such as the coordinates from tSNE.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Feature extraction and cluster evaluation on the low-dimensional space</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;silhouette&#39;</span><span class="p">,</span> <span class="n">cluster</span><span class="o">=</span><span class="s1">&#39;dbscan&#39;</span><span class="p">,</span> <span class="n">cluster_space</span><span class="o">=</span><span class="s1">&#39;low&#39;</span><span class="p">)</span>
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">()</span>
+<span class="c1"># Dendrogram with cluster evalution</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id5">
+<caption><span class="caption-text">Left: the DBindex cluster evaluation. Right: The tSNE plot coloured based on the cluster-labels.</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figCE7" src="_images/dbscan.png" /></p></td>
+<td><p><img alt="figCE8" src="_images/tsne_dbscan.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-center" id="id6">
+<caption><span class="caption-text">Left: the DBindex cluster evaluation. Right: The tSNE plot coloured based on the cluster-labels.</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figCE9" src="_images/silhouette_dbscan.png" /></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
@@ -161,7 +265,7 @@ Results for the malicous URLs, using a 5-fold crossvalidation with gridsearch is
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Feature%20Extraction.html" class="btn btn-neutral float-left" title="PCA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Performance.html" class="btn btn-neutral float-right" title="Performance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="prediction.html" class="btn btn-neutral float-right" title="Prediction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

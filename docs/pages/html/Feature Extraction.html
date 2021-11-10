@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Hyperparameter tuning" href="Cluster%20Evaluation.html" />
+    <link rel="next" title="Gridsearch" href="Cluster%20Evaluation.html" />
     <link rel="prev" title="Preprocessing" href="Pre-processing.html" /> 
 </head>
 
@@ -63,16 +63,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Gridsearch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">dbindex</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">dbscan</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#hdbscan">hdbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">DBindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">DBSCAN</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Prediction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Performance</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Performance.html#results">Results</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
 <ul>
@@ -116,7 +118,7 @@
 <section id="pca">
 <h1>PCA<a class="headerlink" href="#pca" title="Permalink to this headline"></a></h1>
 <p>Principal component analysis (PCA) is the process of computing the principal components.
-In <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> the first 50 (default) components are selected and the rest is ignoring.
+In <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> the <code class="docutils literal notranslate"><span class="pre">pca</span></code> library utilized to extract the first 50 (default) components.
 The use of PC’s for the clustering is usefull in applications with among others faces, where so called eigenfaces are computed.
 The eigenface is a low-dimensional representation of face images. It is shown that principal component analysis could be used on a collection of face images to form a set of basis features.</p>
 </section>
@@ -133,26 +135,33 @@ The HOG feature descriptor counts the occurrences of gradient orientation in loc
 </ul>
 </div></blockquote>
 <p>Not all applications are usefull when using HOG features as it “only” provides the outline of the image.
-For example, if the use-case is to group faces or cars, HOG-features can do a great job but a deeper similarity of persons or car-types may not as the details will be losed.</p>
+For example, if the use-case is to group faces or cars, HOG-features can do a great job but a deeper similarity of faces or types of cars may be difficult as the details will be losed.</p>
+<p>The input parameters for the HOG function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_hog" title="clustimage.clustimage.Clustimage.extract_hog"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_hog()</span></code></a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>image vector    : Flattened 1D vector of the image</p></li>
+<li><p>orientations    : number of allowed orientations (default is 8)</p></li>
+<li><p>pixels_per_cell : Number of pixels per cell aka the HOG-resolution (default: 16, 16)</p></li>
+<li><p>cells_per_block : number of cells per block (default: 1, 1).</p></li>
+</ul>
+</div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="c1"># init</span>
-<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">)</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">))</span>
 <span class="c1"># Load example data</span>
 <span class="n">path_to_imgs</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
-<span class="c1"># Set dim to (128,128)</span>
-<span class="n">dim</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">)</span>
 <span class="c1"># Read image according the preprocessing steps</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">img_read_pipeline</span><span class="p">(</span><span class="n">path_to_imgs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
-<span class="c1"># Extract HOG features.</span>
-<span class="n">img_hog</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_hog</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">pixels_per_cell</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">img_read_pipeline</span><span class="p">(</span><span class="n">path_to_imgs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="n">cl</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+<span class="c1"># Extract HOG features</span>
+<span class="n">img_hog</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_hog</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">orientations</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">pixels_per_cell</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="n">cells_per_block</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">();</span>
 <span class="n">fig</span><span class="p">,</span><span class="n">axs</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">3</span><span class="p">]))</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">cl</span><span class="o">.</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cl</span><span class="o">.</span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">3</span><span class="p">]))</span>
 <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Preprocessed image&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_hog</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_hog</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HOG&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
@@ -168,10 +177,19 @@ For example, if the use-case is to group faces or cars, HOG-features can do a gr
 </tbody>
 </table>
 <p>Here it can be clearly seen that the HOG image is a matrix of 8x8 vectors that is derived by because of the input image (128,128) devided by the pixels per cell (16,16). Thus 128/16=8 rows and columns in this case.
-If an increase of HOG features is desired, you can either increasing the image dimensions (eg 256,256) or decrease the pixels per cell (eg 8,8)
-img_hog = cl.extract_hog(img, pixels_per_cell=(8, 8))</p>
+If an increase of HOG features is desired, you can either increasing the image dimensions (eg 256,256) or decrease the pixels per cell (eg 8,8).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract HOG features.</span>
 <span class="n">img_hog</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_hog</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">pixels_per_cell</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="c1"># Make figure</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">();</span>
+<span class="n">fig</span><span class="p">,</span><span class="n">axs</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="n">cl</span><span class="o">.</span><span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cl</span><span class="o">.</span><span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">3</span><span class="p">]))</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Preprocessed image&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_hog</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HOG&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id2">
@@ -195,7 +213,7 @@ img_hog = cl.extract_hog(img, pixels_per_cell=(8, 8))</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Pre-processing.html" class="btn btn-neutral float-left" title="Preprocessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Cluster%20Evaluation.html" class="btn btn-neutral float-right" title="Hyperparameter tuning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Cluster%20Evaluation.html" class="btn btn-neutral float-right" title="Gridsearch" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

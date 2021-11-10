@@ -5,7 +5,7 @@
 Preprocessing
 ''''''''''''''''
 
-The functions that handle the preprocessing of images is concentrated into the function :func:`clustimage.clustimage.img_read_pipeline`.
+The functions that handle the preprocessing of images is concentrated into the function :func:`clustimage.clustimage.Clustimage.img_read_pipeline`.
 This function reads the full path to the image that needs to be imported, and is subsequently colour-scaled (gray/rgb), scaled and resized.
 
 The pre-processing has 4 steps and are exectued in this order.
@@ -51,7 +51,7 @@ This function depends on functionalities from ``python-opencv`` and uses the ``c
 Scale
 ''''''''''''
 
-The *scale* function :func:`clustimage.clustimage.scale` is only applicable for 2D-arrays (images).
+The *scale* function :func:`clustimage.clustimage.img_scale` is only applicable for 2D-arrays (images).
 Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.
 
 The images are scaled between [0-255] by the following equation:

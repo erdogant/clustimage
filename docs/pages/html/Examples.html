@@ -63,16 +63,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Gridsearch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">dbindex</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">dbscan</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#hdbscan">hdbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">DBindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">DBSCAN</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Prediction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Performance</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Performance.html#results">Results</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
 <ul>
@@ -81,8 +83,7 @@
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#learn-new-model-with-gridsearch-and-train-test-set">Learn new model with gridsearch and train-test set</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#learn-new-model-on-the-entire-data-set">Learn new model on the entire data set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#caltech101-dataset">Caltech101 dataset</a></li>
 </ul>
 </li>
 </ul>
@@ -119,39 +120,75 @@
   <hr class="docutils" id="code-directive" />
 <section id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h1>
-<section id="learn-new-model-with-gridsearch-and-train-test-set">
-<h2>Learn new model with gridsearch and train-test set<a class="headerlink" href="#learn-new-model-with-gridsearch-and-train-test-set" title="Permalink to this headline"></a></h2>
-<p>AAA</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">import</span> <span class="nn">clustimage</span>
-
-<span class="c1"># Load example data set</span>
-<span class="n">X</span><span class="p">,</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">load_example</span><span class="p">()</span>
-
-<span class="c1"># Retrieve URLs of malicous and normal urls:</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span> <span class="n">train_test</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gridsearch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># The test error will be shown</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<section id="caltech101-dataset">
+<h2>Caltech101 dataset<a class="headerlink" href="#caltech101-dataset" title="Permalink to this headline"></a></h2>
+<p>Lets use <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> on a the <strong>Caltech101</strong> dataset to clusters the images.
+The pictures of objects belonging to 101 categories. About 40 to 800 images per category. Most categories have about 50 images. The size of each image is roughly 300 x 200 pixels.
+Download the dataset over here: <a class="reference external" href="http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download">http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="c1"># init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">params_pca</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span><span class="mi">250</span><span class="p">,</span> <span class="s1">&#39;detect_outliers&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">})</span>
+<span class="c1"># cl = Clustimage(method=&#39;pca&#39;, params_pca={&#39;n_components&#39;:0.95, &#39;detect_outliers&#39;:None})</span>
+<span class="c1"># Collect samples</span>
+<span class="c1"># Preprocessing, feature extraction and cluster evaluation</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="s1">&#39;C://101_ObjectCategories//&#39;</span><span class="p">,</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">max_clust</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="c1"># Cluster without the preprocessing</span>
+<span class="c1"># cl.cluster(method=&#39;silhouette&#39;, min_clust=30, max_clust=60)</span>
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># Plot one of the clusters</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labx</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="c1"># Plotting</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
-<section id="learn-new-model-on-the-entire-data-set">
-<h2>Learn new model on the entire data set<a class="headerlink" href="#learn-new-model-on-the-entire-data-set" title="Permalink to this headline"></a></h2>
-<p>BBBB</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">import</span> <span class="nn">clustimage</span>
-
-<span class="c1"># Load example data set</span>
-<span class="n">X</span><span class="p">,</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">load_example</span><span class="p">()</span>
-
-<span class="c1"># Retrieve URLs of malicous and normal urls:</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span> <span class="n">train_test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridsearch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># The train error will be shown. Such results are heavily biased as the model also learned on this set of data</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> we could easily extract the features that explains 89% of the variance and detected an optimal number of clusters of 49.</p>
+<table class="docutils align-center" id="id1">
+<caption><span class="caption-text">Left: Percentage explained variance. Right: Optimal number of clusters.</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figE1" src="_images/101_explainedvar.png" /></p></td>
+<td><p><img alt="figE2" src="_images/101_optimalclusters.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-center" id="id2">
+<caption><span class="caption-text">Silhouette plot</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figE3" src="_images/101_silhouette_plot.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-center" id="id3">
+<caption><span class="caption-text">Left: Dendrogram. Right: tSNE plot coloured on the cluster-labels.</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figE4" src="_images/101_dendrogram.png" /></p></td>
+<td><p><img alt="figE5" src="_images/101_tsne.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-center" id="id4">
+<caption><span class="caption-text">Two examples of the clusters that are detected.</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figE6" src="_images/101_cluster40.png" /></p></td>
+<td><p><img alt="figE7" src="_images/101_cluster.png" /></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 

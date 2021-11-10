@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Save and Load" href="Save%20and%20Load.html" />
-    <link rel="prev" title="Hyperparameter tuning" href="Cluster%20Evaluation.html" /> 
+    <link rel="prev" title="Prediction" href="prediction.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -63,22 +63,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Gridsearch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">dbindex</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">dbscan</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#hdbscan">hdbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">DBindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">DBSCAN</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Prediction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Performance</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Performance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#auc">AUC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#confusion-matrix">Confusion matrix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#kappa-score">Kappa score</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#probability-graph">Probability graph</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#results">Results</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Performance</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
 <ul>
@@ -121,60 +117,99 @@
   <hr class="docutils" id="code-directive" />
 <section id="performance">
 <h1>Performance<a class="headerlink" href="#performance" title="Permalink to this headline"></a></h1>
-<p>To measure the goodness of fit we use various evaluation metrics to check the classification model’s performance.
-The performance scores can be derived in <code class="docutils literal notranslate"><span class="pre">urldetect</span></code> using in the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.plot()</span></code>.</p>
-<p>The performance of the model can deviate based on the threshold being used but the theshold this will not affect the learning process <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit_transform()</span></code>.
-After learning a model, and predicting new samples with it, each sample will get a probability belowing to the class. In case of our two-class approach the simple rule account: <strong>P(class malicous) = 1-P(class normal)</strong>
-The threshold is used on the probabilities to devide samples into the malicous or normal class.</p>
-<section id="auc">
-<h2>AUC<a class="headerlink" href="#auc" title="Permalink to this headline"></a></h2>
-<p>The Area Under The Curve (AUC) and Receiver Operating Characteristics curve (ROC) are one of the most important evaluation metrics for checking any classification model’s performance.
-In our case we designed a two-class model with URLs being <strong>malicous</strong> or not. The probability ranges between [0-1], and the threshold for classification is set at 0.5, where &lt;0.5 is normal and &gt;0.5 is malicous.
-This value can be tweaked to either reduce the number of False positives or True Negatives <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.plot()</span></code>.</p>
-<p>The goal of the AUC-ROC is to determine the probability curve and degree or measure of separability by using various thresholds settings.
-It describes <em>how much</em> the model is capable of distinguishing between the classes. The higher the AUC, the better the model is at predicting whereas a AUC of 0.5 represents <em>random</em> results.</p>
-<p>A perfect score would result in an AUC score=1 and ROC curve like this:</p>
-<figure class="align-default" id="roc-best">
-<img alt="../figs/ROC_best.png" src="../figs/ROC_best.png" />
-</figure>
-</section>
-<section id="confusion-matrix">
-<h2>Confusion matrix<a class="headerlink" href="#confusion-matrix" title="Permalink to this headline"></a></h2>
-<p>A confusion matrix is a table that is often used to describe the performance of a classification model (or “classifier”)
-on a set of test data for which the true values are known. It allows the visualization of the performance of an algorithm.</p>
-</section>
-<section id="kappa-score">
-<h2>Kappa score<a class="headerlink" href="#kappa-score" title="Permalink to this headline"></a></h2>
-<p>Cohen’s kappa coefficient is a statistic that is used to measure inter-rated reliability for qualitative (categorical) items.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scoring</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<p>To measure the performance of various methods implementend in <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>, we can use the <strong>digits</strong> dataset to determine the match between clustered sampels and the true label.
+It can be seen that multiple different parameters still result in similar good performance based on the results below.</p>
+<p>The following peace of code clusters the <strong>digit</strong> images, compares the detected cluster labels with the true label, and finally computes the accuracy.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_digits</span>
+<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">import</span> <span class="nn">classeval</span> <span class="k">as</span> <span class="nn">clf</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+
+<span class="c1"># Load example data</span>
+<span class="n">digits</span> <span class="o">=</span> <span class="n">load_digits</span><span class="p">(</span><span class="n">n_class</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y_true</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">digits</span><span class="o">.</span><span class="n">target</span>
+
+<span class="n">param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;method&#39;</span><span class="p">:[</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="s1">&#39;hog&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="s1">&#39;clust_method&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;silhouette&#39;</span><span class="p">,</span> <span class="s1">&#39;dbindex&#39;</span><span class="p">,</span> <span class="s1">&#39;derivative&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;cluster_space&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">],</span>
+    <span class="p">}</span>
+
+<span class="n">scores</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">allNames</span> <span class="o">=</span> <span class="n">param_grid</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="n">combinations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">param_grid</span><span class="p">[</span><span class="n">Name</span><span class="p">]</span> <span class="k">for</span> <span class="n">Name</span> <span class="ow">in</span> <span class="n">allNames</span><span class="p">)))</span>
+
+<span class="c1"># Iterate over all combinations</span>
+<span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>
+    <span class="c1"># Initialize</span>
+    <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">combination</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Preprocessing, feature extraction and cluster evaluation</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">cluster_space</span><span class="o">=</span><span class="n">combination</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="n">combination</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Compute confmat</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">confmatrix</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;labx&#39;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Transform numbers to make it comparible</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;labx&#39;</span><span class="p">]</span>
+    <span class="n">cm_argmax</span> <span class="o">=</span> <span class="n">cm</span><span class="p">[</span><span class="s1">&#39;confmat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">y_pred_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cm_argmax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">y_pred</span><span class="p">])</span>
+
+    <span class="c1"># Compute again confmat</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">confmatrix</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred_</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">confmatrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Feature extraction: [</span><span class="si">%s</span><span class="s1">]</span><span class="se">\n</span><span class="s1">Cluster evaluation with [</span><span class="si">%s</span><span class="s1">] in [</span><span class="si">%s</span><span class="s1">] dimension&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">combination</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">combination</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">combination</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="c1"># Store scores and labels</span>
+    <span class="n">scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="n">y_pred_</span><span class="p">))</span>
+    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">combination</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="n">combination</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="n">combination</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+<span class="c1"># Make plot</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">scores</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+<span class="n">labels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+<span class="n">isort</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)),</span> <span class="n">scores</span><span class="p">[</span><span class="n">isort</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)),</span> <span class="n">labels</span><span class="p">[</span><span class="n">isort</span><span class="p">],</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Comparison of various approaches.&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="probability-graph">
-<h2>Probability graph<a class="headerlink" href="#probability-graph" title="Permalink to this headline"></a></h2>
-<p>The probability graph plots the probabilities of the samples being classified.</p>
-</section>
-</section>
-<section id="results">
-<h1>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h1>
-<p>The classification performance can be derived using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.plot()</span></code>.
-Results for the malicous URLs, using a 5-fold crossvalidation with gridsearch is as follows:</p>
-<figure class="align-default" id="figure-1">
-<a class="reference internal image-reference" href="../figs/Figure_1.png"><img alt="../figs/Figure_1.png" src="../figs/Figure_1.png" /></a>
-</figure>
-<figure class="align-default" id="figure-2">
-<a class="reference internal image-reference" href="../figs/Figure_2.png"><img alt="../figs/Figure_2.png" src="../figs/Figure_2.png" /></a>
-</figure>
-<figure class="align-default" id="figure-3">
-<a class="reference internal image-reference" href="../figs/Figure_3.png"><img alt="../figs/Figure_3.png" src="../figs/Figure_3.png" /></a>
-</figure>
+<table class="docutils align-center" id="id1">
+<caption><span class="caption-text">Comparison of the performance for the digits dataset using various methods.</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figP1" src="_images/performance_approaches.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-center" id="id2">
+<caption><span class="caption-text">Results of the best two approaches.</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figP2" src="_images/best_digits.png" /></p></td>
+<td><p><img alt="figP3" src="_images/digits_pca_dbindex.png" /></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Cluster%20Evaluation.html" class="btn btn-neutral float-left" title="Hyperparameter tuning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="prediction.html" class="btn btn-neutral float-left" title="Prediction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="Save%20and%20Load.html" class="btn btn-neutral float-right" title="Save and Load" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

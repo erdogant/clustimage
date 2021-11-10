@@ -63,16 +63,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Hyperparameter tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Gridsearch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">dbindex</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">dbscan</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#hdbscan">hdbscan</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">DBindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">DBSCAN</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Prediction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Performance</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Performance.html#results">Results</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
 <ul>
@@ -115,7 +117,7 @@
   <hr class="docutils" id="code-directive" />
 <section id="preprocessing">
 <h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline"></a></h1>
-<p>The functions that handle the preprocessing of images is concentrated into the function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_read_pipeline()</span></code>.
+<p>The functions that handle the preprocessing of images is concentrated into the function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.img_read_pipeline" title="clustimage.clustimage.Clustimage.img_read_pipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.img_read_pipeline()</span></code></a>.
 This function reads the full path to the image that needs to be imported, and is subsequently colour-scaled (gray/rgb), scaled and resized.</p>
 <dl class="simple">
 <dt>The pre-processing has 4 steps and are exectued in this order.</dt><dd><ul class="simple">
@@ -171,7 +173,7 @@ This function depends on functionalities from <code class="docutils literal notr
 </section>
 <section id="scale">
 <h1>Scale<a class="headerlink" href="#scale" title="Permalink to this headline"></a></h1>
-<p>The <em>scale</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.scale()</span></code> is only applicable for 2D-arrays (images).
+<p>The <em>scale</em> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.img_scale" title="clustimage.clustimage.img_scale"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_scale()</span></code></a> is only applicable for 2D-arrays (images).
 Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.</p>
 <p>The images are scaled between [0-255] by the following equation:</p>
 <blockquote>
