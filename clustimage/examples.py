@@ -15,6 +15,30 @@
 
 
 # %%
+from clustimage import Clustimage
+# init
+cl = Clustimage(store_to_disk=True)
+cl = Clustimage(method='pca', embedding='tsne', grayscale=True, params_pca={'n_components':50}, store_to_disk=True)
+# cl = Clustimage(method='hog', embedding='tsne',grayscale=False, params_pca={'n_components':50})
+# cl = Clustimage(method='hog', embedding='tsne', grayscale=False, dim=(8,8), params_pca={'n_components':50})
+# Example data
+X = cl.import_example(data='digits')
+# Preprocessing and feature extraction
+results = cl.fit_transform(X)
+
+# Scatter
+cl.scatter()
+# Plot the clustered images
+cl.plot(cmap='binary', labx=0)
+
+# Cluster differently
+cl.cluster(cluster_space='low')
+# Scatter
+cl.scatter()
+# Plotting
+cl.dendrogram()
+
+# %%
 
 import matplotlib.pyplot as plt
 from clustimage import Clustimage
@@ -75,28 +99,6 @@ cl.scatter()
 
 
 
-# %%
-from clustimage import Clustimage
-# init
-cl = Clustimage(store_to_disk=True)
-cl = Clustimage(method='pca', embedding='tsne', cluster_space='high', grayscale=True, params_pca={'n_components':50}, store_to_disk=True)
-# cl = Clustimage(method='hog', embedding='tsne', cluster_space='high', grayscale=False, params_pca={'n_components':50})
-# cl = Clustimage(method='hog', embedding='tsne', cluster_space='high', grayscale=False, dim=(8,8), params_pca={'n_components':50})
-# Example data
-X = cl.import_example(data='digits')
-# Preprocessing and feature extraction
-results = cl.fit_transform(X)
-# Scatter
-cl.scatter()
-
-# Cluster differently
-cl.cluster(cluster_space='low')
-# Scatter
-cl.scatter()
-# Plotting
-cl.dendrogram()
-# Plot the clustered images
-cl.plot(cmap='binary')
 
 
 # %% Detect faces
@@ -128,20 +130,27 @@ cl.clean_files()
 # %%
 from clustimage import Clustimage
 # init
+cl = Clustimage(method='pca', params_pca={'n_components':250, 'detect_outliers':None})
 cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
 # Collect samples
 # path_to_imgs = cl.get_images_from_path('D://magweg//101_ObjectCategories//')
 # Preprocessing and feature extraction
-results = cl.fit_transform('D://magweg//101_ObjectCategories//', min_clust=30, max_clust=50)
+results = cl.fit_transform('D://magweg//101_ObjectCategories//', min_clust=30, max_clust=60)
 # Cluster
-# labx = cl.cluster(method='silhouette', min_clust=30, max_clust=50)
+# cl.cluster(method='silhouette', min_clust=30, max_clust=60)
 # Scatter
-cl.scatter()
+cl.scatter(dotsize=10)
 # Plot the clustered images
-cl.plot()
+cl.plot(labx=9)
 # Plotting
 cl.dendrogram()
 
+
+y_pred = results['labx']
+y_true=[]
+for path in results['pathnames']:
+    getpath=os.path.split(results['pathnames'][0])[0]
+    y_true.append(os.path.split(getpath)[1])
 
 
 # %%
