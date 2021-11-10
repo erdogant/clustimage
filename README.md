@@ -89,7 +89,7 @@ path_to_imgs = cl.import_example(data='flowers')
 # Preprocessing and feature extraction
 results = cl.fit_transform(path_to_imgs, min_clust=10)
 # Scatter
-cl.scatter(dot_size=50)
+cl.scatter(dotsize=50)
 # Plot dendrogram
 cl.dendrogram()
 # Plot clustered images
