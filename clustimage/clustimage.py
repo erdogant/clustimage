@@ -508,7 +508,7 @@ class Clustimage():
             pathnames=[pathnames]
         if isinstance(pathnames, list):
             filenames = list(map(basename, pathnames))
-            img = list(map(lambda x: img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames)))
+            img = list(map(lambda x: self.img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames)))
             if flatten: img = np.vstack(img)
 
         out = {}
@@ -517,7 +517,7 @@ class Clustimage():
         out['filenames'] = filenames
         return out
 
-    def extract_hog(self, X):
+    def extract_hog(self, X, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1)):
         """Extract HOG features.
 
         Parameters
@@ -531,12 +531,20 @@ class Clustimage():
             NxF array for which N are the samples and F the reduced feature space.
 
         """
+        # If only a single image, make 2D-array
+        ToSingle=False
+        if len(X.shape)==1:
+            X=np.c_[X, X].T
+            ToSingle=True
+
         # Set dim correctly for reshaping image
-        dim = _check_dim(X['img'], self.dim, grayscale=self.grayscale)
+        dim = _check_dim(X, self.dim, grayscale=self.grayscale)
         # Extract hog features per image
-        feat = list(map(lambda x: hog(x.reshape(dim), orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), visualize=True)[1].flatten(), tqdm(X['img'])))
+        feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X)))
         # Stack all hog features into one array and return
         feat = np.vstack(feat)
+        # Back to single image if that was the input
+        if ToSingle: feat=feat[0,:]
         # Return
         return feat
 
@@ -685,7 +693,7 @@ class Clustimage():
         if self.method=='pca':
             X = self.extract_pca(Xraw)
         elif self.method=='hog':
-            X = self.extract_hog(Xraw)
+            X = self.extract_hog(Xraw['img'])
         else:
             # Read images and preprocessing and flattening of images
             X = Xraw['img'].copy()
