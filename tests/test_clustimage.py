@@ -52,7 +52,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
             labx = cl.cluster(cluster_space=combination[0], cluster=combination[1], method=combination[2], metric='euclidean', linkage='ward', min_clust=combination[3], max_clust=combination[4])
             assert len(labx)==len(X)
     
-    def test_predict(self):
+    def test_find(self):
         cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
         # load example with flowers
         path_to_imgs = cl.import_example(data='flowers')
@@ -60,20 +60,20 @@ class TestCLUSTIMAGE(unittest.TestCase):
         results = cl.fit_transform(path_to_imgs, min_clust=10)
     
         # Predict
-        results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
-        assert np.all(np.isin([*results_predict.keys()], ['feat', '0001.png', '0002.png', '0003.png', '0004.png', '0005.png']))
-        assert len(results_predict['0001.png']['y_idx'])==2
-        assert len(results_predict['0002.png']['y_idx'])==1
-        assert len(results_predict['0003.png']['y_idx'])==30
-        assert len(results_predict['0004.png']['y_idx'])==2
-        assert len(results_predict['0005.png']['y_idx'])==1
+        results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+        assert np.all(np.isin([*results_find.keys()], ['feat', '0001.png', '0002.png', '0003.png', '0004.png', '0005.png']))
+        assert len(results_find['0001.png']['y_idx'])==2
+        assert len(results_find['0002.png']['y_idx'])==1
+        assert len(results_find['0003.png']['y_idx'])==30
+        assert len(results_find['0004.png']['y_idx'])==2
+        assert len(results_find['0005.png']['y_idx'])==1
         
-        results_predict = cl.predict(path_to_imgs[0:5], k=1, alpha=None)
-        assert len(results_predict['0001.png']['y_idx'])==1
-        assert len(results_predict['0002.png']['y_idx'])==1
-        assert len(results_predict['0003.png']['y_idx'])==1
-        assert len(results_predict['0004.png']['y_idx'])==1
-        assert len(results_predict['0005.png']['y_idx'])==1
+        results_find = cl.find(path_to_imgs[0:5], k=1, alpha=None)
+        assert len(results_find['0001.png']['y_idx'])==1
+        assert len(results_find['0002.png']['y_idx'])==1
+        assert len(results_find['0003.png']['y_idx'])==1
+        assert len(results_find['0004.png']['y_idx'])==1
+        assert len(results_find['0005.png']['y_idx'])==1
     
     def test_predict(self):
         # Init

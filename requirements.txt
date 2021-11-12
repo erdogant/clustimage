@@ -13,3 +13,4 @@ matplotlib
 scikit-image
 scipy
 opencv-python
+pypickle
