@@ -146,10 +146,11 @@ class Clustimage():
         self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
         self.params['method'] = method
         self.params['embedding'] = embedding
+        self.params['grayscale'] = grayscale
         
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         # self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-        self.grayscale = grayscale
+        # self.grayscale = grayscale
         self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         self.dim = dim
         self.dim_face = dim_face
@@ -471,7 +472,7 @@ class Clustimage():
 
         """
         # If face detection, grayscale should be True.
-        if (not self.grayscale): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
+        if (not self.params['grayscale']): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
 
         # Read and pre-proces the input images
         logger.info("Read images>")
@@ -551,7 +552,7 @@ class Clustimage():
             ToSingle=True
 
         # Set dim correctly for reshaping image
-        dim = _check_dim(X, self.dim, grayscale=self.grayscale)
+        dim = _check_dim(X, self.dim, grayscale=self.params['grayscale'])
         # Extract hog features per image
         feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X)))
         # Stack all hog features into one array and return
@@ -989,7 +990,7 @@ class Clustimage():
                 * None : uses rgb colorscheme
 
         """
-        cmap = _set_cmap(cmap, self.grayscale)
+        cmap = _set_cmap(cmap, self.params['grayscale'])
 
         # Walk over all detected faces
         if hasattr(self, 'results_faces'):
@@ -1126,7 +1127,7 @@ class Clustimage():
         None.
 
         """
-        cmap = _set_cmap(cmap, self.grayscale)
+        cmap = _set_cmap(cmap, self.params['grayscale'])
         # Plot the images that are similar to each other.
         if self.results.get('predict', None) is not None:
             for key in self.results['predict'].keys():
@@ -1170,7 +1171,7 @@ class Clustimage():
 
         """
         # Set cmap
-        cmap = _set_cmap(cmap, self.grayscale)
+        cmap = _set_cmap(cmap, self.params['grayscale'])
         # Plot the clustered images
         if (self.results.get('labx', None) is not None) and (self.results.get('pathnames', None) is not None):
             if labx is None:
@@ -1208,7 +1209,7 @@ class Clustimage():
     def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
         """Make subplots."""
 
-        dim = self.dim if self.grayscale else np.append(self.dim, 3)
+        dim = self.dim if self.params['grayscale'] else np.append(self.dim, 3)
 
         if ncols is None:
             ncols = 5
