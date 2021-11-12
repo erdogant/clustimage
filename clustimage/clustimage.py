@@ -716,7 +716,7 @@ class Clustimage():
         if self.params['method']=='pca':
             X = self.extract_pca(Xraw)
         elif self.params['method']=='hog':
-            X = self.extract_hog(Xraw['img'], orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1))
+            X = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
         else:
             # Read images and preprocessing and flattening of images
             X = Xraw['img'].copy()
