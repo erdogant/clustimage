@@ -144,11 +144,11 @@ class Clustimage():
         self.params = {}
         self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-
+        self.params['method'] = method
+        self.params['embedding'] = embedding
+        
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         # self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-        self.method = method
-        self.embedding = embedding
         self.grayscale = grayscale
         self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         self.dim = dim
@@ -350,10 +350,10 @@ class Clustimage():
         # Fit
         if cluster_space=='low':
             feat = self.results['xycoord']
-            logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.embedding)
+            logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
         else:
             feat = self.results['feat']
-            logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.method)
+            logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
         # Fit model
         ce.fit(feat)
         # Store
@@ -404,7 +404,7 @@ class Clustimage():
         # X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
 
         # Predict according PCA method
-        if self.method=='pca':
+        if self.params['method']=='pca':
             Y, feat = self._compute_distances_pca(X, metric=metric, alpha=alpha)
             out = self._collect_pca(X, Y, k, alpha, feat, todf=True)
         else:
@@ -678,10 +678,10 @@ class Clustimage():
             x,y coordinates after embedding or alternatively the first 2 features.
         """
         # Embedding using tSNE
-        if self.embedding=='tsne':
-            logger.info('Computing embedding using %s..', self.embedding)
+        if self.params['embedding']=='tsne':
+            logger.info('Computing embedding using %s..', self.params['embedding'])
             init='random'
-            # if self.method is None: init='pca'
+            # if self.params['method'] is None: init='pca'
             xycoord = TSNE(n_components=2, learning_rate='auto', init=init).fit_transform(X)
         else:
             xycoord = X[:,0:2]
@@ -709,18 +709,18 @@ class Clustimage():
 
         """
         # If the input is a directory, first collect the images from path
-        logger.info('Extracting features using method: [%s]', self.method)
+        logger.info('Extracting features using method: [%s]', self.params['method'])
         # Extract features
-        if self.method=='pca':
+        if self.params['method']=='pca':
             X = self.extract_pca(Xraw)
-        elif self.method=='hog':
+        elif self.params['method']=='hog':
             X = self.extract_hog(Xraw['img'], orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1))
         else:
             # Read images and preprocessing and flattening of images
             X = Xraw['img'].copy()
 
         # Message
-        logger.info("Extracted features using [%s]: %s" %(self.method, str(X.shape)))
+        logger.info("Extracted features using [%s]: %s" %(self.params['method'], str(X.shape)))
         return Xraw, X
 
     def _compute_distances_pca(self, X, metric, alpha):
@@ -1086,13 +1086,13 @@ class Clustimage():
             # Scatter
             self.clusteval.scatter(xycoord)
 
-        if self.embedding=='tsne':
+        if self.params['embedding']=='tsne':
             colours=np.vstack(colourmap.fromlist(labx)[0])
             title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.cluster_space))
             fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labx, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0])
 
         # Scatter all points
-        if self.method=='pca':
+        if self.params['method']=='pca':
             _, ax = self.pca.plot(figsize=figsize)
             _, ax = self.pca.scatter(y=labx, legend=legend, label=False, figsize=figsize)
 
@@ -1189,7 +1189,7 @@ class Clustimage():
                 self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(labx))))
 
                 # Make hog plots
-                if show_hog and (self.method=='hog'):
+                if show_hog and (self.params['method']=='hog'):
                     hog_images = self.results['feat'][idx,:]
                     fig, axs = plt.subplots(len(imgs), 2, figsize=(15,10), sharex=True, sharey=True)
                     for i, ax in enumerate(axs):
