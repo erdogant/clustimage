@@ -132,7 +132,7 @@ class Clustimage():
     >>> cl.scatter()
 
     """
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dirpath=None, store_to_disk=False, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=False, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
 
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
@@ -152,7 +152,7 @@ class Clustimage():
         self.grayscale = grayscale
         self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         self.dim = dim
-        self.dim_face = (64, 64)
+        self.dim_face = dim_face
         self.params_pca = params_pca
         self.dirpath = dirpath
         self.tempdir = tempfile.mkdtemp()
@@ -267,7 +267,7 @@ class Clustimage():
         # Return
         return self.results
 
-    def cluster(self, cluster_space='high', cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25):
+    def cluster(self, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25, cluster_space='high'):
         """Detection of the optimal number of clusters given the input set of features.
         
         Description
