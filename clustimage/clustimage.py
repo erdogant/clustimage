@@ -147,11 +147,12 @@ class Clustimage():
         self.params['method'] = method
         self.params['embedding'] = embedding
         self.params['grayscale'] = grayscale
+        self.params['cv2_imread_colorscale'] = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         # self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
         # self.grayscale = grayscale
-        self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+        # self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         self.dim = dim
         self.dim_face = dim_face
         self.params_pca = params_pca
@@ -402,7 +403,7 @@ class Clustimage():
         X = self._import_data(X)
 
         # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
-        # X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
+        # X = self.preprocessing(pathnames, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=True)
 
         # Predict according PCA method
         if self.params['method']=='pca':
@@ -636,7 +637,7 @@ class Clustimage():
             # Make sure that list in lists are flattend
             Xraw = list(np.hstack(Xraw))
             # Read images and preprocessing
-            X = self.preprocessing(Xraw, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
+            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=True)
 
         # 3. If input is array-like. Make sure X becomes compatible.
         if isinstance(Xraw, np.ndarray):
@@ -797,7 +798,7 @@ class Clustimage():
         # Set defaults
         coord_eyes, facepath, imgstore = [], [], []
         # Get image
-        X = self.preprocessing(pathname, grayscale=self.cv2_imread_colorscale, dim=None, flatten=False)
+        X = self.preprocessing(pathname, grayscale=self.params['cv2_imread_colorscale'], dim=None, flatten=False)
         # Get the image and Convert into grayscale if required
         img = X['img'][0]
         # img = to_gray(X['img'][0])
@@ -1140,9 +1141,9 @@ class Clustimage():
                     # Input label
                     if isinstance(input_img, str): input_img=[input_img]
                     # Input images
-                    I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), input_img))
+                    I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=False), input_img))
                     # Predicted label
-                    I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), find_img))
+                    I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=False), find_img))
                     # Make the real plot
                     title='Top or top-left image is input. The others are predicted.'
                     # Show images into subplots
@@ -1185,7 +1186,7 @@ class Clustimage():
                 # Collect the images
                 getfiles = np.array(self.results['pathnames'])[idx]
                 # Get the images that cluster together
-                imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), getfiles))
+                imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=False), getfiles))
                 # Make subplots
                 self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(labx))))
 
