@@ -141,12 +141,12 @@ class Clustimage():
 
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
-        # self.params = {}
-        # self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        # self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+        self.params = {}
+        self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
-        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+        # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        # self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
         self.method = method
         self.embedding = embedding
         self.grayscale = grayscale
@@ -801,7 +801,7 @@ class Clustimage():
         img = X['img'][0]
         # img = to_gray(X['img'][0])
         # Detect faces using the face_cascade
-        coord_faces = self.face_cascade.detectMultiScale(img, 1.3, 5)
+        coord_faces = self.params['face_cascade'].detectMultiScale(img, 1.3, 5)
 
         # Collect the faces from the image
         for (x,y,w,h) in coord_faces:
@@ -816,7 +816,7 @@ class Clustimage():
             # imgstore.append(imgface.flatten())
             imgstore.append(img_flatten(imgface))
             # Detect eyes
-            eyes = self.eye_cascade.detectMultiScale(imgface)
+            eyes = self.params['eye_cascade'].detectMultiScale(imgface)
             if eyes==(): eyes=None
             coord_eyes.append(eyes)
         # Return
