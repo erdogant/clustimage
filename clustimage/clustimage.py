@@ -144,22 +144,22 @@ class Clustimage():
         self.params = {}
         self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+        self.params['cv2_imread_colorscale'] = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+
         self.params['method'] = method
         self.params['embedding'] = embedding
         self.params['grayscale'] = grayscale
-        self.params['cv2_imread_colorscale'] = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
-        
-        # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        # self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-        # self.grayscale = grayscale
-        # self.cv2_imread_colorscale = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
-        self.dim = dim
-        self.dim_face = dim_face
+        self.params['dim'] = dim
+        self.params['dim_face'] = dim_face
+
+        self.params['dirpath'] = dirpath
+        self.params['tempdir'] = tempfile.mkdtemp()
+        self.params['ext'] = ext
+        self.params['store_to_disk'] = store_to_disk
+
         self.params_pca = params_pca
-        self.dirpath = dirpath
-        self.tempdir = tempfile.mkdtemp()
-        self.ext = ext
-        self.store_to_disk = store_to_disk
+        self.params_hog = params_hog
+
         set_logger(verbose=verbose)
 
     def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
@@ -346,7 +346,7 @@ class Clustimage():
 
         """
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
-        self.cluster_space = cluster_space
+        self.params['cluster_space'] = cluster_space
         # Init
         ce = clusteval(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
         # Fit
@@ -403,7 +403,7 @@ class Clustimage():
         X = self._import_data(X)
 
         # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
-        # X = self.preprocessing(pathnames, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=True)
+        # X = self.preprocessing(pathnames, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
 
         # Predict according PCA method
         if self.params['method']=='pca':
@@ -553,7 +553,7 @@ class Clustimage():
             ToSingle=True
 
         # Set dim correctly for reshaping image
-        dim = _check_dim(X, self.dim, grayscale=self.params['grayscale'])
+        dim = _check_dim(X, self.params['dim'], grayscale=self.params['grayscale'])
         # Extract hog features per image
         feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X)))
         # Stack all hog features into one array and return
@@ -629,7 +629,7 @@ class Clustimage():
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
             logger.info('Extracting images from: [%s]', Xraw)
-            Xraw = self.get_images_from_path(Xraw, ext=self.ext)
+            Xraw = self.get_images_from_path(Xraw, ext=self.params['ext'])
             logger.info('Extracted images: [%s]', len(Xraw))
 
         # 2. Read images
@@ -637,7 +637,7 @@ class Clustimage():
             # Make sure that list in lists are flattend
             Xraw = list(np.hstack(Xraw))
             # Read images and preprocessing
-            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=True)
+            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
 
         # 3. If input is array-like. Make sure X becomes compatible.
         if isinstance(Xraw, np.ndarray):
@@ -647,10 +647,10 @@ class Clustimage():
             # Check dimensions
             pathnames, filenames = None, None
             # Check dim
-            self.dim = _check_dim(Xraw, self.dim)
+            self.params['dim'] = _check_dim(Xraw, self.params['dim'])
             # Store to disk
-            if self.store_to_disk:
-                pathnames, filenames = store_to_disk(Xraw, self.dim, self.tempdir)
+            if self.params['store_to_disk']:
+                pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'])
 
             # Make dict
             X = {'img': Xraw, 'pathnames':pathnames, 'filenames':filenames}
@@ -808,10 +808,10 @@ class Clustimage():
         # Collect the faces from the image
         for (x,y,w,h) in coord_faces:
             # Create filename for face
-            filename = os.path.join(self.dirpath, str(uuid.uuid4()))+'.png'
+            filename = os.path.join(self.params['dirpath'], str(uuid.uuid4()))+'.png'
             facepath.append(filename)
             # Store faces seperately
-            imgface = img_resize(img[y:y+h, x:x+w], dim=self.dim_face)
+            imgface = img_resize(img[y:y+h, x:x+w], dim=self.params['dim_face'])
             # Write to disk
             cv2.imwrite(filename, imgface)
             # Store face image
@@ -1081,7 +1081,7 @@ class Clustimage():
 
         # Scatter cluster evaluation
         if hasattr(self, 'clusteval'):
-            if self.cluster_space=='low':
+            if self.params['cluster_space']=='low':
                 xycoord = self.results['xycoord']
             else:
                 xycoord = self.results['feat']
@@ -1090,7 +1090,7 @@ class Clustimage():
 
         if self.params['embedding']=='tsne':
             colours=np.vstack(colourmap.fromlist(labx)[0])
-            title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.cluster_space))
+            title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.params['cluster_space']))
             fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labx, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0])
 
         # Scatter all points
@@ -1141,9 +1141,9 @@ class Clustimage():
                     # Input label
                     if isinstance(input_img, str): input_img=[input_img]
                     # Input images
-                    I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=False), input_img))
+                    I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
                     # Predicted label
-                    I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=False), find_img))
+                    I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
                     # Make the real plot
                     title='Top or top-left image is input. The others are predicted.'
                     # Show images into subplots
@@ -1186,7 +1186,7 @@ class Clustimage():
                 # Collect the images
                 getfiles = np.array(self.results['pathnames'])[idx]
                 # Get the images that cluster together
-                imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.dim, flatten=False), getfiles))
+                imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
                 # Make subplots
                 self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(labx))))
 
@@ -1195,7 +1195,7 @@ class Clustimage():
                     hog_images = self.results['feat'][idx,:]
                     fig, axs = plt.subplots(len(imgs), 2, figsize=(15,10), sharex=True, sharey=True)
                     for i, ax in enumerate(axs):
-                        hog_image_rescaled = exposure.rescale_intensity(hog_images[i,:].reshape(self.dim), in_range=(0,10))
+                        hog_image_rescaled = exposure.rescale_intensity(hog_images[i,:].reshape(self.params['dim']), in_range=(0,10))
                         ax[0].imshow(imgs[i], cmap=plt.cm.gray)
                         ax[0].axis('off')
                         ax[1].imshow(hog_image_rescaled, cmap=plt.cm.gray)
@@ -1210,7 +1210,7 @@ class Clustimage():
     def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
         """Make subplots."""
 
-        dim = self.dim if self.params['grayscale'] else np.append(self.dim, 3)
+        dim = self.params['dim'] if self.params['grayscale'] else np.append(self.params['dim'], 3)
 
         if ncols is None:
             ncols = 5
