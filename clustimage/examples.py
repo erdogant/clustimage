@@ -23,18 +23,19 @@ cl = Clustimage(method='pca', embedding='tsne', grayscale=True, params_pca={'n_c
 # cl = Clustimage(method='hog', embedding='tsne', grayscale=False, dim=(8,8), params_pca={'n_components':50})
 # Example data
 X = cl.import_example(data='digits')
-# Preprocessing and feature extraction
+# Preprocessing, feature extraction and cluster evaluation
 results = cl.fit_transform(X)
+
+results_find = cl.find(X[0:2,:])
+cl.plot_find()
+
+labx = cl.cluster()
+# labx = cl.cluster(cluster_space='high', cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25)
 
 # Scatter
 cl.scatter()
 # Plot the clustered images
-cl.plot(cmap='binary', labx=0)
-
-# Cluster differently
-cl.cluster(cluster_space='low')
-# Scatter
-cl.scatter()
+cl.plot(cmap='binary', labx=1)
 # Plotting
 cl.dendrogram()
 
@@ -90,8 +91,8 @@ cl.dendrogram()
 cl.plot(show_hog=True)
 
 # Predict
-results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
-cl.plot_predict()
+results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+cl.plot_find()
 cl.scatter()
 
 
@@ -131,7 +132,7 @@ cl.clean_files()
 from clustimage import Clustimage
 # init
 cl = Clustimage(method='pca', params_pca={'n_components':250, 'detect_outliers':None})
-cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
+# cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
 # Collect samples
 # path_to_imgs = cl.get_images_from_path('D://magweg//101_ObjectCategories//')
 # Preprocessing and feature extraction
@@ -141,7 +142,7 @@ results = cl.fit_transform('D://magweg//101_ObjectCategories//', min_clust=30, m
 # Scatter
 cl.scatter(dotsize=10)
 # Plot the clustered images
-cl.plot(labx=9)
+cl.plot(labx=10)
 # Plotting
 cl.dendrogram()
 

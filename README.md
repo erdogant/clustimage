@@ -96,8 +96,8 @@ cl.dendrogram()
 cl.plot(ncols=5)
 
 # Predict
-results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
-cl.plot_predict()
+results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+cl.plot_find()
 cl.scatter()
 
 ```
@@ -110,8 +110,8 @@ cl.scatter()
 #### Make prediction for unseen input image.
 ```python
 # Predict
-results_predict = cl.predict(path_to_imgs[0:5], alpha=0.05)
-cl.plot_predict()
+results_find = cl.find(path_to_imgs[0:5], alpha=0.05)
+cl.plot_find()
 cl.scatter()
 ```
 <p align="center">

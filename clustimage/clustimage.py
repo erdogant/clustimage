@@ -11,6 +11,7 @@ from pca import pca
 from distfit import distfit
 from clusteval import clusteval
 from scatterd import scatterd
+import pypickle as pypickle
 import pandas as pd
 import colourmap
 from tqdm import tqdm
@@ -30,6 +31,7 @@ from skimage import exposure
 import tempfile
 import uuid
 import shutil
+import random
 
 logger = logging.getLogger('')
 for handler in logger.handlers[:]: #get rid of existing old handlers
@@ -73,8 +75,7 @@ class Clustimage():
             * None : No feature extraction
     embedding : str, (default: 'tsne')
         Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
-            * 'tsne'
-            * None
+            * 'tsne' or  None
     grayscale : Bool, (default: False)
         Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
     dim : tuple, (default: (128,128))
@@ -83,8 +84,10 @@ class Clustimage():
         Directory to write images.
     ext : list, (default: ['png','tiff','jpg'])
         Images with the file extentions are used.
-    params_pca : dict, (default: {'n_components':50, 'detect_outliers':None}.)
+    params_pca : dict, default: {'n_components':50, 'detect_outliers':None}
         Parameters to initialize the pca model.
+    params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
+        Parameters to extract hog features.
     verbose : int, (default: 20)
         Print progress to screen. The default is 3.
         60: None, 40: Error, 30: Warn, 20: Info, 10: Debug
@@ -124,12 +127,12 @@ class Clustimage():
     >>> cl.plot()
     >>>
     >>> # Make prediction
-    >>> results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
-    >>> cl.plot_predict()
+    >>> results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+    >>> cl.plot_find()
     >>> cl.scatter()
 
     """
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dirpath=None, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, store_to_disk=False, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dirpath=None, store_to_disk=False, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
 
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
@@ -138,6 +141,10 @@ class Clustimage():
 
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
+        # self.params = {}
+        # self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        # self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
         self.method = method
@@ -236,8 +243,8 @@ class Clustimage():
         >>> cl.plot_faces()
         >>>
         >>> # Make prediction
-        >>> results_predict = cl.predict(face_results['facepath'][2][0], k=None, alpha=0.05)
-        >>> cl.plot_predict()
+        >>> results_find = cl.find(face_results['facepath'][2][0], k=None, alpha=0.05)
+        >>> cl.plot_find()
         >>> cl.scatter()
 
         """
@@ -356,14 +363,15 @@ class Clustimage():
         # Return
         return ce.results['labx']
 
-    def predict(self, pathnames, metric='euclidean', k=1, alpha=0.05):
-        """Predict the similarity of the input image with all other fitted images.
+    def find(self, X, metric='euclidean', k=1, alpha=0.05):
+        """Find images that are similar to that of the input image.
 
         Description
         -----------
         Computes K-nearest neighbour and P-values for pathnames [y] based on the fitted distribution from X.
         The empirical distribution of X is used to estimate the loc/scale/arg parameters for a theoretical distribution.
-        For each image, it computes the probability for input variables y, and returns the images that are <= alpha
+        For each image, the probability is computed for input variables y, and returns the images that are <= alpha
+        If both k and alpha is specified, the union is taken.
 
         Parameters
         ----------
@@ -389,15 +397,18 @@ class Clustimage():
             raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
         out = None
 
+        # Check whether in is dir, list of files or array-like
+        X = self._import_data(X)
+
         # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
-        X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
+        # X = self.preprocessing(pathnames, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
 
         # Predict according PCA method
         if self.method=='pca':
-            Y, dist, feat = self._compute_distances_pca(X, metric=metric, alpha=alpha)
-            out = self._collect_pca(X, Y, dist, k, alpha, feat, todf=True)
+            Y, feat = self._compute_distances_pca(X, metric=metric, alpha=alpha)
+            out = self._collect_pca(X, Y, k, alpha, feat, todf=True)
         else:
-            logger.warning('Nothing to predict. Prediction requires initialization with method="pca".')
+            logger.warning('Nothing to Find. Prediction requires initialization with method="pca".')
 
         # Store
         self.results['predict'] = out
@@ -453,9 +464,9 @@ class Clustimage():
         >>> # Plot facces
         >>> cl.plot_faces()
         >>>
-        >>> # Make prediction
-        >>> results_predict = cl.predict(face_results['facepath'][2], k=None, alpha=0.05)
-        >>> cl.plot_predict()
+        >>> # Find image
+        >>> results_find = cl.find(face_results['facepath'][2], k=None, alpha=0.05)
+        >>> cl.plot_find()
         >>> cl.scatter()
 
         """
@@ -570,10 +581,10 @@ class Clustimage():
             self.params_pca['n_components'] = X['img'].shape[0]
 
         # Fit model using PCA
-        self.model = pca(**self.params_pca)
-        self.model.fit_transform(X['img'], row_labels=X['filenames'])
+        self.pca = pca(**self.params_pca)
+        self.pca.fit_transform(X['img'], row_labels=X['filenames'])
         # Return
-        return self.model.results['PC'].values
+        return self.pca.results['PC'].values
 
     def _import_data(self, Xraw):
         """Import images and return in an consistent manner.
@@ -618,14 +629,19 @@ class Clustimage():
             logger.info('Extracting images from: [%s]', Xraw)
             Xraw = self.get_images_from_path(Xraw, ext=self.ext)
             logger.info('Extracted images: [%s]', len(Xraw))
+
         # 2. Read images
         if isinstance(Xraw, list):
             # Make sure that list in lists are flattend
             Xraw = list(np.hstack(Xraw))
             # Read images and preprocessing
             X = self.preprocessing(Xraw, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=True)
+
         # 3. If input is array-like. Make sure X becomes compatible.
         if isinstance(Xraw, np.ndarray):
+            # Make 2D
+            if len(Xraw.shape)==1:
+                Xraw = Xraw.reshape(-1,1).T
             # Check dimensions
             pathnames, filenames = None, None
             # Check dim
@@ -633,6 +649,7 @@ class Clustimage():
             # Store to disk
             if self.store_to_disk:
                 pathnames, filenames = store_to_disk(Xraw, self.dim, self.tempdir)
+
             # Make dict
             X = {'img': Xraw, 'pathnames':pathnames, 'filenames':filenames}
         return X
@@ -642,8 +659,10 @@ class Clustimage():
         if hasattr(self, 'results'):
             logger.info('Cleaning previous fitted model results')
             if hasattr(self, 'results'): del self.results
-            if hasattr(self, 'clusteval'): del self.clusteval
             if hasattr(self, 'results_faces'): del self.results_faces
+            if hasattr(self, 'distfit'): del self.distfit
+            if hasattr(self, 'clusteval'): del self.clusteval
+            if hasattr(self, 'pca'): del self.pca
 
     def _compute_embedding(self, X):
         """Compute the embedding for the extracted features.
@@ -695,7 +714,7 @@ class Clustimage():
         if self.method=='pca':
             X = self.extract_pca(Xraw)
         elif self.method=='hog':
-            X = self.extract_hog(Xraw['img'])
+            X = self.extract_hog(Xraw['img'], orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1))
         else:
             # Read images and preprocessing and flattening of images
             X = Xraw['img'].copy()
@@ -706,6 +725,9 @@ class Clustimage():
 
     def _compute_distances_pca(self, X, metric, alpha):
         """Compute distances and probabilities for new unseen samples.
+        
+        Description
+        ------------
         In case of PCA, a transformation needs to take place first.
 
         Parameters
@@ -714,29 +736,36 @@ class Clustimage():
             NxM array for which N are the samples and M the features.
         metric : str, (default: 'euclidean').
             Distance measures. All metrics from sklearn can be used such as:
-                * 'euclidean'
-                * 'hamming'
-                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
+                * 'cityblock', 'correlation', 'cosine', 'euclidean', 'hamming', 'jaccard', etc
         alpha : float, default: 0.05
             Significance alpha.
 
         """
-        dist = None
         # Transform new unseen datapoint into feature space
-        PCnew = self.model.transform(X['img'], row_labels=X['filenames'])
+        PCnew = self.pca.transform(X['img'], row_labels=X['filenames'])
+
         # Compute distance to all samples
         Y = distance.cdist(self.results['feat'], PCnew, metric=metric)
         Ytot = distance.cdist(self.results['feat'], self.results['feat'], metric=metric)
+
         # Fit distribution to emperical data and compute probability of the distances of interest
-        if alpha is not None:
-            dist = distfit(bound='down', multtest=None)
-            dist.fit_transform(Ytot)
-            # model.plot()
+        if (alpha is not None) and (not hasattr(self, 'distfit')):
+            # Take a subset of samples to prevent high computation times.
+            x_max, y_max = np.minimum(500, Ytot.shape[0]), np.minimum(500, Ytot.shape[1])
+            xrow, yrow = random.sample(range(1, x_max), x_max-1), random.sample(range(1, y_max), y_max-1)
+            # Init distfit
+            self.distfit = distfit(bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'])
+            Ytot = Ytot[xrow, :]
+            Ytot = Ytot[:, yrow]
+            _ = self.distfit.fit_transform(Ytot)
+            # dist.plot()
+        else:
+            logger.info('Loading pre-fitted theoretical model..')
 
         # Sanity check
         if len(X['filenames'])!=Y.shape[1]: raise Exception(logger.error('Number of input files does not match number of computed distances.'))
         # Return
-        return Y, dist, PCnew
+        return Y, PCnew
 
     def _extract_faces(self, pathname):
         """Extract the faces from the image.
@@ -793,7 +822,7 @@ class Clustimage():
         # Return
         return facepath, np.array(imgstore), coord_faces, coord_eyes, X['filenames'][0], X['pathnames'][0]
 
-    def _collect_pca(self, X, Y, dist, k, alpha, feat, todf=True):
+    def _collect_pca(self, X, Y, k, alpha, feat, todf=True):
         """Collect the samples that are closest in according the metric."""
 
         filenames = X['filenames']
@@ -802,7 +831,7 @@ class Clustimage():
 
         # Collect nearest neighor and sample with highes probability per input sample
         for i, filename in enumerate(filenames):
-            logger.info('Predict: %s', filename)
+            logger.info('Find: %s', filename)
             store_key = {}
             idx_dist, idx_k = None, None
             # Collect bes samples based on k-nearest neighbor
@@ -810,7 +839,7 @@ class Clustimage():
                 idx_k = np.argsort(Y[:,i])[0:k]
             # Collect samples based on probability
             if alpha is not None:
-                dist_results = dist.predict(Y[:,i], verbose=0)
+                dist_results = self.distfit.predict(Y[:,i], verbose=0)
                 idx_dist = np.where(dist_results['y_proba']<=alpha)[0]
             else:
                 # If alpha is not used, set all to nan
@@ -822,7 +851,7 @@ class Clustimage():
 
             # Store in dict
             store_key = {**store_key, 'x_path': X['pathnames'][i], 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'y_label': np.array(self.results['filenames'])[idx].tolist(), 'y_path': np.array(self.results['pathnames'])[idx].tolist()}
-            if todf: pd.DataFrame(store_key)
+            if todf: store_key = pd.DataFrame(store_key)
             out[filename] = store_key
 
         # Return
@@ -858,6 +887,85 @@ class Clustimage():
         # Flatten the image
         if flatten: img = img_flatten(img)
         return img
+
+    def save(self, filepath='clustimage.pkl', overwrite=False, verbose=3):
+        """Save model in pickle file.
+    
+        Parameters
+        ----------
+        filepath : str, (default: 'clustimage.pkl')
+            Pathname to store pickle files.
+        overwrite : bool, (default=False)
+            Overwite file if exists.
+        verbose : int, optional
+            Show message. A higher number gives more informatie. The default is 3.
+    
+        Returns
+        -------
+        bool : [True, False]
+            Status whether the file is saved.
+    
+        """
+        if (filepath is None) or (filepath==''):
+            filepath = 'clustimage.pkl'
+        if filepath[-4:] != '.pkl':
+            filepath = filepath + '.pkl'
+        # Store data
+        storedata = {}
+        storedata['results'] = self.results
+        storedata['results_faces'] = self.results_faces
+        storedata['distfit'] = self.distfit
+        storedata['clusteval'] = self.clusteval
+        storedata['pca'] = self.pca
+        storedata['params'] = self.params
+        storedata['params_pca'] = self.params_pca
+        storedata['params_hog'] = self.params_hog
+        # Save
+        status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
+        logger.info('Saving..')
+        # return
+        return status
+
+    def load(self, filepath='clustimage.pkl', verbose=3):
+        """Restore previous results.
+
+        Parameters
+        ----------
+        filepath : str
+            Pathname to stored pickle files.
+        verbose : int, optional
+            Show message. A higher number gives more information. The default is 3.
+
+        Returns
+        -------
+        Object.
+
+        """
+        if (filepath is None) or (filepath==''):
+            filepath = 'clustimage.pkl'
+        if filepath[-4:]!='.pkl':
+            filepath = filepath + '.pkl'
+
+        # Load
+        storedata = pypickle.load(filepath, verbose=verbose)
+
+        # Store in self
+        if storedata is not None:
+            self.results = storedata['results']
+            self.results_faces = storedata['results_faces']
+            self.distfit = storedata['distfit']
+            self.clusteval = storedata['clusteval']
+            self.pca = storedata['pca']
+            self.params = storedata['params']
+            self.params_pca = storedata['params_pca']
+            self.params_hog = storedata['params_hog']
+
+            logger.info('Load succesful!')
+            # Return results
+            return self.results
+        else:
+            logger.warning('Could not load previous results!')
+
 
     def plot_faces(self, faces=True, eyes=True, cmap=None):
         """Plot detected faces.
@@ -973,10 +1081,10 @@ class Clustimage():
         if hasattr(self, 'clusteval'):
             if self.cluster_space=='low':
                 xycoord = self.results['xycoord']
-                self.clusteval.scatter(self.results['xycoord'])
             else:
                 xycoord = self.results['feat']
-                self.clusteval.scatter(self.results['feat'])
+            # Scatter
+            self.clusteval.scatter(xycoord)
 
         if self.embedding=='tsne':
             colours=np.vstack(colourmap.fromlist(labx)[0])
@@ -985,12 +1093,12 @@ class Clustimage():
 
         # Scatter all points
         if self.method=='pca':
-            _, ax = self.model.plot(figsize=figsize)
-            _, ax = self.model.scatter(y=labx, legend=legend, label=False, figsize=figsize)
+            _, ax = self.pca.plot(figsize=figsize)
+            _, ax = self.pca.scatter(y=labx, legend=legend, label=False, figsize=figsize)
 
         # Scatter the predicted cases
         if self.results.get('predict', None) is not None:
-            fig, ax = self.model.scatter(y=labx, legend=legend, label=False, figsize=figsize)
+            fig, ax = self.pca.scatter(y=labx, legend=legend, label=False, figsize=figsize)
             # Create unique colors
             colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
             for key in self.results['predict'].keys():
@@ -1002,7 +1110,7 @@ class Clustimage():
                     ax.text(x,y, key, color=colours[key])
                     ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
 
-    def plot_predict(self, cmap=None, figsize=(15,10)):
+    def plot_find(self, cmap=None, figsize=(15,10)):
         """Plot the input image together with the predicted images.
 
         Parameters
@@ -1022,20 +1130,22 @@ class Clustimage():
         # Plot the images that are similar to each other.
         if self.results.get('predict', None) is not None:
             for key in self.results['predict'].keys():
+
                 if self.results['predict'].get(key).get('y_idx', None) is not None:
+                    logger.info('Plotting results for [%s]', key)
                     # Collect images
                     input_img = self.results['predict'][key]['x_path']
-                    predict_img = self.results['predict'][key]['y_path']
+                    find_img = self.results['predict'][key]['y_path']
                     # Input label
                     if isinstance(input_img, str): input_img=[input_img]
                     # Input images
                     I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), input_img))
                     # Predicted label
-                    I_predict = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), predict_img))
+                    I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.cv2_imread_colorscale, dim=self.dim, flatten=False), find_img))
                     # Make the real plot
                     title='Top or top-left image is input. The others are predicted.'
                     # Show images into subplots
-                    imgs=I_input+I_predict
+                    imgs=I_input+I_find
                     self._make_subplots(imgs, None, cmap, figsize, title)
 
     def plot(self, labx=None, ncols=10, cmap=None, show_hog=False, figsize=(15,10)):
@@ -1161,8 +1271,10 @@ class Clustimage():
 def _check_dim(Xraw, dim, grayscale=None):
     dimOK=False
     # Determine the dimension based on the length of the 1D-vector.
+    # if len(Xraw.shape)==1:
+        # Xraw=np.c_[Xraw, Xraw].T
     if len(Xraw.shape)==1:
-        Xraw=np.c_[Xraw, Xraw].T
+        Xraw = Xraw.reshape(-1,1).T
 
     # Compute dim based on vector length
     dimX = int(np.sqrt(Xraw.shape[1]))

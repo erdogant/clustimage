@@ -40,8 +40,8 @@ Example
 >>> cl.plot()
 >>>
 >>> # Make prediction
->>> results_predict = cl.predict(path_to_imgs[0:5], k=None, alpha=0.05)
->>> cl.plot_predict()
+>>> results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+>>> cl.plot_find()
 >>> cl.scatter()
 >>>
 
