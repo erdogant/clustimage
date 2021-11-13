@@ -25,6 +25,7 @@ import requests
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import offsetbox
 from scipy.spatial import distance
 from skimage.feature import hog
 from skimage import exposure
@@ -115,21 +116,31 @@ class Clustimage():
     >>> # Init with default settings
     >>> cl = Clustimage()
     >>> # load example with flowers
-    >>> path_to_imgs = cl.import_example(data='flowers')
+    >>> pathnames = cl.import_example(data='flowers')
     >>> # Detect cluster
-    >>> results = cl.fit_transform(path_to_imgs, min_clust=10)
+    >>> results = cl.fit_transform(pathnames, min_clust=7)
     >>>
     >>> # Plot dendrogram
     >>> cl.dendrogram()
     >>> # Scatter
     >>> cl.scatter(dotsize=50)
     >>> # Plot clustered images
-    >>> cl.plot()
+    >>> cl.plot(labels=[2,8])
     >>>
     >>> # Make prediction
-    >>> results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+    >>> results_find = cl.find(pathnames[0:5], k=None, alpha=0.05)
     >>> cl.plot_find()
     >>> cl.scatter()
+    >>> 
+    >>> # Plot the explained variance
+    >>> cl.pca.plot()
+    >>> # Make scatter plot of PC1 vs PC2
+    >>> cl.pca.scatter(legend=False, label=True)
+    >>> # Plot the evaluation of the number of clusters
+    >>> cl.clusteval.plot()
+    >>> # Make silhouette plot
+    >>> cl.clusteval.scatter(cl.results['xycoord'])
+    >>>
 
     """
     def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=False, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
@@ -246,7 +257,7 @@ class Clustimage():
         >>> # Plot dendrogram
         >>> cl.dendrogram()
         >>> # Scatter
-        >>> cl.scatter(dotsize=100)
+        >>> cl.scatter(dotsize=50)
         >>> # Plot clustered images
         >>> cl.plot(ncols=2)
         >>> # Plot facces
@@ -361,8 +372,10 @@ class Clustimage():
         """
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
         self.params['cluster_space'] = cluster_space
+
         # Init
         ce = clusteval(cluster=cluster, method=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
+
         # Fit
         if cluster_space=='low':
             feat = self.results['xycoord']
@@ -370,13 +383,14 @@ class Clustimage():
         else:
             feat = self.results['feat']
             logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
+
         # Fit model
         ce.fit(feat)
 
         # Store results and params
         logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
         self.results['labels'] = ce.results['labx']
-        self.params['cluster_space'] = max_clust
+        self.params['cluster_space'] = cluster_space
         self.params['metric_find'] = metric
         self.clusteval = ce
         self.params_clusteval = {}
@@ -386,6 +400,10 @@ class Clustimage():
         self.params_clusteval['linkage'] = linkage
         self.params_clusteval['min_clust'] = min_clust
         self.params_clusteval['max_clust'] = max_clust
+
+        # Find unique
+        self.unique()
+
         # Return
         return self.results['labels']
 
@@ -408,19 +426,30 @@ class Clustimage():
         # Check status
         self._check_status()
         if metric is None: metric=self.params_clusteval['metric']
-
+        pathnames, center_idx, center_coord = [], [], []
+        # Unique labels
         uilabels = np.unique(self.results['labels'])
+
         # Run over all cluster labels
         for label in uilabels:
-            Iloc = self.results['labels']==label
+            # Get cluster label
+            idx = np.where(self.results['labels']==label)[0]
+            # Compute center of cluster
+            self.results['feat'][idx,:].mean(axis=0)
+            xycoord_center = np.mean(self.results['xycoord'][idx,:], axis=0)
             # Compute distance across all samples
-            dist = distance.cdist(self.results['feat'][Iloc,:], self.results['feat'][Iloc,:], metric=metric)
-            # model = distfit()
-            # model.fit_transform(dist.flatten())
-            # model.plot()
-            dist.flatten().mean()
+            dist = distance.cdist(self.results['xycoord'], xycoord_center.reshape(-1,1).T, metric=metric)
+            # Take closest sample to the center
+            idx_closest = np.argmin(dist)
+            # Store
+            center_idx.append(idx_closest)
+            center_coord.append(xycoord_center)
+            pathnames.append(self.results['pathnames'][idx_closest])
 
-
+        # Store and return
+        self.results_unique = {'labels':uilabels, 'idx':center_idx, 'xycoord_center':np.vstack(center_coord), 'pathnames':pathnames}
+        return self.results_unique
+        
     def find(self, Xnew, metric=None, k=None, alpha=0.05):
         """Find images that are similar to that of the input image.
 
@@ -724,6 +753,7 @@ class Clustimage():
             logger.info('Cleaning previous fitted model results')
             if hasattr(self, 'results'): del self.results
             if hasattr(self, 'results_faces'): del self.results_faces
+            if hasattr(self, 'results_unique'): del self.results_unique
             if hasattr(self, 'distfit'): del self.distfit
             if hasattr(self, 'clusteval'): del self.clusteval
             if hasattr(self, 'pca'): del self.pca
@@ -920,6 +950,8 @@ class Clustimage():
             if alpha is not None:
                 dist_results = self.distfit.predict(Y[:,i], verbose=0)
                 idx_dist = np.where(dist_results['y_proba']<=alpha)[0]
+                # Sort on significance
+                idx_dist = idx_dist[np.argsort(dist_results['y_proba'][idx_dist])]
             else:
                 # If alpha is not used, set all to nan
                 dist_results={}
@@ -993,12 +1025,13 @@ class Clustimage():
         storedata = {}
         storedata['results'] = self.results
         storedata['results_faces'] = self.results_faces
-        storedata['distfit'] = self.distfit
-        storedata['clusteval'] = self.clusteval
-        storedata['pca'] = self.pca
+        storedata['results_unique'] = self.results_unique
         storedata['params'] = self.params
         storedata['params_pca'] = self.params_pca
         storedata['params_hog'] = self.params_hog
+        storedata['distfit'] = self.distfit
+        storedata['clusteval'] = self.clusteval
+        storedata['pca'] = self.pca
         # Save
         status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
         logger.info('Saving..')
@@ -1032,12 +1065,13 @@ class Clustimage():
         if storedata is not None:
             self.results = storedata['results']
             self.results_faces = storedata['results_faces']
-            self.distfit = storedata['distfit']
-            self.clusteval = storedata['clusteval']
-            self.pca = storedata['pca']
+            self.results_unique = storedata['results_unique']
             self.params = storedata['params']
             self.params_pca = storedata['params_pca']
             self.params_hog = storedata['params_hog']
+            self.distfit = storedata['distfit']
+            self.clusteval = storedata['clusteval']
+            self.pca = storedata['pca']
 
             logger.info('Load succesful!')
             # Return results
@@ -1139,13 +1173,23 @@ class Clustimage():
         self._check_status()
 
         if hasattr(self, 'clusteval'):
-            self.clusteval.plot()
             results = self.clusteval.dendrogram(max_d=max_d, figsize=figsize)
-            # if feat is None: feat=self.results['feat']
             # results = self.clusteval.dendrogram(X=feat, max_d=max_d, figsize=figsize)
-        return results
+        else:
+            logger.warning('This Plot requires running fit_transform() first.')
 
-    def scatter(self, dotsize=15, legend=False, figsize=(15,10)):
+        if max_d is not None:
+            return results
+    
+    def _add_img_to_scatter(self, ax, pathnames, xycoord, cmap=None, zoom=0.2):
+        # Plot the images on top of the scatterplot
+        if zoom is not None:
+            for i, pathname in enumerate(pathnames):
+                img = self.img_read_pipeline(pathname, dim=self.params['dim'], flatten=False, grayscale=self.params['cv2_imread_colorscale'])
+                imagebox = offsetbox.AnnotationBbox( offsetbox.OffsetImage(img, cmap=cmap, zoom=zoom), xycoord[i,:] )
+                ax.add_artist(imagebox)
+
+    def scatter(self, dotsize=15, legend=False, zoom=0.3, figsize=(15,10)):
         """Plot the samples using a scatterplot.
 
         Parameters
@@ -1165,31 +1209,54 @@ class Clustimage():
         # Check status
         self._check_status()
         # Set default settings
+        cmap = plt.cm.gray if self.params['grayscale'] else None
         labels = self.results.get('labels', None)
         if labels is None: labels=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
 
         # Make scatterplot
         colours=np.vstack(colourmap.fromlist(labels)[0])
-        title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.params['cluster_space']))
-        fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0])
+        title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
+        fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0], xlabel='x-axis', ylabel='y-axis')
+        if hasattr(self, 'results_unique'):
+            self._add_img_to_scatter(ax, cmap=cmap, zoom=zoom, pathnames=self.results_unique['pathnames'], xycoord=self.results_unique['xycoord_center'])
 
         # Scatter the predicted cases
-        if (self.results.get('predict', None) is not None) and (self.params['method']=='pca'):
-            # Scatter all points
-            fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize)
-            # Create unique colors
-            colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
-            for key in self.results['predict'].keys():
-                if self.results['predict'].get(key).get('y_idx', None) is not None:
-                    x,y = self.results['predict']['feat'].iloc[:,0:2].loc[key]
-                    idx = self.results['predict'][key]['y_idx']
-                    # Scatter
-                    ax.scatter(x, y, color=colours[key], edgecolors=[0,0,0])
-                    ax.text(x,y, key, color=colours[key])
-                    ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
-        elif (self.params['method']=='pca'):
-            _, ax = self.pca.plot(figsize=figsize)
-            _, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize)
+        if (self.results.get('predict', None) is not None):
+            if self.params['method']=='pca':
+                # Scatter all points
+                fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize)
+                # Create unique colors
+                colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
+                for key in self.results['predict'].keys():
+                    if self.results['predict'].get(key).get('y_idx', None) is not None:
+                        x,y = self.results['predict']['feat'].iloc[:,0:2].loc[key]
+                        idx = self.results['predict'][key]['y_idx']
+                        # Scatter
+                        ax.scatter(x, y, color=colours[key], edgecolors=[0,0,0])
+                        ax.text(x,y, key, color=colours[key])
+                        ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
+            else:
+                logger.info('Mapping predicted results is only possible when uing method="pca".')
+
+    def plot_unique(self, cmap=None, figsize=(15,10)):
+        if hasattr(self, 'results_unique') is not None:
+            cmap = _set_cmap(cmap, self.params['grayscale'])
+
+            imgs = []
+            txtlabels = []
+            # Collect all samples
+            for i, file in enumerate(self.results_unique['pathnames']):
+                # img = self.img_read_pipeline(file, dim=self.params['dim'])
+                img = self.img_read_pipeline(file, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
+                imgs.append(img)
+                txtlabels.append(('cluster %s' %(str(i))))
+                # plt.figure()
+                # plt.imshow(img.reshape(128,128,3))
+                # plt.title(self.results_unique['labels'][i])
+            # Make the plot
+            self._make_subplots(imgs, None, cmap, figsize, title='Unique images', labels=txtlabels)
+        else:
+            logger.warning('Plotting unique images is not possible. Hint: Try to run the unique() function first.')
 
     def plot_find(self, cmap=None, figsize=(15,10)):
         """Plot the input image together with the predicted images.
@@ -1208,11 +1275,10 @@ class Clustimage():
 
         """
         cmap = _set_cmap(cmap, self.params['grayscale'])
+
         # Plot the images that are similar to each other.
         if self.results.get('predict', None) is not None:
-
             for key in self.results['predict'].keys():
-
                 try: 
                     if (self.results['predict'].get(key).get('y_idx', None) is not None):
                         # Collect images
@@ -1225,11 +1291,17 @@ class Clustimage():
                         I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
                         # Predicted label
                         I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
-                        # Make the real plot
-                        title='Top or top-left image is input. The others are predicted.'
-                        # Show images into subplots
-                        imgs=I_input+I_find
-                        self._make_subplots(imgs, None, cmap, figsize, title)
+                        # Combine input image with the detected images
+                        imgs = I_input + I_find
+                        input_txt = basename(self.results['predict'][key]['x_path'][0])
+                        # Make the labels for the subplots
+                        if not np.isnan(self.results['predict'][key]['y_proba'][0]):
+                            labels = ['Input'] + list(map(lambda x: 'P={:.3g}'.format(x), self.results['predict'][key]['y_proba']))
+                        else:
+                            labels = ['Input'] + list(map(lambda x: 'k='+x, np.arange(1,len(I_find)+1).astype(str)))
+                        title = 'Find similar images for [%s].' %(input_txt)
+                        # Make the subplot
+                        self._make_subplots(imgs, None, cmap, figsize, title=title, labels=labels)
                         logger.info('[%d] similar images detected for input image: [%s]' %(len(find_img), key))
                 except:
                     pass
@@ -1270,47 +1342,51 @@ class Clustimage():
             # Run over all labels.
             for label in tqdm(uilabels, disable=disable_tqdm()):
                 idx = np.where(self.results['labels']==label)[0]
-                # Collect the images
-                getfiles = np.array(self.results['pathnames'])[idx]
-                # Get the images that cluster together
-                imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
-                # Make subplots
-                if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(getfiles)))), 2)
-                self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(label))))
-
-                # Make hog plots
-                if show_hog and (self.params['method']=='hog'):
-                    hog_images = self.results['feat'][idx,:]
-                    fig, axs = plt.subplots(len(imgs), 2, figsize=(15,10), sharex=True, sharey=True)
-                    ax = axs.ravel()
-                    fignum=0
-                    for i, img in enumerate(imgs):
-                        hog_image_rescaled = exposure.rescale_intensity(hog_images[i,:].reshape(self.params['dim']), in_range=(0,10))
-                        ax[fignum].imshow(img, cmap=cmap)
-                        ax[fignum].axis('off')
-                        ax[fignum+1].imshow(hog_image_rescaled, cmap=cmap)
-                        ax[fignum+1].axis('off')
-                        fignum=fignum+2
-
-                    _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
-                    plt.tight_layout()
-                    plt.show()
+                if len(idx)>0:
+                    # Collect the images
+                    getfiles = np.array(self.results['pathnames'])[idx]
+                    # Get the images that cluster together
+                    imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
+                    # Make subplots
+                    if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(getfiles)))), 2)
+                    self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(label))))
+    
+                    # Make hog plots
+                    if show_hog and (self.params['method']=='hog'):
+                        hog_images = self.results['feat'][idx,:]
+                        fig, axs = plt.subplots(len(imgs), 2, figsize=(15,10), sharex=True, sharey=True)
+                        ax = axs.ravel()
+                        fignum=0
+                        for i, img in enumerate(imgs):
+                            hog_image_rescaled = exposure.rescale_intensity(hog_images[i,:].reshape(self.params['dim']), in_range=(0,10))
+                            ax[fignum].imshow(img, cmap=cmap)
+                            ax[fignum].axis('off')
+                            ax[fignum+1].imshow(hog_image_rescaled, cmap=cmap)
+                            ax[fignum+1].axis('off')
+                            fignum=fignum+2
+    
+                        _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
+                        plt.tight_layout()
+                        plt.show()
+                else:
+                    logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
         else:
-            logger.warning('Plotting is not possible if path locations are unknown. Your input may have been a data-array. Try to set "store_to_disk=True" during initialization.')
+            logger.warning('Plotting is not possible. Path locations are unknown. Hint: try to set "store_to_disk=True" during initialization.')
 
-    def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
+    def _make_subplots(self, imgs, ncols, cmap, figsize, title='', labels=None):
         """Make subplots."""
         # Get appropriate dimension
         dim = self.params['dim'] if self.params['grayscale'] else np.append(self.params['dim'], 3)
         # Get appropriate ncols
         if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
-        
+
         # Setup rows and columns
         nrows = int(np.ceil(len(imgs)/ncols))
         fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
         for i, ax in enumerate(axs.ravel()):
             if i<len(imgs):
                 ax.imshow(imgs[i].reshape(dim), cmap=cmap)
+                if labels is not None: ax.set_title(labels[i])
             ax.axis("off")
         _ = fig.suptitle(title, fontsize=16)
         plt.pause(0.1)

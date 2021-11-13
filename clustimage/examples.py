@@ -3,7 +3,44 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 # 
+# Read image according the preprocessing steps
 
+
+# %%
+# Load library
+from clustimage import Clustimage
+
+# Init with default settings
+cl = Clustimage(method='hog')
+# load example with flowers
+pathnames = cl.import_example(data='flowers')
+# Detect cluster
+results = cl.fit_transform(pathnames, min_clust=7)
+
+uiimgs = cl.unique()
+cl.plot_unique()
+
+# Scatter
+cl.scatter(dotsize=50)
+# Plot clustered images
+cl.plot(labels=[2,3])
+# Plot dendrogram
+cl.dendrogram()
+
+# Make prediction
+results_find = cl.find(pathnames[0:5], k=10, alpha=0.05)
+cl.plot_find()
+
+cl.scatter()
+
+# Plot the explained variance
+cl.pca.plot()
+# Make scatter plot of PC1 vs PC2
+cl.pca.scatter(legend=False, label=True)
+# Plot the evaluation of the number of clusters
+cl.clusteval.plot()
+# Make silhouette plot
+cl.clusteval.scatter(cl.results['xycoord'])
 
 # %% Detect faces
 
@@ -14,18 +51,18 @@ cl = Clustimage(method='hog', grayscale=True)
 pathnames = cl.import_example(data='faces')
 # Detect faces
 face_results = cl.detect_faces(pathnames)
-# Cluster
+# Preproceesing, cluster detection
 results = cl.fit_transform(face_results['facepath'])
 
 
 out = cl.unique()
+cl.plot_unique()
 
 out = cl.find(face_results['facepath'][20], k=None, alpha=0.05, metric='euclidean')
 cl.plot_find()
 
 out = cl.find(face_results['facepath'][20], k=5, alpha=None, metric='euclidean')
 cl.plot_find()
-
 
 cl.plot_faces(eyes=False)
 
@@ -36,10 +73,11 @@ labels = results['labels']
 cl.dendrogram()
 # Scatter
 cl.scatter()
+cl.scatter(zoom=None)
 # Plot faces
 cl.plot_faces(eyes=False)
 # Make plot
-cl.plot(labels=4, show_hog=True)
+cl.plot(labels=17, show_hog=True)
 # Cleaning files
 cl.clean_files()
 
@@ -111,8 +149,12 @@ cl = Clustimage(method='pca', params_pca={'n_components':250, 'detect_outliers':
 results = cl.fit_transform('D://magweg//101_ObjectCategories//', min_clust=30, max_clust=60)
 # Cluster
 # cl.cluster(method='silhouette', min_clust=30, max_clust=60)
+
+uiimgs = cl.unique()
+cl.plot_unique()
+
 # Scatter
-cl.scatter(dotsize=10)
+cl.scatter(dotsize=10, zoom=0.2)
 # Plot the clustered images
 cl.plot(labels=10)
 # Plotting
