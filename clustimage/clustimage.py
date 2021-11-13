@@ -12,8 +12,9 @@ from distfit import distfit
 from clusteval import clusteval
 from scatterd import scatterd
 import pypickle as pypickle
-import pandas as pd
 import colourmap
+import pandas as pd
+import numpy as np
 from tqdm import tqdm
 from sklearn.manifold import TSNE
 import os
@@ -23,7 +24,6 @@ import fnmatch
 import zipfile
 import requests
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
 from scipy.spatial import distance
