@@ -34,10 +34,10 @@ Lets load the **digits** dataset and see how the different methods detects the o
 .. code:: python
 
     # Feature extraction and cluster evaluation
-    results = cl.fit_transform(X, method='silhouette', cluster='agglomerative')
+    results = cl.fit_transform(X, evaluate='silhouette', cluster='agglomerative')
 
     # Cluster differently using directly the extracted features.
-    # results = cl.cluster(, cluster='agglomerative', method='silhouette', cluster_space='low')
+    # results = cl.cluster(, cluster='agglomerative', evaluate='silhouette', cluster_space='low')
 
     # Scatter
     cl.scatter()

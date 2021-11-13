@@ -37,10 +37,10 @@ The silhouette can be calculated with any distance metric, such as the Euclidean
 .. code:: python
 
     # Feature extraction and cluster evaluation
-    results = cl.fit_transform(X, method='silhouette', cluster='agglomerative')
+    results = cl.fit_transform(X, evaluate='silhouette', cluster='agglomerative')
 
     # Cluster differently using directly the extracted features.
-    # results = cl.cluster(, cluster='agglomerative', method='silhouette', cluster_space='low')
+    # results = cl.cluster(, cluster='agglomerative', evaluate='silhouette', cluster_space='low')
 
     # Scatter
     cl.scatter()
@@ -129,7 +129,7 @@ This works especially good when having samples which contains clusters of simila
 .. code:: python
 
     # Feature extraction and cluster evaluation on the low-dimensional space
-    results = cl.fit_transform(X, method='silhouette', cluster='dbscan', cluster_space='low')
+    results = cl.fit_transform(X, evaluate='silhouette', cluster='dbscan', cluster_space='low')
     # Scatter
     cl.scatter()
     # Dendrogram with cluster evalution

@@ -25,7 +25,7 @@ The following peace of code clusters the **digit** images, compares the detected
 
     param_grid = {
     	'method':['pca', 'hog', None],
-    	'clust_method' : ['silhouette', 'dbindex', 'derivative'],
+    	'evaluate' : ['silhouette', 'dbindex', 'derivative'],
     	'cluster_space' : ['low', 'high'],
     	}
 
@@ -40,7 +40,7 @@ The following peace of code clusters the **digit** images, compares the detected
         cl = Clustimage(method=combination[0])
         
         # Preprocessing, feature extraction and cluster evaluation
-        results = cl.fit_transform(X, cluster_space=combination[2], method=combination[1])
+        results = cl.fit_transform(X, cluster_space=combination[2], evaluate=combination[1])
 
         # Compute confmat
         cm = clf.confmatrix.eval(y_true, results['labx'], normalize=False)

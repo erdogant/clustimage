@@ -22,7 +22,7 @@ Download the dataset over here: http://www.vision.caltech.edu/Image_Datasets/Cal
     # Preprocessing, feature extraction and cluster evaluation
     results = cl.fit_transform('C://101_ObjectCategories//', min_clust=30, max_clust=60)
     # Cluster without the preprocessing
-    # cl.cluster(method='silhouette', min_clust=30, max_clust=60)
+    # cl.cluster(evaluate='silhouette', min_clust=30, max_clust=60)
     # Scatter
     cl.scatter(dotsize=10)
     # Plot one of the clusters

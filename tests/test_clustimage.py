@@ -26,10 +26,10 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Iterate over all combinations
         for combination in combinations:
             # init
-            cl = Clustimage(method=combination[0], embedding=combination[1], cluster_space=combination[2], grayscale=combination[3], dim=combination[4], params_pca={'n_components':50, 'detect_outliers':None})
+            cl = Clustimage(method=combination[0], embedding=combination[1], grayscale=combination[3], dim=combination[4], params_pca={'n_components':50, 'detect_outliers':None})
             # Preprocessing and feature extraction
-            assert cl.fit_transform(combination[5])
-    
+            assert cl.fit_transform(combination[5], cluster_space=combination[2])
+
     def test_cluster(self):
         cl = Clustimage()
         X = cl.import_example(data='flowers')
@@ -41,7 +41,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         param_grid = {
         	'cluster_space':['high','low'],
         	'cluster':['agglomerative'],
-        	'method' : ['silhouette', 'dbindex'],
+        	'evaluate' : ['silhouette', 'dbindex'],
             'min_clust' : [2, 4, 6],
             'max_clust' : [10, 20, 30],
         	}
@@ -49,7 +49,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         allNames = param_grid.keys()
         combinations = list(it.product(*(param_grid[Name] for Name in allNames)))
         for combination in combinations:
-            labx = cl.cluster(cluster_space=combination[0], cluster=combination[1], method=combination[2], metric='euclidean', linkage='ward', min_clust=combination[3], max_clust=combination[4])
+            labx = cl.cluster(cluster_space=combination[0], cluster=combination[1], evaluate=combination[2], metric='euclidean', linkage='ward', min_clust=combination[3], max_clust=combination[4])
             assert len(labx)==len(X)
     
     def test_find(self):

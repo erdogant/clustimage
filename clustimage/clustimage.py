@@ -105,7 +105,7 @@ class Clustimage():
             Full path to images that are used in the model.
         filenames : list of str.
             Filename of the input images.
-        labx : list.
+        labels : list.
             Cluster labels
 
     Example
@@ -134,6 +134,8 @@ class Clustimage():
     """
     def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=False, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
+        # Clean readily fitted models to ensure correct results
+        self._clean()
 
         if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
         if dirpath is None: dirpath = tempfile.mkdtemp()
@@ -162,7 +164,7 @@ class Clustimage():
 
         set_logger(verbose=verbose)
 
-    def fit_transform(self, X, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
+    def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
         """Group samples into clusters that are similar in their feature space.
 
         Parameters
@@ -178,8 +180,8 @@ class Clustimage():
                 * 'kmeans'
                 * 'dbscan'
                 * 'hdbscan'
-        method : str, (default: 'silhouette')
-            Method type for cluster validation.
+        evaluate : str, (default: 'silhouette')
+            Cluster evaluation method.
                 * 'silhouette'
                 * 'dbindex'
                 * 'derivative'
@@ -187,7 +189,13 @@ class Clustimage():
             Distance measures. All metrics from sklearn can be used such as:
                 * 'euclidean'
                 * 'hamming'
-                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
+                * 'cityblock'
+                * 'correlation'
+                * 'cosine'
+                * 'jaccard'
+                * 'mahalanobis'
+                * 'seuclidean'
+                * 'sqeuclidean'
         linkage : str, (default: 'ward')
             Linkage type for the clustering.
                 * 'ward'
@@ -219,7 +227,7 @@ class Clustimage():
                 Full path to images that are used in the model.
             filenames : list of str.
                 Filename of the input images.
-            labx : list.
+            labels : list.
                 Cluster labels
 
         Example
@@ -265,16 +273,16 @@ class Clustimage():
         self.results['pathnames'] = raw['pathnames']
         self.results['filenames'] = raw['filenames']
         # Cluster
-        self.cluster(cluster=cluster, method=method, cluster_space=cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
+        self.cluster(cluster=cluster, evaluate=evaluate, cluster_space=cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
         # Return
         return self.results
 
-    def cluster(self, cluster='agglomerative', method='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25, cluster_space='high'):
+    def cluster(self, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25, cluster_space='high'):
         """Detection of the optimal number of clusters given the input set of features.
         
         Description
         -----------
-        This function is build on clusteval, which is a python package that provides various methods for unsupervised cluster validation.
+        This function is build on clusteval, which is a python package that provides various evalution methods for unsupervised cluster validation.
 
         Parameters
         ----------
@@ -288,8 +296,8 @@ class Clustimage():
                 * 'kmeans'
                 * 'dbscan'
                 * 'hdbscan'
-        method : str, (default: 'silhouette')
-            Method type for cluster validation.
+        evaluate : str, (default: 'silhouette')
+            Cluster evaluation method.
                 * 'silhouette'
                 * 'dbindex'
                 * 'derivative'
@@ -297,7 +305,13 @@ class Clustimage():
             Distance measures. All metrics from sklearn can be used such as:
                 * 'euclidean'
                 * 'hamming'
-                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
+                * 'cityblock'
+                * 'correlation'
+                * 'cosine'
+                * 'jaccard'
+                * 'mahalanobis'
+                * 'seuclidean'
+                * 'sqeuclidean'
         linkage : str, (default: 'ward')
             Linkage type for the clustering.
                 * 'ward'
@@ -317,7 +331,7 @@ class Clustimage():
         Returns
         -------
         array-like
-            .results['labx'] : Cluster labels.
+            .results['labels'] : Cluster labels.
             .clusteval : model parameters for cluster-evaluation and plotting.
 
         Example
@@ -333,8 +347,8 @@ class Clustimage():
         >>> # Scatter
         >>> cl.scatter(dotsize=25)
         >>>
-        >>> # Change the clustering method, metric, minimum expected nr. of clusters etc.
-        >>> labx = cl.cluster(cluster='agglomerative', method='dbindex', metric='euclidean', linkage='ward', min_clust=2, max_clust=25)
+        >>> # Change the clustering evaluation approach, metric, minimum expected nr. of clusters etc.
+        >>> labels = cl.cluster(cluster='agglomerative', evaluate='dbindex', metric='euclidean', linkage='ward', min_clust=2, max_clust=25)
         >>>
         >>> # Scatter
         >>> cl.scatter(dotsize=25)
@@ -348,7 +362,7 @@ class Clustimage():
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
         self.params['cluster_space'] = cluster_space
         # Init
-        ce = clusteval(cluster=cluster, method=method, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
+        ce = clusteval(cluster=cluster, method=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
         # Fit
         if cluster_space=='low':
             feat = self.results['xycoord']
@@ -358,33 +372,81 @@ class Clustimage():
             logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
         # Fit model
         ce.fit(feat)
-        # Store
-        logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
-        self.results['labx'] = ce.results['labx']
-        self.clusteval = ce
-        # Return
-        return ce.results['labx']
 
-    def find(self, X, metric='euclidean', k=1, alpha=0.05):
+        # Store results and params
+        logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
+        self.results['labels'] = ce.results['labx']
+        self.params['cluster_space'] = max_clust
+        self.params['metric_find'] = metric
+        self.clusteval = ce
+        self.params_clusteval = {}
+        self.params_clusteval['cluster'] = cluster
+        self.params_clusteval['evaluate'] = evaluate
+        self.params_clusteval['metric'] = metric
+        self.params_clusteval['linkage'] = linkage
+        self.params_clusteval['min_clust'] = min_clust
+        self.params_clusteval['max_clust'] = max_clust
+        # Return
+        return self.results['labels']
+
+    def _check_status(self):
+        if not hasattr(self, 'results'):
+            raise Exception(logger.error('Results in missing! Hint: try to first fit_transform() your data!'))
+
+    def unique(self, metric=None):
+        """Give the unique images back.
+
+        Description
+        -----------
+        Take per cluster the image that has the most similarities with others.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Check status
+        self._check_status()
+        if metric is None: metric=self.params_clusteval['metric']
+
+        uilabels = np.unique(self.results['labels'])
+        # Run over all cluster labels
+        for label in uilabels:
+            Iloc = self.results['labels']==label
+            # Compute distance across all samples
+            dist = distance.cdist(self.results['feat'][Iloc,:], self.results['feat'][Iloc,:], metric=metric)
+            # model = distfit()
+            # model.fit_transform(dist.flatten())
+            # model.plot()
+            dist.flatten().mean()
+
+
+    def find(self, Xnew, metric=None, k=None, alpha=0.05):
         """Find images that are similar to that of the input image.
 
         Description
         -----------
-        Computes K-nearest neighbour and P-values for pathnames [y] based on the fitted distribution from X.
+        Computes K-nearest neighbour and P-values for pathnames [y] based on the fitted distribution from X using the distance metric that is defined in the fit_transform() function.
         The empirical distribution of X is used to estimate the loc/scale/arg parameters for a theoretical distribution.
-        For each image, the probability is computed for input variables y, and returns the images that are <= alpha
-        If both k and alpha is specified, the union is taken.
+        For each image, the probability is computed for input variables y, and returns the images that are <= alpha. If both k and alpha is specified, the union is taken.
+        Note that the metric can be changed but this may lead to confusions as the results will not intuitively match the scatter plots. It is recommended to keep the metric in fit_transform() similar to that of here.
 
         Parameters
         ----------
         pathnames : list of str.
             Full path to images that are used in the model.
-        metric : str, (default: 'euclidean').
+        metric : str, (default: the input of fit_transform()).
             Distance measures. All metrics from sklearn can be used such as:
                 * 'euclidean'
                 * 'hamming'
-                * 'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon', 'kulsinski', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule'
-        k : int, (default: 1)
+                * 'cityblock'
+                * 'correlation'
+                * 'cosine'
+                * 'jaccard'
+                * 'mahalanobis'
+                * 'seuclidean'
+                * 'sqeuclidean'
+        k : int, (default: None)
             The k-nearest neighbour.
         alpha : float, default: 0.05
             Significance alpha.
@@ -395,26 +457,22 @@ class Clustimage():
             Images are returned that are either k-nearest neighbour or significant.
 
         """
+        out = None
         if (k is None) and (alpha is None):
             raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
-        out = None
+        if metric is None: metric=self.params_clusteval['metric']
+        logger.info('Find similar images with metric [%s], k-nearest neighbors: %s and under alpha: %s ' %(metric, str(k), str(alpha)))
 
         # Check whether in is dir, list of files or array-like
-        X = self._import_data(X)
-
-        # Read images and preprocessing. This is indepdent on the method type but should be in similar manner.
-        # X = self.preprocessing(pathnames, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
-
-        # Predict according PCA method
-        if self.params['method']=='pca':
-            Y, feat = self._compute_distances_pca(X, metric=metric, alpha=alpha)
-            out = self._collect_pca(X, Y, k, alpha, feat, todf=True)
-        else:
-            logger.warning('Nothing to Find. Prediction requires initialization with method="pca".')
+        Xnew = self._import_data(Xnew)
+        # Compute distance
+        Y, feat = self._compute_distances(Xnew, metric=metric, alpha=alpha)
+        # Collect the samples
+        out = self._collect_pca(Xnew, Y, k, alpha, feat, todf=True)
 
         # Store
         self.results['predict'] = out
-        # Return
+        self.params['metric_find'] = metric
         return self.results['predict']
 
     def detect_faces(self, pathnames):
@@ -476,11 +534,16 @@ class Clustimage():
         if (not self.params['grayscale']): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
 
         # Read and pre-proces the input images
-        logger.info("Read images>")
+        X = self._import_data(pathnames, imread=False)
         # Create empty list
         faces = {'img':[], 'pathnames':[], 'filenames':[], 'facepath':[], 'coord_faces':[], 'coord_eyes':[]}
+        
+        # Set logger to warning-error only
+        verbose = logger.getEffectiveLevel()
+        set_logger(verbose=30)
+
         # Extract faces and eyes from image
-        for pathname in pathnames:
+        for pathname in tqdm(X['pathnames'], disable=disable_tqdm()):
             # Extract faces
             facepath, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self._extract_faces(pathname)
             # Store
@@ -491,11 +554,13 @@ class Clustimage():
             faces['coord_faces'].append(coord_faces)
             faces['coord_eyes'].append(coord_eyes)
 
+        # Restore verbose status
+        set_logger(verbose=verbose)
         # Return
         self.results_faces = faces
         return faces
 
-    def preprocessing(self, pathnames, grayscale, dim, flatten=True):
+    def preprocessing(self, pathnames, grayscale, dim, imread=True, flatten=True):
         """Pre-processing the input images and returning consistent output.
 
         Parameters
@@ -523,8 +588,9 @@ class Clustimage():
             pathnames=[pathnames]
         if isinstance(pathnames, list):
             filenames = list(map(basename, pathnames))
-            img = list(map(lambda x: self.img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames)))
-            if flatten: img = np.vstack(img)
+            if imread:
+                img = list(map(lambda x: self.img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
+                if flatten: img = np.vstack(img)
 
         out = {}
         out['img'] = img
@@ -546,20 +612,16 @@ class Clustimage():
             NxF array for which N are the samples and F the reduced feature space.
 
         """
-        # If only a single image, make 2D-array
-        ToSingle=False
+        # If 1D-vector, make 2D-array
         if len(X.shape)==1:
-            X=np.c_[X, X].T
-            ToSingle=True
+            X = X.reshape(-1,1).T
 
         # Set dim correctly for reshaping image
         dim = _check_dim(X, self.params['dim'], grayscale=self.params['grayscale'])
         # Extract hog features per image
-        feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X)))
+        feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X, disable=disable_tqdm())))
         # Stack all hog features into one array and return
         feat = np.vstack(feat)
-        # Back to single image if that was the input
-        if ToSingle: feat=feat[0,:]
         # Return
         return feat
 
@@ -588,7 +650,7 @@ class Clustimage():
         # Return
         return self.pca.results['PC'].values
 
-    def _import_data(self, Xraw):
+    def _import_data(self, Xraw, imread=True, flatten=True):
         """Import images and return in an consistent manner.
 
         Description
@@ -637,7 +699,7 @@ class Clustimage():
             # Make sure that list in lists are flattend
             Xraw = list(np.hstack(Xraw))
             # Read images and preprocessing
-            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
+            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
 
         # 3. If input is array-like. Make sure X becomes compatible.
         if isinstance(Xraw, np.ndarray):
@@ -682,9 +744,7 @@ class Clustimage():
         # Embedding using tSNE
         if self.params['embedding']=='tsne':
             logger.info('Computing embedding using %s..', self.params['embedding'])
-            init='random'
-            # if self.params['method'] is None: init='pca'
-            xycoord = TSNE(n_components=2, learning_rate='auto', init=init).fit_transform(X)
+            xycoord = TSNE(n_components=2, learning_rate='auto', init='random').fit_transform(X)
         else:
             xycoord = X[:,0:2]
         # Return
@@ -725,7 +785,7 @@ class Clustimage():
         logger.info("Extracted features using [%s]: %s" %(self.params['method'], str(X.shape)))
         return Xraw, X
 
-    def _compute_distances_pca(self, X, metric, alpha):
+    def _compute_distances(self, X, metric, alpha):
         """Compute distances and probabilities for new unseen samples.
         
         Description
@@ -738,36 +798,54 @@ class Clustimage():
             NxM array for which N are the samples and M the features.
         metric : str, (default: 'euclidean').
             Distance measures. All metrics from sklearn can be used such as:
-                * 'cityblock', 'correlation', 'cosine', 'euclidean', 'hamming', 'jaccard', etc
+                * 'euclidean'
+                * 'hamming'
+                * 'cityblock'
+                * 'correlation'
+                * 'cosine'
+                * 'jaccard'
+                * 'mahalanobis'
+                * 'seuclidean'
+                * 'sqeuclidean'
         alpha : float, default: 0.05
             Significance alpha.
 
         """
-        # Transform new unseen datapoint into feature space
-        PCnew = self.pca.transform(X['img'], row_labels=X['filenames'])
+        if self.params['method']=='pca':
+            # Transform new unseen datapoint into feature space
+            Xmapped = self.pca.transform(X['img'], row_labels=X['filenames'])
+        else:
+            # Extract Features
+            _, Xmapped = self._extract_feat(X)
 
-        # Compute distance to all samples
-        Y = distance.cdist(self.results['feat'], PCnew, metric=metric)
-        Ytot = distance.cdist(self.results['feat'], self.results['feat'], metric=metric)
+        # Compute distance from input sample to all other samples
+        Y = distance.cdist(self.results['feat'], Xmapped, metric=metric)
+
+        # Sanity check
+        if np.any(np.isnan(Y)):
+            logger.warning('The metric [%s] results in NaN! Please change metric for appropriate results!', metric)
 
         # Fit distribution to emperical data and compute probability of the distances of interest
-        if (alpha is not None) and (not hasattr(self, 'distfit')):
+        if (alpha is not None) and ( (not hasattr(self,'distfit')) or (self.params['metric_find'] != metric) ):
+            # Compute distance across all samples
+            Ytot = distance.cdist(self.results['feat'], self.results['feat'], metric=metric)
             # Take a subset of samples to prevent high computation times.
             x_max, y_max = np.minimum(500, Ytot.shape[0]), np.minimum(500, Ytot.shape[1])
             xrow, yrow = random.sample(range(1, x_max), x_max-1), random.sample(range(1, y_max), y_max-1)
-            # Init distfit
-            self.distfit = distfit(bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'])
             Ytot = Ytot[xrow, :]
             Ytot = Ytot[:, yrow]
+            # Init distfit
+            self.distfit = distfit(bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'])
+            # Fit theoretical distribution
             _ = self.distfit.fit_transform(Ytot)
-            # dist.plot()
+            # self.distfit.plot()
         else:
             logger.info('Loading pre-fitted theoretical model..')
 
         # Sanity check
         if len(X['filenames'])!=Y.shape[1]: raise Exception(logger.error('Number of input files does not match number of computed distances.'))
         # Return
-        return Y, PCnew
+        return Y, Xmapped
 
     def _extract_faces(self, pathname):
         """Extract the faces from the image.
@@ -833,7 +911,6 @@ class Clustimage():
 
         # Collect nearest neighor and sample with highes probability per input sample
         for i, filename in enumerate(filenames):
-            logger.info('Find: %s', filename)
             store_key = {}
             idx_dist, idx_k = None, None
             # Collect bes samples based on k-nearest neighbor
@@ -850,9 +927,9 @@ class Clustimage():
 
             # Combine the unique k-nearest samples and probabilities.
             idx = unique_no_sort(np.append(idx_dist, idx_k))
-
             # Store in dict
-            store_key = {**store_key, 'x_path': X['pathnames'][i], 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'y_label': np.array(self.results['filenames'])[idx].tolist(), 'y_path': np.array(self.results['pathnames'])[idx].tolist()}
+            logger.info('[%d] similar images found for [%s]' %(len(idx), filename))
+            store_key = {**store_key, 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'y_label': np.array(self.results['filenames'])[idx].tolist(), 'y_path': np.array(self.results['pathnames'])[idx].tolist(), 'x_path': X['pathnames'][i]}
             if todf: store_key = pd.DataFrame(store_key)
             out[filename] = store_key
 
@@ -992,10 +1069,13 @@ class Clustimage():
 
         """
         cmap = _set_cmap(cmap, self.params['grayscale'])
+        # Set logger to warning-error only
+        verbose = logger.getEffectiveLevel()
+        set_logger(verbose=30)
 
         # Walk over all detected faces
         if hasattr(self, 'results_faces'):
-            for i, pathname in enumerate(self.results_faces['pathnames']):
+            for i, pathname in tqdm(enumerate(self.results_faces['pathnames']), disable=disable_tqdm()):
                 # Import image
                 img = self.preprocessing(pathname, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['img'][0].copy()
 
@@ -1028,8 +1108,13 @@ class Clustimage():
                                     plt.imshow(face)
                         else:
                             logger.warning('File is removed: %s', facepath)
+
+                # Pause to plot to screen
+                plt.pause(0.1)
         else:
             logger.warning('Nothing to plot. First detect faces with ".detect_faces(pathnames)"')
+        
+        set_logger(verbose=verbose)
 
     def dendrogram(self, max_d=None, figsize=(15,10)):
         """Plot Dendrogram.
@@ -1051,6 +1136,8 @@ class Clustimage():
         None.
 
         """
+        self._check_status()
+
         if hasattr(self, 'clusteval'):
             self.clusteval.plot()
             results = self.clusteval.dendrogram(max_d=max_d, figsize=figsize)
@@ -1075,32 +1162,21 @@ class Clustimage():
         None.
 
         """
+        # Check status
+        self._check_status()
         # Set default settings
-        labx = self.results.get('labx', None)
-        if labx is None: labx=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
+        labels = self.results.get('labels', None)
+        if labels is None: labels=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
 
-        # Scatter cluster evaluation
-        if hasattr(self, 'clusteval'):
-            if self.params['cluster_space']=='low':
-                xycoord = self.results['xycoord']
-            else:
-                xycoord = self.results['feat']
-            # Scatter
-            self.clusteval.scatter(xycoord)
-
-        if self.params['embedding']=='tsne':
-            colours=np.vstack(colourmap.fromlist(labx)[0])
-            title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.params['cluster_space']))
-            fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labx, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0])
-
-        # Scatter all points
-        if self.params['method']=='pca':
-            _, ax = self.pca.plot(figsize=figsize)
-            _, ax = self.pca.scatter(y=labx, legend=legend, label=False, figsize=figsize)
+        # Make scatterplot
+        colours=np.vstack(colourmap.fromlist(labels)[0])
+        title = ('tSNE plot for which the samples are coloured on the cluster-labels of the the [%s] feature space.' %(self.params['cluster_space']))
+        fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0])
 
         # Scatter the predicted cases
-        if self.results.get('predict', None) is not None:
-            fig, ax = self.pca.scatter(y=labx, legend=legend, label=False, figsize=figsize)
+        if (self.results.get('predict', None) is not None) and (self.params['method']=='pca'):
+            # Scatter all points
+            fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize)
             # Create unique colors
             colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
             for key in self.results['predict'].keys():
@@ -1111,6 +1187,9 @@ class Clustimage():
                     ax.scatter(x, y, color=colours[key], edgecolors=[0,0,0])
                     ax.text(x,y, key, color=colours[key])
                     ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
+        elif (self.params['method']=='pca'):
+            _, ax = self.pca.plot(figsize=figsize)
+            _, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize)
 
     def plot_find(self, cmap=None, figsize=(15,10)):
         """Plot the input image together with the predicted images.
@@ -1131,33 +1210,38 @@ class Clustimage():
         cmap = _set_cmap(cmap, self.params['grayscale'])
         # Plot the images that are similar to each other.
         if self.results.get('predict', None) is not None:
+
             for key in self.results['predict'].keys():
 
-                if self.results['predict'].get(key).get('y_idx', None) is not None:
-                    logger.info('Plotting results for [%s]', key)
-                    # Collect images
-                    input_img = self.results['predict'][key]['x_path']
-                    find_img = self.results['predict'][key]['y_path']
-                    # Input label
-                    if isinstance(input_img, str): input_img=[input_img]
-                    # Input images
-                    I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
-                    # Predicted label
-                    I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
-                    # Make the real plot
-                    title='Top or top-left image is input. The others are predicted.'
-                    # Show images into subplots
-                    imgs=I_input+I_find
-                    self._make_subplots(imgs, None, cmap, figsize, title)
+                try: 
+                    if (self.results['predict'].get(key).get('y_idx', None) is not None):
+                        # Collect images
+                        input_img = self.results['predict'][key]['x_path'][0]
+                        find_img = self.results['predict'][key]['y_path']
+                        # Input label
+                        if isinstance(input_img, str): input_img=[input_img]
+                        if isinstance(find_img, str): find_img=[find_img]
+                        # Input images
+                        I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
+                        # Predicted label
+                        I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
+                        # Make the real plot
+                        title='Top or top-left image is input. The others are predicted.'
+                        # Show images into subplots
+                        imgs=I_input+I_find
+                        self._make_subplots(imgs, None, cmap, figsize, title)
+                        logger.info('[%d] similar images detected for input image: [%s]' %(len(find_img), key))
+                except:
+                    pass
 
-    def plot(self, labx=None, ncols=10, cmap=None, show_hog=False, figsize=(15,10)):
+    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, figsize=(15,10)):
         """Plot the results.
 
         Parameters
         ----------
-        labx : int, (default: None)
+        labels : list, (default: None)
             Cluster label to plot. In case of None, all cluster labels are plotted.
-        ncols : int, (default: 10)
+        ncols : int, (default: None)
             Number of columns to use in the subplot. The number of rows are estimated based on the columns.
         Colorscheme for the images.
             'gray', 'binary',  None (uses rgb colorscheme)
@@ -1171,35 +1255,42 @@ class Clustimage():
         None.
 
         """
-        # Set cmap
+        # Do some checks and set defaults
+        self._check_status()
         cmap = _set_cmap(cmap, self.params['grayscale'])
+
         # Plot the clustered images
-        if (self.results.get('labx', None) is not None) and (self.results.get('pathnames', None) is not None):
-            if labx is None:
-                uilabx = np.unique(self.results['labx'])
-            else:
-                uilabx = [labx]
-            
+        if (self.results.get('labels', None) is not None) and (self.results.get('pathnames', None) is not None):
+            # Gather labels
+            if labels is None: labels = self.results['labels']
+            if not isinstance(labels, list): labels = [labels]
+            # Unique labels
+            uilabels = np.unique(labels)
+
             # Run over all labels.
-            for labx in tqdm(uilabx):
-                idx = np.where(self.results['labx']==labx)[0]
+            for label in tqdm(uilabels, disable=disable_tqdm()):
+                idx = np.where(self.results['labels']==label)[0]
                 # Collect the images
                 getfiles = np.array(self.results['pathnames'])[idx]
                 # Get the images that cluster together
                 imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
                 # Make subplots
-                self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(labx))))
+                if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(getfiles)))), 2)
+                self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(label))))
 
                 # Make hog plots
                 if show_hog and (self.params['method']=='hog'):
                     hog_images = self.results['feat'][idx,:]
                     fig, axs = plt.subplots(len(imgs), 2, figsize=(15,10), sharex=True, sharey=True)
-                    for i, ax in enumerate(axs):
+                    ax = axs.ravel()
+                    fignum=0
+                    for i, img in enumerate(imgs):
                         hog_image_rescaled = exposure.rescale_intensity(hog_images[i,:].reshape(self.params['dim']), in_range=(0,10))
-                        ax[0].imshow(imgs[i], cmap=plt.cm.gray)
-                        ax[0].axis('off')
-                        ax[1].imshow(hog_image_rescaled, cmap=plt.cm.gray)
-                        ax[1].axis('off')
+                        ax[fignum].imshow(img, cmap=cmap)
+                        ax[fignum].axis('off')
+                        ax[fignum+1].imshow(hog_image_rescaled, cmap=cmap)
+                        ax[fignum+1].axis('off')
+                        fignum=fignum+2
 
                     _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
                     plt.tight_layout()
@@ -1209,14 +1300,10 @@ class Clustimage():
 
     def _make_subplots(self, imgs, ncols, cmap, figsize, title=''):
         """Make subplots."""
-
+        # Get appropriate dimension
         dim = self.params['dim'] if self.params['grayscale'] else np.append(self.params['dim'], 3)
-
-        if ncols is None:
-            ncols = 5
-            if len(imgs)>25: ncols=10
-            if len(imgs)>=100: ncols=15
-            if len(imgs)>=150: ncols=20
+        # Get appropriate ncols
+        if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
         
         # Setup rows and columns
         nrows = int(np.ceil(len(imgs)/ncols))
@@ -1245,6 +1332,8 @@ class Clustimage():
             if os.path.isdir(dirpath):
                 logger.info('Removing directory with all content: %s', dirpath)
                 shutil.rmtree(dirpath)
+                self.results['pathnames'] = None
+                self.results['filenames'] = None
         else:
             logger.info('Nothing to clean.')
 
@@ -1329,7 +1418,7 @@ def store_to_disk(Xraw, dim, tempdir):
     # Store images to disk
     pathnames, filenames = [], []
     logger.info('Writing images to tempdir [%s]', tempdir)
-    for i in tqdm(np.arange(0, Xraw.shape[0])):
+    for i in tqdm(np.arange(0, Xraw.shape[0]), disable=disable_tqdm()):
         filename = str(uuid.uuid4())+'.png'
         pathname = os.path.join(tempdir, filename)
         # Write to disk
@@ -1434,6 +1523,12 @@ def img_read(filepath, grayscale=1):
 def set_logger(verbose=20):
     """Set the logger for verbosity messages."""
     logger.setLevel(verbose)
+
+
+# %%
+def disable_tqdm():
+    """Set the logger for verbosity messages."""
+    return (True if (logger.getEffectiveLevel()>=30) else False)
 
 
 # %% Import example dataset from github.

@@ -35,7 +35,7 @@ Example
 >>> # Plot dendrogram
 >>> cl.dendrogram()
 >>> # Scatter
->>> cl.scatter(dot_size=50)
+>>> cl.scatter(dotsize=50)
 >>> # Plot clustered images
 >>> cl.plot()
 >>>
