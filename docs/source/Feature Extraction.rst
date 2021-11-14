@@ -41,7 +41,7 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
     # Load example data
     path_to_imgs = cl.import_example(data='flowers')
     # Read image according the preprocessing steps
-    img = cl.img_read_pipeline(path_to_imgs[0], dim=cl.dim)
+    img = cl.imread(imread[0], dim=cl.dim)
     # Extract HOG features
     img_hog = cl.extract_hog(img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1,1))
 

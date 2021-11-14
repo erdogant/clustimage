@@ -26,13 +26,14 @@ Besides clustering of images, the ``clustimage`` model can also be used to find 
 The input for the model can be a NxM array for which each rows is a flattened rgb/gray image, or it can be a target directory or the full path to a list of images.
 More advantages of ``clustimage`` is:
 
+    * It can group any set of images on similarity.
+    * It can determine the unique() images.
+    * it can find similar images given an input image.
+    * It is build on core statistics, such as PCA, HOG for feature extraction, and therefore it does not has a dependency block.
     * It does not require a learning proces.
-    * It can group any set of images.
-    * It can return only the unique() images.
-    * it can find highly similar images given an input image.
-    * It provided many plots to improve understanding of the feature-space and sample-sample relationships
-    * It is build on core statistics, such as PCA, HOG and many more, and therefore it does not has a dependency block.
     * It works out of the box.
+    * It provides explainable results.
+    * It provided many plots to improve understanding of the feature-space and sample-sample relationships.
     
 
 Schematic overview

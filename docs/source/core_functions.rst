@@ -2,10 +2,13 @@
 
 -------------------------------------
 
+This section will describe the core functionalities that in ``clustimage``.
+Many of the functionalities are written in a generic manner to make sure that it can be used in various applications.
+
 Preprocessing
 ''''''''''''''''
 
-The functions that handle the preprocessing of images is concentrated into the function :func:`clustimage.clustimage.Clustimage.img_read_pipeline`.
+The functions that handle the preprocessing of images is concentrated into the function :func:`clustimage.clustimage.Clustimage.imread`.
 This function reads the full path to the image that needs to be imported, and is subsequently colour-scaled (gray/rgb), scaled and resized.
 
 The pre-processing has 4 steps and are exectued in this order.
@@ -22,7 +25,7 @@ The pre-processing has 4 steps and are exectued in this order.
     # Load example dataset
     path_to_imgs = cl.import_example(data='flowers')
     # Run specific function to read preproces the images
-    img = cl.img_read_pipeline(path_to_imgs[0], dim=(128,128))
+    img = cl.imread(path_to_imgs[0], dim=(128,128))
     # Plot the flower after preprocessing    
     plt.figure()
     plt.imshow(img.reshape(128,128,3))
@@ -39,7 +42,7 @@ The pre-processing has 4 steps and are exectued in this order.
    | |figP1|  | |figP2|  | 
    +----------+----------+
 
-   
+
    
 Colorscale
 ''''''''''''
@@ -48,7 +51,7 @@ The *img_read* function :func:`clustimage.clustimage.img_read` reads the images 
 This function depends on functionalities from ``python-opencv`` and uses the ``cv2.COLOR_GRAY2RGB`` setting.
 
 
-Scale
+imscale
 ''''''''''''
 
 The *scale* function :func:`clustimage.clustimage.img_scale` is only applicable for 2D-arrays (images).
@@ -59,11 +62,61 @@ The images are scaled between [0-255] by the following equation:
     Ximg * (255 / max(Ximg) )
 
 
-Resize
+imresize
 ''''''''''''
 
 The resize function :func:`clustimage.clustimage.img_resize` resizes the images into 128x128 pixels (default) or an user-defined size.
 The function depends on the functionality of ``python-opencv`` with the interpolation: ``interpolation=cv2.INTER_AREA``.
 
 
-   
+wget
+''''''''''''
+Get url internetstuff
+
+
+unzip
+''''''''''''
+unzipping
+
+
+listdir
+''''''''''''
+list directories
+
+
+set_logger
+''''''''''''
+Change status of the logger
+
+clean_files
+''''''''''''
+Cleaining files
+
+extract_hog
+''''''''''''
+hog extract
+
+extract_pca
+''''''''''''
+pca extract
+
+
+detect_faces
+''''''''''''
+Detection of faces
+
+
+
+After fit_transform:
+
+cluster
+''''''''''''
+Clustering of images
+
+find
+''''''''''''
+Find images
+
+unique
+''''''''''''
+Unique images

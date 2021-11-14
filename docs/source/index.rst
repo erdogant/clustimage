@@ -1,9 +1,9 @@
 clustimage's documentation!
 ============================
 
-``clustimage`` Python package clustimage is for unsupervised clustering of images.
-Most of the packages regarding imaging rely on (deep) neural networks, and try solve the problem of predicting "whats on the image".
-However, not all challanges are supervised, and it can be quit a breath to carefully group similar images in an unsupervised manner, or simply extract the unique images out of a huge set of images.
+The aim of ``clustimage`` is to detect natural groups or clusters of images.
+Many computer vision tasks rely on (deep) neural networks, and aim to solve the problem of predicting "whats on the image".
+However, not all tasks require supervised approaches, and it can be quit a breath to carefully group similar images in an unsupervised manner, or simply extract the unique images out of a huge set of images.
 ``clustimage`` is a generic approach for unsupervised images clustering and overcomes the following challenges: 
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.
@@ -29,9 +29,9 @@ Content
 
 .. toctree::
   :maxdepth: 1
-  :caption: Pre-processing
+  :caption: Core functionalities
 
-  Pre-processing
+  core_functions
 
 .. toctree::
   :maxdepth: 1
