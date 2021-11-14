@@ -25,6 +25,13 @@ The optimal number of clusters can be determined using well known methods suchs 
 With ``clustimage`` we aim to determine the most robust clustering by efficiently searching across the parameter and evaluation the clusters.
 Besides clustering of images, the ``clustimage`` model can also be used to find the most similar images for a new unseen sample.
 
+A schematic overview is as following:
+
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/schematic_overview.png" width="600" />
+</p>
+
+
 ``clustimage`` overcomess the following challenges: 
 
     * 1. Robustly groups similar images.
