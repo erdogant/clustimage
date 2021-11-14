@@ -117,20 +117,32 @@
   <hr class="docutils" id="code-directive" />
 <section id="abstract">
 <h1>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h1>
-<p>Background</p>
+<p><strong>Background</strong></p>
 <p>Image recognition is a computer vision task for identifying and verifying objects/persons on a photograph.
 We can seperate the image recognition task into the two broad tasks, namely the supervised and unsupervised task.
 In case of the supervised task, we have to classify an image into a fixed number of learned categories.
 In case of the unsupervised task, we do not depend on the fact that training data is required but we can interpret the input data and find natural groups or clusters.</p>
-<p>Aim</p>
-<p>The aim of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clustering across the the high-dimensional feature space.
-The optimal number of clusters can be determined using the three well known methods; silhouette, dbindex, and derivatives in combination with four clustering methods; agglomerative, kmeans, dbscan and hdbscan.
+<p><strong>Aim</strong></p>
+<p>The aim of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clusters across the feature space.
+The optimal number of clusters can be determined using well known methods suchs as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 With <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> we aim to determine the most robust clustering by efficiently searching across the parameter and evaluation the clusters.
-Besides clustering of images, the final optimized model can also be used to predict the most similar image for a new unseen samples.</p>
-<p>Results</p>
+Besides clustering of images, the <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> model can also be used to find the most similar images for a new unseen sample.</p>
+<p><strong>Results</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is Python package for unsupervised clustering of images after carefully pre-processing the images, extracting the features, and evaluating the optimal number of clustering in the high-dimensional feature space.
-<code class="docutils literal notranslate"><span class="pre">clustimage</span></code> does not depend on complex pre-trained neural networks with many package-dependencies but simply extract features using Principal component analysis (PCA), and/or Histogram of Oriented Gradients (HOG).
-The input for the model can be a NxM array for which each rows is a flattened rgb/gray image, or it can be a target directory or the full path to a list of images.</p>
+<code class="docutils literal notranslate"><span class="pre">clustimage</span></code> does not depend on pre-trained neural networks that require many package-dependencies but is build on core statistics, such as Principal component analysis (PCA), and/or Histogram of Oriented Gradients (HOG).
+The input for the model can be a NxM array for which each rows is a flattened rgb/gray image, or it can be a target directory or the full path to a list of images.
+More advantages of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>It does not require a learning proces.</p></li>
+<li><p>It can group any set of images.</p></li>
+<li><p>It can return only the unique() images.</p></li>
+<li><p>it can find highly similar images given an input image.</p></li>
+<li><p>It provided many plots to improve understanding of the feature-space and sample-sample relationships</p></li>
+<li><p>It is build on core statistics, such as PCA, HOG and many more, and therefore it does not has a dependency block.</p></li>
+<li><p>It works out of the box.</p></li>
+</ul>
+</div></blockquote>
 </section>
 <section id="schematic-overview">
 <h1>Schematic overview<a class="headerlink" href="#schematic-overview" title="Permalink to this headline"></a></h1>
