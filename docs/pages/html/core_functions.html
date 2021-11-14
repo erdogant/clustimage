@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Preprocessing &mdash; clustimage clustimage documentation</title>
+  <title>Core functionalities &mdash; clustimage clustimage documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -50,13 +50,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core functionalities</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#colorscale">Colorscale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imscale">imscale</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imresize">imresize</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#core-functionalities">Core functionalities</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Core functionalities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#fit-and-transform">Fit and transform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#detect-faces">detect_faces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cluster">cluster</a></li>
@@ -64,14 +58,17 @@
 <li class="toctree-l2"><a class="reference internal" href="#unique">unique</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#generic">Generic</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#preprocessing">Preprocessing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#imscale">imscale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imresize">imresize</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#generic-functionalities">Generic functionalities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#wget">wget</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#unzip">unzip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#listdir">listdir</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#set-logger">set_logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#clean-files">clean_files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extract-hog">extract_hog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#extract-pca">extract_pca</a></li>
 </ul>
 </li>
 </ul>
@@ -79,7 +76,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html">PCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#hog">HOG</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#tsne">tSNE</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
@@ -124,7 +120,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Preprocessing</li>
+      <li>Core functionalities</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/core_functions.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -135,41 +131,104 @@
            <div itemprop="articleBody">
              
   <hr class="docutils" id="code-directive" />
-<p>This section will describe the core functionalities that in <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>.
-Many of the functionalities are written in a generic manner to make sure that it can be used in various applications.</p>
+<p>This section describes the core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>.
+Many of the functionalities are written in a generic manner which allows to be used in various applications.</p>
+<section id="core-functionalities">
+<h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this headline"></a></h1>
+<p>The are 5 core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> that allows to preprocess the input images, robustly determines the optimal number of clusters, and then optimize the clusters if desired.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>fit_transform</p></li>
+<li><p>detect_faces</p></li>
+<li><p>cluster</p></li>
+<li><p>find</p></li>
+<li><p>unique</p></li>
+</ul>
+</div></blockquote>
+<section id="fit-and-transform">
+<h2>Fit and transform<a class="headerlink" href="#fit-and-transform" title="Permalink to this headline"></a></h2>
+<p>The <em>fit_transform</em> function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
+The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
+Based on the clustering results, the unique images are also gathered.</p>
+<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a></p>
+</section>
+<section id="detect-faces">
+<h2>detect_faces<a class="headerlink" href="#detect-faces" title="Permalink to this headline"></a></h2>
+<p>To cluster faces on images, we first need to detect, and extract the faces from the images.
+The <em>detect_faces</em> function does this task.
+Faces and eyes are detected using <code class="docutils literal notranslate"><span class="pre">haarcascade_frontalface_default.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">haarcascade_eye.xml</span></code> in <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code>.</p>
+<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.detect_faces" title="clustimage.clustimage.Clustimage.detect_faces"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.detect_faces()</span></code></a></p>
+</section>
+<section id="cluster">
+<h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h2>
+<p>The <em>cluster</em> function is build on <code class="docutils literal notranslate"><span class="pre">clusteval</span></code>, which is a python package that provides various evalution methods for unsupervised cluster validation.
+The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
+This function can be run after the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
+Besides changing evaluation methods and metrics, it is also possible to cluster on the low-embedded feature space. This can be done setting the parameter <code class="docutils literal notranslate"><span class="pre">cluster_space='low'</span></code>.</p>
+<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a></p>
+</section>
+<section id="find">
+<h2>find<a class="headerlink" href="#find" title="Permalink to this headline"></a></h2>
+<p>The <em>find</em> function is to detect images that are similar to that of the input image.
+Finding images can be used in two manners:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Based on the k-nearest neighbour</p></li>
+<li><p>Based on significance after probability density fitting</p></li>
+</ul>
+</div></blockquote>
+<p>In both cases, first the adjacency matrix is computed using the distance metric (default Euclidean).
+In case of the K-nearest neighbour approach, the k nearest neighbours are determined.
+In case of significance, the adjacency matrix is used to to estimate the loc/scale/arg parameters for various theoretical distribution.
+The tested disributions are <em>[‘norm’, ‘expon’, ‘uniform’, ‘gamma’, ‘t’]</em>. The fitted distribution describes the similarity-distribution of samples.
+For each new image, the probability is computed, and returns the images that are &lt;= <em>alpha</em> in the lower bound of the distribution.
+If both k and alpha is specified, the union of detected samples is taken.</p>
+<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.find" title="clustimage.clustimage.Clustimage.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.find()</span></code></a></p>
+</section>
+<section id="unique">
+<h2>unique<a class="headerlink" href="#unique" title="Permalink to this headline"></a></h2>
+<p>The unique images are detected by first computing the center of the cluster, and then taking the image closest to the center.</p>
+<p><a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.unique" title="clustimage.clustimage.Clustimage.unique"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.unique()</span></code></a></p>
+</section>
+</section>
 <section id="preprocessing">
 <h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline"></a></h1>
-<p>The functions that handle the preprocessing of images is concentrated into the function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.imread" title="clustimage.clustimage.Clustimage.imread"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imread()</span></code></a>.
-This function reads the full path to the image that needs to be imported, and is subsequently colour-scaled (gray/rgb), scaled and resized.</p>
-<dl class="simple">
-<dt>The pre-processing has 4 steps and are exectued in this order.</dt><dd><ul class="simple">
+<p>The preprocessing step is the function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.imread" title="clustimage.clustimage.Clustimage.imread"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imread()</span></code></a>, and contains 3 functions to handle the import, scaling and resizing of images.
+This function requires the full path to the image for which the first step is reading the images and colour scaling it based on the input parameter <code class="docutils literal notranslate"><span class="pre">grayscale</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">grayscale</span></code> is set to <em>True</em>, the <code class="docutils literal notranslate"><span class="pre">cv2.COLOR_GRAY2RGB</span></code> setting from <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> is used.</p>
+<p>The pre-processing has 4 steps and are exectued in this order.</p>
+<blockquote>
+<div><ul class="simple">
 <li><ol class="arabic simple">
 <li><p>Import data.</p></li>
 </ol>
 </li>
 <li><ol class="arabic simple" start="2">
-<li><p>Scaling color pixels between [0-255]</p></li>
-</ol>
-</li>
-<li><ol class="arabic simple" start="3">
 <li><p>Conversion to gray-scale (user defined)</p></li>
 </ol>
 </li>
+<li><ol class="arabic simple" start="3">
+<li><p>Scaling color pixels between [0-255]</p></li>
+</ol>
+</li>
 <li><ol class="arabic simple" start="4">
-<li><p>Resizing (to reduce computation time)</p></li>
+<li><p>Resizing</p></li>
 </ol>
 </li>
 </ul>
-</dd>
-</dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import libraries</span>
+<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+
+<span class="c1"># Init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
 <span class="c1"># Load example dataset</span>
-<span class="n">path_to_imgs</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
-<span class="c1"># Run specific function to read preproces the images</span>
-<span class="n">img</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path_to_imgs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">))</span>
-<span class="c1"># Plot the flower after preprocessing</span>
+<span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Preprocessing of the first image</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">pathnames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">))</span>
+
+<span class="c1"># Plot</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
@@ -187,14 +246,9 @@ This function reads the full path to the image that needs to be imported, and is
 </tr>
 </tbody>
 </table>
-<section id="colorscale">
-<h2>Colorscale<a class="headerlink" href="#colorscale" title="Permalink to this headline"></a></h2>
-<p>The <em>img_read</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_read()</span></code> reads the images and colour scales it based on the input parameter <code class="docutils literal notranslate"><span class="pre">grayscale</span></code>.
-This function depends on functionalities from <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> and uses the <code class="docutils literal notranslate"><span class="pre">cv2.COLOR_GRAY2RGB</span></code> setting.</p>
-</section>
 <section id="imscale">
 <h2>imscale<a class="headerlink" href="#imscale" title="Permalink to this headline"></a></h2>
-<p>The <em>scale</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_scale()</span></code> is only applicable for 2D-arrays (images).
+<p>The <em>imscale</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imscale()</span></code> is only applicable for 2D-arrays (images).
 Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.</p>
 <p>The images are scaled between [0-255] by the following equation:</p>
 <blockquote>
@@ -203,64 +257,94 @@ Scaling data is an import pre-processing step to make sure all data is ranged be
 </section>
 <section id="imresize">
 <h2>imresize<a class="headerlink" href="#imresize" title="Permalink to this headline"></a></h2>
-<p>The resize function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_resize()</span></code> resizes the images into 128x128 pixels (default) or an user-defined size.
+<p>The <em>imresize</em> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.imresize" title="clustimage.clustimage.imresize"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.imresize()</span></code></a> resizes the images into 128x128 pixels (default) or to an user-defined size.
 The function depends on the functionality of <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> with the interpolation: <code class="docutils literal notranslate"><span class="pre">interpolation=cv2.INTER_AREA</span></code>.</p>
 </section>
 </section>
-<section id="core-functionalities">
-<h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this headline"></a></h1>
-<p>After fit_transform:</p>
-<section id="fit-and-transform">
-<h2>Fit and transform<a class="headerlink" href="#fit-and-transform" title="Permalink to this headline"></a></h2>
-<p>Fit and transform</p>
-</section>
-<section id="detect-faces">
-<h2>detect_faces<a class="headerlink" href="#detect-faces" title="Permalink to this headline"></a></h2>
-<p>Detection of faces</p>
-</section>
-<section id="cluster">
-<h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h2>
-<p>Clustering of images</p>
-</section>
-<section id="find">
-<h2>find<a class="headerlink" href="#find" title="Permalink to this headline"></a></h2>
-<p>Find images</p>
-</section>
-<section id="unique">
-<h2>unique<a class="headerlink" href="#unique" title="Permalink to this headline"></a></h2>
-<p>Unique images</p>
-</section>
-</section>
-<section id="generic">
-<h1>Generic<a class="headerlink" href="#generic" title="Permalink to this headline"></a></h1>
-<p>Generic functionalities</p>
+<section id="generic-functionalities">
+<h1>Generic functionalities<a class="headerlink" href="#generic-functionalities" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">clustimage</span></code> contains various generic functionalities that are internally used but may be usefull too in other applications.</p>
 <section id="wget">
 <h2>wget<a class="headerlink" href="#wget" title="Permalink to this headline"></a></h2>
-<p>Get url internetstuff</p>
+<p>Download files from the internet and store on disk.
+Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.wget" title="clustimage.clustimage.wget"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.wget()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="c1"># Download</span>
+<span class="n">images</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">wget</span><span class="p">(</span><span class="s1">&#39;https://erdogant.github.io/datasets/flower_images.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;c://temp//flower_images.zip&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="unzip">
 <h2>unzip<a class="headerlink" href="#unzip" title="Permalink to this headline"></a></h2>
-<p>unzipping</p>
+<p>Unzip files into a destination directory.
+Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.unzip" title="clustimage.clustimage.unzip"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.unzip()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="c1"># Unzip to path</span>
+<span class="n">dirpath</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">unzip</span><span class="p">(</span><span class="s1">&#39;c://temp//flower_images.zip&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="listdir">
 <h2>listdir<a class="headerlink" href="#listdir" title="Permalink to this headline"></a></h2>
-<p>list directories</p>
+<p>Recusively list the files in the directory.
+Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.listdir" title="clustimage.clustimage.listdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.listdir()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="c1"># Unzip to path</span>
+<span class="n">dirpath</span> <span class="o">=</span> <span class="s1">&#39;c://temp//flower_images&#39;</span>
+<span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;png&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
 </section>
 <section id="set-logger">
 <h2>set_logger<a class="headerlink" href="#set-logger" title="Permalink to this headline"></a></h2>
-<p>Change status of the logger</p>
-</section>
-<section id="clean-files">
-<h2>clean_files<a class="headerlink" href="#clean-files" title="Permalink to this headline"></a></h2>
-<p>Cleaining files</p>
+<p>Change status of the logger.
+Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.set_logger" title="clustimage.clustimage.set_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.set_logger()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Change to verbosity message of warnings and higher</span>
+<span class="n">set_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="extract-hog">
 <h2>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this headline"></a></h2>
-<p>hog extract</p>
-</section>
-<section id="extract-pca">
-<h2>extract_pca<a class="headerlink" href="#extract-pca" title="Permalink to this headline"></a></h2>
-<p>pca extract</p>
+<p>Extracting hog features.
+Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_hog" title="clustimage.clustimage.Clustimage.extract_hog"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_hog()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+
+<span class="c1"># Init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">)</span>
+
+<span class="c1"># Load example data</span>
+<span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Read image according the preprocessing steps</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">pathnames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">))</span>
+
+<span class="c1"># Extract HOG features</span>
+<span class="n">img_hog</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_hog</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">();</span>
+<span class="n">fig</span><span class="p">,</span><span class="n">axs</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Preprocessed image&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_hog</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HOG&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id2">
+<caption><span class="caption-text">Left is orignal input figure and right the hog features</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figC1" src="_images/hog_example.png" /></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 

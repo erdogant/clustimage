@@ -94,8 +94,3 @@ If an increase of HOG features is desired, you can either increasing the image d
    +----------+
 
    
-tSNE
-''''''''''
-
-t-distributed stochastic neighbor embedding can be used to transform the samples into a 2D space.
-

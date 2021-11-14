@@ -56,12 +56,21 @@ A quick example how to learn a model on a given dataset.
     # Run the model to find the optimal clusters
     results = cl.fit_transform(path_to_imgs, min_clust=10)
 
+    # Cluster evaluation plot
+    cl.clusteval.plot()
+    
+    # Unique images
+    cl.results_unique.keys()
+    cl.plot_unique(img_mean=False)
+
+    # Scatter
+    cl.scatter(dotsize=50, img_mean=False)
+
+    # Plot clustered images
+    cl.plot(labels=0)
+
     # Plot dendrogram
     cl.dendrogram()
-    # Scatter
-    cl.scatter(dotsize=50)
-    # Plot clustered images
-    cl.plot()
 
     # Predict
     results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
