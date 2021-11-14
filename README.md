@@ -13,7 +13,15 @@
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
 * clustimage is a python package for unsupervised clustering of images.
+The number of avaialble images has become huge over time for which (deep) neural networks are ideal for predictive purposes.
+However, it can be quit a complex approach to grouping a set of images that are highly similar in an unsupervised manner, or to identify the "unique" images in a directory.
+With ``clustimage`` I want to overcome these challanges and created a generic approach to unsupervised cluster images.
 
+clustimage is fun because:
+* it does not require a learning proces.
+* it can group any set of images.
+* It can return only the unique() images.
+* Many many plots to improve understanding of the feature-space and sample-sample relationships
 
 ### Installation
 * Install clustimage from PyPI (recommended). clustimage is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
@@ -34,14 +42,16 @@ pip install -U clustimage
 from clustimage import Clustimage
 ```
 
-#### Simple example using data-array as an input.
+### Example 1: Digit images.
+In this example we will be using a flattened grayscale image array loaded from sklearn.
+The array in NxM, where N are the samples and M the flattened raw rgb/gray image.
 
 ```python
 # Load library
 import matplotlib.pyplot as plt
 from clustimage import Clustimage
 # init
-cl = Clustimage(store_to_disk=True)
+cl = Clustimage()
 # Load example digit data
 X = cl.import_example(data='digits')
 
@@ -72,7 +82,6 @@ print(results.keys())
 # Get the unique images
 unique_samples = cl.unique()
 # 
-# Lets examine the results.
 print(unique_samples.keys())
 # ['labels', 'idx', 'xycoord_center', 'pathnames']
 # 
@@ -80,13 +89,13 @@ print(unique_samples.keys())
 X[unique_samples['idx'],:]
 
 ```
-##### Plot the unique detected images.
+##### Plot the unique images.
 
 ```python
 cl.plot_unique()
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_unique.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_unique.png" width="300" />
 </p>
 
 
@@ -98,9 +107,10 @@ cl.plot_unique()
 # Cluster 5 contains digit 2
 # etc
 # 
+# No images in scatterplot
 cl.scatter(zoom=None)
 
-# Include the images in the scatterplot
+# Include images scatterplot
 cl.scatter(zoom=4)
 
 ```
@@ -119,7 +129,6 @@ cl.plot(cmap='binary')
 
 # Plot the images in a specific cluster
 cl.plot(cmap='binary', labels=[1,5])
-
 ```
 <p align="center">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster1.png" width="400" />
@@ -148,7 +157,6 @@ cl.pca.scatter(legend=False, label=False)
 cl.clusteval.plot()
 # Make silhouette plot
 cl.clusteval.scatter(cl.results['xycoord'])
-
 ```
 <p align="center">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="600" />
@@ -157,27 +165,70 @@ cl.clusteval.scatter(cl.results['xycoord'])
 </p>
 
 
-#### images with flowers to cluster.
+### Example 2: Flower images.
+In this example I will be using flower images for which the path locations are somewhere on disk.
+
 ```python
 # Load library
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='pca', embedding='tsne')
+cl = Clustimage(method='pca')
 # load example with flowers
-path_to_imgs = cl.import_example(data='flowers')
-# Preprocessing and feature extraction
-results = cl.fit_transform(path_to_imgs, min_clust=10)
-# Scatter
+pathnames = cl.import_example(data='flowers')
+# The pathnames are stored in a list
+print(pathnames[0:2])
+# ['C:\\temp\\flower_images\\0001.png', 'C:\\temp\\flower_images\\0002.png']
+
+# Preprocessing, feature extraction and clustering. Lets set a minimum of 1-
+results = cl.fit_transform(pathnames)
+
+# Lets first evaluate the number of detected clusters.
+# This looks pretty good because there is a high distinction between the peak for 5 clusters and the number of clusters that subsequently follow.
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['xycoord'])
+
+```
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_sil_vs_nrclusters.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_silhouette.png" width="400" />
+</p>
+
+
+#### Scatter
+
+```python
+cl.scatter(dotsize=50, zoom=None)
 cl.scatter(dotsize=50)
+```
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs.png" width="400" />
+</p>
+
+#### Plot the clustered images
+
+```python
+# Plot unique images
+cl.plot_unique()
+
+# Plot all images per cluster
+cl.plot()
+
+# Plot the images in a specific cluster
+cl.plot(labels=3)
+```
+
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_unique.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_cluster3.png" width="400" />
+</p>
+
+
+```python
 # Plot dendrogram
 cl.dendrogram()
 # Plot clustered images
-cl.plot(ncols=5)
-
-# Predict
-results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
-cl.plot_find()
-cl.scatter()
+cl.plot()
 
 ```
 <p align="center">
@@ -188,46 +239,72 @@ cl.scatter()
 
 #### Make prediction for unseen input image.
 ```python
-# Predict
-results_find = cl.find(path_to_imgs[0:5], alpha=0.05)
+# Find images that are significanly similar as the unseen input image. 
+results_find = cl.find(path_to_imgs[0:2], alpha=0.05)
 cl.plot_find()
+
+# Map the unseen images in existing feature-space.
 cl.scatter()
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/scatter_predict.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flower_predict_example.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_1.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_2.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_scatter.png" width="400" />
 </p>
 
 
-#### images with faces to cluster.
+### Example 3: Cluster the faces on images.
 
 ```python
 from clustimage import Clustimage
-# Init
-cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':14})
+# Initialize with grayscale and extract HOG features.
+cl = Clustimage(method='hog', grayscale=True)
 # Load example with faces
 pathnames = cl.import_example(data='faces')
-# Detect faces
+# First we need to detect and extract the faces from the images
 face_results = cl.detect_faces(pathnames)
-# Cluster
-results = cl.fit_transform(face_results['facepath'])
+# The detected faces are extracted and stored in face_resuls. We can now easily provide the pathnames of the faces that are stored in pathnames_face.
+results = cl.fit_transform(face_results['pathnames_face'])
+
+# Plot the evaluation of the number of clusters. As you can see, the maximum number of cluster evaluated is 24 can perhaps be too small.
+cl.clusteval.plot()
+# Lets increase the maximum number and clusters and run solely the clustering. Note that you do not need to fit_transform() anymore. You can only do the clustering now.
+cl.cluster(max_clust=35)
+# And plot again. As you can see, it keeps increasing which means that it may not found any local maximum anymore.
+# When looking at the graph, we see a local maximum at 12 clusters. Lets go for that
+cl.cluster(min_clust=12, max_clust=13)
+
+# Lets plot the 12 unique clusters that contain the faces
+cl.plot_unique()
+
+# Scatter
+cl.scatter(zoom=None)
+cl.scatter(zoom=0.2)
+
+# Make plot
+cl.plot(show_hog=True, labels=[1,7])
 
 # Plot faces
 cl.plot_faces()
 # Dendrogram depicts the clustering of the faces
 cl.dendrogram()
 
-# Make various other plots
-cl.scatter()
-# Make plot
-cl.plot(ncols=2, show_hog=True)
 ```
 
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces1.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_dendrogram.png" width="400" />
+
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_sil_vs_nrclusters.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_set_max_clust.png" width="400" />
+
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_unique.png" width="400" />
+
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_scatter_no_img.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_scatter.png" width="400" />
+
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_cluster0.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces_cluster3.png" width="400" />
+
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces1.png" width="400" />
 </p>
 
 #### References

@@ -82,7 +82,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         pathnames = cl.import_example(data='faces')
         # Detect faces
         face_results = cl.detect_faces(pathnames)
-        assert np.all(np.isin([*cl.results_faces.keys()], ['img', 'pathnames', 'filenames', 'facepath', 'coord_faces', 'coord_eyes']))
+        assert np.all(np.isin([*cl.results_faces.keys()], ['img', 'pathnames', 'filenames', 'pathnames_face', 'coord_faces', 'coord_eyes']))
         # Cluster
-        results = cl.fit_transform(face_results['facepath'])
+        results = cl.fit_transform(face_results['pathnames_face'])
         assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']))

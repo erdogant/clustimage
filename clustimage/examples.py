@@ -52,16 +52,16 @@ pathnames = cl.import_example(data='faces')
 # Detect faces
 face_results = cl.detect_faces(pathnames)
 # Preproceesing, cluster detection
-results = cl.fit_transform(face_results['facepath'])
+results = cl.fit_transform(face_results['pathnames_face'])
 
 
 out = cl.unique()
 cl.plot_unique()
 
-out = cl.find(face_results['facepath'][20], k=None, alpha=0.05, metric='euclidean')
+out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
 cl.plot_find()
 
-out = cl.find(face_results['facepath'][20], k=5, alpha=None, metric='euclidean')
+out = cl.find(face_results['pathnames_face'][20], k=5, alpha=None, metric='euclidean')
 cl.plot_find()
 
 cl.plot_faces(eyes=False)
@@ -120,7 +120,8 @@ cl.dendrogram()
 import matplotlib.pyplot as plt
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='hog')
+cl = Clustimage()
+# cl = Clustimage(method='hog')
 # Load example data
 path_to_imgs = cl.import_example(data='flowers')
 # Read image according the preprocessing steps

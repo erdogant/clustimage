@@ -143,7 +143,7 @@ class Clustimage():
     >>>
 
     """
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=False, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self._clean()
@@ -252,7 +252,7 @@ class Clustimage():
         >>> # Detect faces
         >>> face_results = cl.detect_faces(pathnames)
         >>> # Cluster extracted faces
-        >>> results = cl.fit_transform(face_results['facepath'])
+        >>> results = cl.fit_transform(face_results['pathnames_face'])
         >>>
         >>> # Plot dendrogram
         >>> cl.dendrogram()
@@ -264,7 +264,7 @@ class Clustimage():
         >>> cl.plot_faces()
         >>>
         >>> # Make prediction
-        >>> results_find = cl.find(face_results['facepath'][2][0], k=None, alpha=0.05)
+        >>> results_find = cl.find(face_results['pathnames_face'][2][0], k=None, alpha=0.05)
         >>> cl.plot_find()
         >>> cl.scatter()
 
@@ -288,7 +288,7 @@ class Clustimage():
         # Return
         return self.results
 
-    def cluster(self, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25, cluster_space='high'):
+    def cluster(self, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
         """Detection of the optimal number of clusters given the input set of features.
         
         Description
@@ -524,14 +524,14 @@ class Clustimage():
                 Full path to images that are used in the model.
             filenames : list of str.
                 Filename of the input images.
-            facepath : list of str.
+            pathnames_face : list of str.
                 Filename of the extracted faces that are stored to disk.
             img : array-like.
                 NxMxC for which N are the Samples, M the features and C the number of channels.
             coord_faces : array-like.
                 list of lists containing coordinates fo the faces in the original image.
             coord_eyes : array-like.
-                list of lists containing coordinates fo the eyes in the extracted (img and facepath) image.
+                list of lists containing coordinates fo the eyes in the extracted (img and pathnames_face) image.
 
         Example
         -------
@@ -545,7 +545,7 @@ class Clustimage():
         >>> # Detect faces
         >>> face_results = cl.detect_faces(pathnames)
         >>> # Cluster extracted faces
-        >>> results = cl.fit_transform(face_results['facepath'])
+        >>> results = cl.fit_transform(face_results['pathnames_face'])
         >>>
         >>> # Plot dendrogram
         >>> cl.dendrogram()
@@ -557,7 +557,7 @@ class Clustimage():
         >>> cl.plot_faces()
         >>>
         >>> # Find image
-        >>> results_find = cl.find(face_results['facepath'][2], k=None, alpha=0.05)
+        >>> results_find = cl.find(face_results['pathnames_face'][2], k=None, alpha=0.05)
         >>> cl.plot_find()
         >>> cl.scatter()
 
@@ -568,7 +568,7 @@ class Clustimage():
         # Read and pre-proces the input images
         X = self._import_data(pathnames, imread=False)
         # Create empty list
-        faces = {'img':[], 'pathnames':[], 'filenames':[], 'facepath':[], 'coord_faces':[], 'coord_eyes':[]}
+        faces = {'img':[], 'pathnames':[], 'filenames':[], 'pathnames_face':[], 'coord_faces':[], 'coord_eyes':[]}
         
         # Set logger to warning-error only
         verbose = logger.getEffectiveLevel()
@@ -577,11 +577,11 @@ class Clustimage():
         # Extract faces and eyes from image
         for pathname in tqdm(X['pathnames'], disable=disable_tqdm()):
             # Extract faces
-            facepath, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self._extract_faces(pathname)
+            pathnames_face, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self._extract_faces(pathname)
             # Store
             faces['pathnames'].append(path_to_image)
             faces['filenames'].append(filename)
-            faces['facepath'].append(facepath)
+            faces['pathnames_face'].append(pathnames_face)
             faces['img'].append(imgfaces)
             faces['coord_faces'].append(coord_faces)
             faces['coord_eyes'].append(coord_eyes)
@@ -890,7 +890,7 @@ class Clustimage():
 
         Returns
         -------
-        facepath : list of str.
+        pathnames_face : list of str.
             Filename of the extracted faces that are stored to disk.
         img : array-like.
             NxMxC for which N are the Samples, M the features and C the number of channels.
@@ -899,7 +899,7 @@ class Clustimage():
         coord_faces : array-like.
             list of lists containing coordinates fo the faces in the original image.
         coord_eyes : array-like.
-            list of lists containing coordinates fo the eyes in the extracted (img and facepath) image.
+            list of lists containing coordinates fo the eyes in the extracted (img and pathnames_face) image.
         filenames : list of str.
             Filename of the input images.
         pathnames : list of str.
@@ -907,7 +907,7 @@ class Clustimage():
 
         """
         # Set defaults
-        coord_eyes, facepath, imgstore = [], [], []
+        coord_eyes, pathnames_face, imgstore = [], [], []
         # Get image
         X = self.preprocessing(pathname, grayscale=self.params['cv2_imread_colorscale'], dim=None, flatten=False)
         # Get the image and Convert into grayscale if required
@@ -920,7 +920,7 @@ class Clustimage():
         for (x,y,w,h) in coord_faces:
             # Create filename for face
             filename = os.path.join(self.params['dirpath'], str(uuid.uuid4()))+'.png'
-            facepath.append(filename)
+            pathnames_face.append(filename)
             # Store faces seperately
             imgface = img_resize(img[y:y+h, x:x+w], dim=self.params['dim_face'])
             # Write to disk
@@ -933,7 +933,7 @@ class Clustimage():
             if eyes==(): eyes=None
             coord_eyes.append(eyes)
         # Return
-        return facepath, np.array(imgstore), coord_faces, coord_eyes, X['filenames'][0], X['pathnames'][0]
+        return pathnames_face, np.array(imgstore), coord_faces, coord_eyes, X['filenames'][0], X['pathnames'][0]
 
     def _collect_pca(self, X, Y, k, alpha, feat, todf=True):
         """Collect the samples that are closest in according the metric."""
@@ -1130,11 +1130,11 @@ class Clustimage():
                 # Plot the eyes
                 if eyes:
                     coord_eyes = self.results_faces['coord_eyes'][i]
-                    for k in np.arange(0, len(self.results_faces['facepath'][i])):
+                    for k in np.arange(0, len(self.results_faces['pathnames_face'][i])):
                         # face = self.results_faces['img'][i][k].copy()
-                        facepath = self.results_faces['facepath'][i][k]
-                        if os.path.isfile(facepath):
-                            face = self.preprocessing(facepath, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['img'][0].copy()
+                        pathnames_face = self.results_faces['pathnames_face'][i][k]
+                        if os.path.isfile(pathnames_face):
+                            face = self.preprocessing(pathnames_face, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['img'][0].copy()
                             if coord_eyes[k] is not None:
                                 plt.figure()
                                 for (ex,ey,ew,eh) in coord_eyes[k]:
@@ -1144,7 +1144,7 @@ class Clustimage():
                                 else:
                                     plt.imshow(face)
                         else:
-                            logger.warning('File is removed: %s', facepath)
+                            logger.warning('File is removed: %s', pathnames_face)
 
                 # Pause to plot to screen
                 plt.pause(0.1)
@@ -1402,7 +1402,7 @@ class Clustimage():
         from pathlib import Path
         if hasattr(self, 'results_faces'):
             out = []
-            for sublist in self.results_faces['facepath']:
+            for sublist in self.results_faces['pathnames_face']:
                 out.extend(sublist)
 
             p = Path(out[0])
