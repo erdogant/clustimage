@@ -385,7 +385,7 @@ class Clustimage():
             logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
 
         # Fit model
-        ce.fit(feat)
+        _ = ce.fit(feat)
 
         # Store results and params
         logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
@@ -402,7 +402,7 @@ class Clustimage():
         self.params_clusteval['max_clust'] = max_clust
 
         # Find unique
-        self.unique()
+        self.unique(metric=metric)
 
         # Return
         return self.results['labels']
@@ -435,7 +435,7 @@ class Clustimage():
             # Get cluster label
             idx = np.where(self.results['labels']==label)[0]
             # Compute center of cluster
-            self.results['feat'][idx,:].mean(axis=0)
+            # self.results['feat'][idx,:].mean(axis=0)
             xycoord_center = np.mean(self.results['xycoord'][idx,:], axis=0)
             # Compute distance across all samples
             dist = distance.cdist(self.results['xycoord'], xycoord_center.reshape(-1,1).T, metric=metric)
@@ -444,7 +444,10 @@ class Clustimage():
             # Store
             center_idx.append(idx_closest)
             center_coord.append(xycoord_center)
-            pathnames.append(self.results['pathnames'][idx_closest])
+            if self.results.get('pathnames', None) is not None:
+                pathnames.append(self.results['pathnames'][idx_closest])
+            else:
+                pathnames.append('')
 
         # Store and return
         self.results_unique = {'labels':uilabels, 'idx':center_idx, 'xycoord_center':np.vstack(center_coord), 'pathnames':pathnames}
