@@ -65,7 +65,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         assert len(results_find['0001.png']['y_idx'])==2
         assert len(results_find['0002.png']['y_idx'])==1
         assert len(results_find['0003.png']['y_idx'])>=30
-        assert len(results_find['0004.png']['y_idx'])>=2
+        assert len(results_find['0004.png']['y_idx'])>=1
         assert len(results_find['0005.png']['y_idx'])==1
         
         results_find = cl.find(path_to_imgs[0:5], k=1, alpha=None)

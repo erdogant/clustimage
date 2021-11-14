@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prediction &mdash; clustimage clustimage documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Performance" href="Performance.html" />
+    <link rel="prev" title="Gridsearch" href="Cluster%20Evaluation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> clustimage
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#quickstart">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Pre-processing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#colorscale">Colorscale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#scale">Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pre-processing.html#resize">Resize</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Feature Extraction/Embedding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html">PCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#hog">HOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#tsne">tSNE</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Gridsearch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">DBindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">DBSCAN</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Prediction</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Prediction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Performance</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Save and Load</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clustimage.clustimage.html">API References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">clustimage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Prediction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/prediction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <hr class="docutils" id="code-directive" />
+<section id="prediction">
+<h1>Prediction<a class="headerlink" href="#prediction" title="Permalink to this headline"></a></h1>
+<p>The performance of the model can deviate based on the threshold being used but the theshold this will not affect the learning process <code class="xref py py-func docutils literal notranslate"><span class="pre">urldetect.fit_transform()</span></code>.
+After learning a model, and predicting new samples with it, each sample will get a probability belowing to the class. In case of our two-class approach the simple rule account: <strong>P(class malicous) = 1-P(class normal)</strong>
+The threshold is used on the probabilities to devide samples into the malicous or normal class.</p>
+<p>For the detection of the optimal number of clusters, the python library <code class="docutils literal notranslate"><span class="pre">clusteval</span></code> is utilized to evaluate the <strong>goodness</strong> of clusters.
+The clustering approaches can be set to <em>agglomerative</em>, <em>kmeans</em>, <em>dbscan</em> and <em>hdbscan</em>, for which the <code class="docutils literal notranslate"><span class="pre">clusteval</span></code> library then searches across the space of clusters and method-parameters to determine the optimal number of clusters given the input dataset.</p>
+<p><strong>Cluster evaluation can be performed based on:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Silhouette scores</p></li>
+<li><p>DBindex</p></li>
+<li><p>Derivative method</p></li>
+</ul>
+</div></blockquote>
+<p>Lets load the <strong>digits</strong> dataset and see how the different methods detects the optimal number of clusters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="c1"># init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="s1">&#39;tsne&#39;</span><span class="p">,</span> <span class="n">cluster_space</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">grayscale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">store_to_disk</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Example data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;digits&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Feature extraction and cluster evaluation</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">evaluate</span><span class="o">=</span><span class="s1">&#39;silhouette&#39;</span><span class="p">,</span> <span class="n">cluster</span><span class="o">=</span><span class="s1">&#39;agglomerative&#39;</span><span class="p">)</span>
+
+<span class="c1"># Cluster differently using directly the extracted features.</span>
+<span class="c1"># results = cl.cluster(, cluster=&#39;agglomerative&#39;, evaluate=&#39;silhouette&#39;, cluster_space=&#39;low&#39;)</span>
+
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">()</span>
+<span class="c1"># Dendrogram with cluster evalution</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id1">
+<caption><span class="caption-text">Left: The number of clusters vs silhouette scores. Right: tSNE plot coloured on the cluster-labels.</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figCE0" src="_images/digits_clusters.png" /></p></td>
+<td><p><img alt="figCE6" src="_images/silhouette_tsne.png" /></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Cluster%20Evaluation.html" class="btn btn-neutral float-left" title="Gridsearch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Performance.html" class="btn btn-neutral float-right" title="Performance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Erdogan Taskesen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
