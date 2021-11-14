@@ -35,12 +35,13 @@ from clustimage import Clustimage
 ```
 
 #### Simple example using data-array as an input.
+
 ```python
 # Load library
 import matplotlib.pyplot as plt
 from clustimage import Clustimage
 # init
-cl = Clustimage()
+cl = Clustimage(store_to_disk=True)
 # Load example digit data
 X = cl.import_example(data='digits')
 
@@ -58,23 +59,101 @@ plt.imshow(X[0,:].reshape(8,8), cmap='binary')
 # Preprocessing and feature extraction
 results = cl.fit_transform(X)
 
-# Scatter
-cl.scatter()
-# Plot dendrogram
-cl.dendrogram()
-# Plot the clustered images
-cl.plot(cmap='binary')
+# Lets examine the results.
+print(results.keys())
+# ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']
+# 
+# feat      : Extracted features
+# xycoord   : Coordinates of samples in the embedded space.
+# filenames : Name of the files
+# pathnames : Absolute location of the files
+# labels    : Cluster labels in the same order as the input
+
+# Get the unique images
+unique_samples = cl.unique()
+# 
+# Lets examine the results.
+print(unique_samples.keys())
+# ['labels', 'idx', 'xycoord_center', 'pathnames']
+# 
+# Collect the unique images from the input
+X[unique_samples['idx'],:]
+
+```
+##### Plot the unique detected images.
+
+```python
+cl.plot_unique()
+```
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_unique.png" width="400" />
+</p>
+
+
+##### Scatter samples based on the embedded space.
+
+```python
+# The scatterplot that is coloured on the clusterlabels. The clusterlabels should match the unique labels.
+# Cluster 1 contains digit 4
+# Cluster 5 contains digit 2
+# etc
+# 
+cl.scatter(zoom=None)
+
+# Include the images in the scatterplot
+cl.scatter(zoom=4)
 
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig1.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_pca.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_clusters.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_dendrogram.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig21_tsne.png" width="400" />
+</p>
+
+
+
+#### Plot the clustered images
+
+```python
+# Plot all images per cluster
+cl.plot(cmap='binary')
+
+# Plot the images in a specific cluster
+cl.plot(cmap='binary', labels=[1,5])
+
+```
+<p align="center">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster1.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster4.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster5.png" width="400" />
+</p>
+
+
+#### Dendrogram
+```python
+# The dendrogram is based on the high-dimensional feature space.
+cl.dendrogram()
+
+```
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_dendrogram.png" width="400" />
+</p>
+
+
+#### Make various other plots
+```python
+# Plot the explained variance
+cl.pca.plot()
+# Make scatter plot of PC1 vs PC2
+cl.pca.scatter(legend=False, label=False)
+# Plot the evaluation of the number of clusters
+cl.clusteval.plot()
+# Make silhouette plot
+cl.clusteval.scatter(cl.results['xycoord'])
+
+```
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_clusters.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig1.png" width="600" />
 </p>
 
 
