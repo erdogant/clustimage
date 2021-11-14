@@ -198,11 +198,13 @@ cl.clusteval.scatter(cl.results['xycoord'])
 
 ```python
 cl.scatter(dotsize=50, zoom=None)
-cl.scatter(dotsize=50)
+cl.scatter(dotsize=50, zoom=0.5)
+cl.scatter(dotsize=50, zoom=0.5, img_mean=False)
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter.png" width="300" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs_mean.png" width="300" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs.png" width="300" />
 </p>
 
 #### Plot the clustered images
@@ -210,6 +212,7 @@ cl.scatter(dotsize=50)
 ```python
 # Plot unique images
 cl.plot_unique()
+cl.plot_unique(img_mean=False)
 
 # Plot all images per cluster
 cl.plot()
@@ -220,6 +223,7 @@ cl.plot(labels=3)
 
 <p align="center">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_unique.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_unique_mean.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_cluster3.png" width="400" />
 </p>
 

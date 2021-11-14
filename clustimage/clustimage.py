@@ -426,7 +426,7 @@ class Clustimage():
         # Check status
         self._check_status()
         if metric is None: metric=self.params_clusteval['metric']
-        pathnames, center_idx, center_coord = [], [], []
+        eigen_img, pathnames, center_idx, center_coord = [], [], [], []
         # Unique labels
         uilabels = np.unique(self.results['labels'])
 
@@ -437,6 +437,14 @@ class Clustimage():
             # Compute center of cluster
             # self.results['feat'][idx,:].mean(axis=0)
             xycoord_center = np.mean(self.results['xycoord'][idx,:], axis=0)
+
+            # Compute the average image by simply averaging the images
+            img = np.vstack(list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
+            eigen_img.append(img_scale(np.mean(img, axis=0)))
+
+            # dim = _check_dim(eigen_img, self.params['dim'])
+            # plt.figure();plt.imshow(eigen_img.reshape(dim))
+
             # Compute distance across all samples
             dist = distance.cdist(self.results['xycoord'], xycoord_center.reshape(-1,1).T, metric=metric)
             # Take closest sample to the center
@@ -450,7 +458,7 @@ class Clustimage():
                 pathnames.append('')
 
         # Store and return
-        self.results_unique = {'labels':uilabels, 'idx':center_idx, 'xycoord_center':np.vstack(center_coord), 'pathnames':pathnames}
+        self.results_unique = {'labels':uilabels, 'idx':center_idx, 'xycoord_center':np.vstack(center_coord), 'pathnames':pathnames, 'img_mean':np.vstack(eigen_img)}
         return self.results_unique
         
     def find(self, Xnew, metric=None, k=None, alpha=0.05):
@@ -645,9 +653,7 @@ class Clustimage():
 
         """
         # If 1D-vector, make 2D-array
-        if len(X.shape)==1:
-            X = X.reshape(-1,1).T
-
+        if len(X.shape)==1: X = X.reshape(-1,1).T
         # Set dim correctly for reshaping image
         dim = _check_dim(X, self.params['dim'], grayscale=self.params['grayscale'])
         # Extract hog features per image
@@ -1183,16 +1189,23 @@ class Clustimage():
 
         if max_d is not None:
             return results
-    
+
     def _add_img_to_scatter(self, ax, pathnames, xycoord, cmap=None, zoom=0.2):
         # Plot the images on top of the scatterplot
         if zoom is not None:
             for i, pathname in enumerate(pathnames):
-                img = self.img_read_pipeline(pathname, dim=self.params['dim'], flatten=False, grayscale=self.params['cv2_imread_colorscale'])
+                if isinstance(pathname, str):
+                    img = self.img_read_pipeline(pathname, dim=self.params['dim'], flatten=False, grayscale=self.params['cv2_imread_colorscale'])
+                else:
+                    dim = _check_dim(pathname, self.params['dim'], grayscale=self.params['grayscale'])
+                    # dim = _check_dim(pathname, self.params['dim'])
+                    # plt.figure();plt.imshow(eigen_img.reshape(dim))
+                    img = pathname.reshape(dim)
+                # Make hte plot
                 imagebox = offsetbox.AnnotationBbox( offsetbox.OffsetImage(img, cmap=cmap, zoom=zoom), xycoord[i,:] )
                 ax.add_artist(imagebox)
 
-    def scatter(self, dotsize=15, legend=False, zoom=0.3, figsize=(15,10)):
+    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, figsize=(15,10)):
         """Plot the samples using a scatterplot.
 
         Parameters
@@ -1213,6 +1226,10 @@ class Clustimage():
         self._check_status()
         # Set default settings
         cmap = plt.cm.gray if self.params['grayscale'] else None
+        # Set logger to warning-error only
+        verbose = logger.getEffectiveLevel()
+        set_logger(verbose=30)
+        # Get the cluster labels
         labels = self.results.get('labels', None)
         if labels is None: labels=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
 
@@ -1220,8 +1237,13 @@ class Clustimage():
         colours=np.vstack(colourmap.fromlist(labels)[0])
         title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
         fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0], xlabel='x-axis', ylabel='y-axis')
+
         if hasattr(self, 'results_unique'):
-            self._add_img_to_scatter(ax, cmap=cmap, zoom=zoom, pathnames=self.results_unique['pathnames'], xycoord=self.results_unique['xycoord_center'])
+            if img_mean:
+                X = self.results_unique['img_mean']
+            else:
+                X = self.results_unique['pathnames']
+            self._add_img_to_scatter(ax, cmap=cmap, zoom=zoom, pathnames=X, xycoord=self.results_unique['xycoord_center'])
 
         # Scatter the predicted cases
         if (self.results.get('predict', None) is not None):
@@ -1241,7 +1263,10 @@ class Clustimage():
             else:
                 logger.info('Mapping predicted results is only possible when uing method="pca".')
 
-    def plot_unique(self, cmap=None, figsize=(15,10)):
+        # Restore verbose status
+        set_logger(verbose=verbose)
+
+    def plot_unique(self, cmap=None, img_mean=True, figsize=(15,10)):
         if hasattr(self, 'results_unique') is not None:
             cmap = _set_cmap(cmap, self.params['grayscale'])
 
@@ -1249,15 +1274,15 @@ class Clustimage():
             txtlabels = []
             # Collect all samples
             for i, file in enumerate(self.results_unique['pathnames']):
-                # img = self.img_read_pipeline(file, dim=self.params['dim'])
                 img = self.img_read_pipeline(file, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
                 imgs.append(img)
                 txtlabels.append(('cluster %s' %(str(i))))
-                # plt.figure()
-                # plt.imshow(img.reshape(128,128,3))
-                # plt.title(self.results_unique['labels'][i])
+
             # Make the plot
-            self._make_subplots(imgs, None, cmap, figsize, title='Unique images', labels=txtlabels)
+            if img_mean:
+                self._make_subplots(self.results_unique['img_mean'], None, cmap, figsize, title='Averaged images per cluster.', labels=txtlabels)
+            else:
+                self._make_subplots(imgs, None, cmap, figsize, title='Unique images', labels=txtlabels)
         else:
             logger.warning('Plotting unique images is not possible. Hint: Try to run the unique() function first.')
 
@@ -1485,7 +1510,7 @@ def _check_dim(Xraw, dim, grayscale=None):
     if not dimOK:
         raise Exception(logger.error('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(dim), str([int(dimX)]*2), str([int(dimX)]*2) )))
     else:
-        logger.info('The dim is changed into: %s', str(dim))
+        logger.debug('The dim is changed into: %s', str(dim))
 
     return dim
 

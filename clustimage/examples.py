@@ -17,13 +17,15 @@ pathnames = cl.import_example(data='flowers')
 # Detect cluster
 results = cl.fit_transform(pathnames, min_clust=7)
 
-uiimgs = cl.unique()
+# uiimgs = cl.unique()
 cl.plot_unique()
+cl.plot_unique(img_mean=False)
 
 # Scatter
 cl.scatter(dotsize=50)
+cl.scatter(dotsize=50, img_mean=False)
 # Plot clustered images
-cl.plot(labels=[2,3])
+cl.plot(labels=[12])
 # Plot dendrogram
 cl.dendrogram()
 
