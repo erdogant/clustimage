@@ -28,7 +28,7 @@ Besides clustering of images, the ``clustimage`` model can also be used to find 
 A schematic overview is as following:
 
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/schematic_overview.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/schematic_overview.png" width="800" />
 </p>
 
 
