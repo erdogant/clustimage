@@ -34,7 +34,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         cl = Clustimage()
         X = cl.import_example(data='flowers')
         results = cl.fit_transform(X)
-        assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labx']))
+        assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']))
         assert len(cl.cluster())==len(X)
     
         # Parameters combinations to check
@@ -64,8 +64,8 @@ class TestCLUSTIMAGE(unittest.TestCase):
         assert np.all(np.isin([*results_find.keys()], ['feat', '0001.png', '0002.png', '0003.png', '0004.png', '0005.png']))
         assert len(results_find['0001.png']['y_idx'])==2
         assert len(results_find['0002.png']['y_idx'])==1
-        assert len(results_find['0003.png']['y_idx'])==30
-        assert len(results_find['0004.png']['y_idx'])==2
+        assert len(results_find['0003.png']['y_idx'])>=30
+        assert len(results_find['0004.png']['y_idx'])>=2
         assert len(results_find['0005.png']['y_idx'])==1
         
         results_find = cl.find(path_to_imgs[0:5], k=1, alpha=None)
@@ -85,4 +85,4 @@ class TestCLUSTIMAGE(unittest.TestCase):
         assert np.all(np.isin([*cl.results_faces.keys()], ['img', 'pathnames', 'filenames', 'facepath', 'coord_faces', 'coord_eyes']))
         # Cluster
         results = cl.fit_transform(face_results['facepath'])
-        assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labx']))
+        assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']))
