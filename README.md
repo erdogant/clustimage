@@ -159,8 +159,8 @@ cl.clusteval.plot()
 cl.clusteval.scatter(cl.results['xycoord'])
 ```
 <p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="600" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_clusters.png" width="600" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_clusters.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig1.png" width="600" />
 </p>
 
