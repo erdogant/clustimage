@@ -12,9 +12,10 @@
 [![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
-* clustimage is a python package for unsupervised clustering of images.
+The aim of ``clustimage`` is to detect natural groups or clusters of images.
 Most of the packages regarding imaging rely on (deep) neural networks, and try solve the problem of predicting "whats on the image".
 However, not all challanges are supervised, and it can be quit a breath to carefully group similar images in an unsupervised manner, or simply identify the unique images.
+
 ``clustimage`` is a generic approach for unsupervised clustering of images and overcomes the following challenges: 
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.

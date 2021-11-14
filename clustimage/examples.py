@@ -25,7 +25,7 @@ cl.plot_unique(img_mean=False)
 cl.scatter(dotsize=50)
 cl.scatter(dotsize=50, img_mean=False)
 # Plot clustered images
-cl.plot(labels=[12])
+cl.plot(labels=[12], show_hog=True)
 # Plot dendrogram
 cl.dendrogram()
 
@@ -33,12 +33,10 @@ cl.dendrogram()
 results_find = cl.find(pathnames[0:5], k=10, alpha=0.05)
 cl.plot_find()
 
-cl.scatter()
-
 # Plot the explained variance
-cl.pca.plot()
+if cl.params['method']=='pca': cl.pca.plot()
 # Make scatter plot of PC1 vs PC2
-cl.pca.scatter(legend=False, label=True)
+if cl.params['method']=='pca': cl.pca.scatter(legend=False, label=True)
 # Plot the evaluation of the number of clusters
 cl.clusteval.plot()
 # Make silhouette plot
@@ -127,7 +125,7 @@ cl = Clustimage()
 # Load example data
 path_to_imgs = cl.import_example(data='flowers')
 # Read image according the preprocessing steps
-img = cl.img_read_pipeline(path_to_imgs[0], dim=(128,128))
+img = cl.imread(path_to_imgs[0], dim=(128,128))
 # Extract HOG features
 img_hog = cl.extract_hog(img)
 

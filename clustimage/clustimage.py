@@ -439,8 +439,8 @@ class Clustimage():
             xycoord_center = np.mean(self.results['xycoord'][idx,:], axis=0)
 
             # Compute the average image by simply averaging the images
-            img = np.vstack(list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
-            eigen_img.append(img_scale(np.mean(img, axis=0)))
+            img = np.vstack(list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
+            eigen_img.append(imscale(np.mean(img, axis=0)))
 
             # dim = _check_dim(eigen_img, self.params['dim'])
             # plt.figure();plt.imshow(eigen_img.reshape(dim))
@@ -629,7 +629,7 @@ class Clustimage():
         if isinstance(pathnames, list):
             filenames = list(map(basename, pathnames))
             if imread:
-                img = list(map(lambda x: self.img_read_pipeline(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
+                img = list(map(lambda x: self.imread(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
                 if flatten: img = np.vstack(img)
 
         out = {}
@@ -729,7 +729,7 @@ class Clustimage():
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
             logger.info('Extracting images from: [%s]', Xraw)
-            Xraw = self.get_images_from_path(Xraw, ext=self.params['ext'])
+            Xraw = self.listdir(Xraw, ext=self.params['ext'])
             logger.info('Extracted images: [%s]', len(Xraw))
 
         # 2. Read images
@@ -928,7 +928,7 @@ class Clustimage():
             filename = os.path.join(self.params['dirpath'], str(uuid.uuid4()))+'.png'
             pathnames_face.append(filename)
             # Store faces seperately
-            imgface = img_resize(img[y:y+h, x:x+w], dim=self.params['dim_face'])
+            imgface = imresize(img[y:y+h, x:x+w], dim=self.params['dim_face'])
             # Write to disk
             cv2.imwrite(filename, imgface)
             # Store face image
@@ -977,9 +977,9 @@ class Clustimage():
         # Return
         return out
 
-    def img_read_pipeline(self, filepath, grayscale=1, dim=(128, 128), flatten=True):
+    def imread(self, filepath, grayscale=1, dim=(128, 128), flatten=True):
         """Read and pre-processing of images.
-    
+
         Parameters
         ----------
         filepath : str
@@ -991,21 +991,22 @@ class Clustimage():
             Rescale images. This is required because the feature-space need to be the same across samples.
         flatten : Bool, (default: True)
             Flatten the processed NxMxC array to a 1D-vector
-    
+
         Returns
         -------
         img : array-like
             Imported and processed image.
-    
+
         """
         # Read the image
-        img = img_read(filepath, grayscale=grayscale)
+        img = _img_read(filepath, grayscale=grayscale)
         # Scale the image
-        img = img_scale(img)
+        img = imscale(img)
         # Resize the image
-        img = img_resize(img, dim=dim)
+        img = imresize(img, dim=dim)
         # Flatten the image
         if flatten: img = img_flatten(img)
+        # Return
         return img
 
     def save(self, filepath='clustimage.pkl', overwrite=False, verbose=3):
@@ -1195,7 +1196,7 @@ class Clustimage():
         if zoom is not None:
             for i, pathname in enumerate(pathnames):
                 if isinstance(pathname, str):
-                    img = self.img_read_pipeline(pathname, dim=self.params['dim'], flatten=False, grayscale=self.params['cv2_imread_colorscale'])
+                    img = self.imread(pathname, dim=self.params['dim'], flatten=False, grayscale=self.params['cv2_imread_colorscale'])
                 else:
                     dim = _check_dim(pathname, self.params['dim'], grayscale=self.params['grayscale'])
                     # dim = _check_dim(pathname, self.params['dim'])
@@ -1228,7 +1229,7 @@ class Clustimage():
         cmap = plt.cm.gray if self.params['grayscale'] else None
         # Set logger to warning-error only
         verbose = logger.getEffectiveLevel()
-        set_logger(verbose=30)
+        set_logger(verbose=40)
         # Get the cluster labels
         labels = self.results.get('labels', None)
         if labels is None: labels=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
@@ -1274,7 +1275,7 @@ class Clustimage():
             txtlabels = []
             # Collect all samples
             for i, file in enumerate(self.results_unique['pathnames']):
-                img = self.img_read_pipeline(file, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
+                img = self.imread(file, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
                 imgs.append(img)
                 txtlabels.append(('cluster %s' %(str(i))))
 
@@ -1316,9 +1317,9 @@ class Clustimage():
                         if isinstance(input_img, str): input_img=[input_img]
                         if isinstance(find_img, str): find_img=[find_img]
                         # Input images
-                        I_input = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
+                        I_input = list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
                         # Predicted label
-                        I_find = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
+                        I_find = list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
                         # Combine input image with the detected images
                         imgs = I_input + I_find
                         input_txt = basename(self.results['predict'][key]['x_path'][0])
@@ -1374,7 +1375,7 @@ class Clustimage():
                     # Collect the images
                     getfiles = np.array(self.results['pathnames'])[idx]
                     # Get the images that cluster together
-                    imgs = list(map(lambda x: self.img_read_pipeline(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
+                    imgs = list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
                     # Make subplots
                     if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(getfiles)))), 2)
                     self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(label))))
@@ -1419,8 +1420,8 @@ class Clustimage():
         _ = fig.suptitle(title, fontsize=16)
         plt.pause(0.1)
 
-    def get_images_from_path(self, dirpath, ext=['png','tiff','jpg']):
-        return _get_images_from_path(dirpath, ext=ext)
+    def listdir(self, dirpath, ext=['png','tiff','jpg']):
+        return _listdir(dirpath, ext=ext)
     
     def clean_files(self):
         # Cleaning
@@ -1549,7 +1550,7 @@ def img_flatten(img):
     return img.flatten()
 
 # %% Resize image
-def img_resize(img, dim=(128, 128)):
+def imresize(img, dim=(128, 128)):
     """Resize image."""
     if dim is not None:
         img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
@@ -1563,7 +1564,7 @@ def _set_cmap(cmap, grayscale):
     return cmap
 
 # %% Scaling
-def img_scale(img):
+def imscale(img):
     """Normalize image by scaling.
 
     Description
@@ -1593,7 +1594,7 @@ def img_scale(img):
 
 
 # %% Read image
-def img_read(filepath, grayscale=1):
+def _img_read(filepath, grayscale=1):
     """Read image from filepath using colour-scaling.
 
     Parameters
@@ -1687,15 +1688,15 @@ def import_example(data='flowers', url=None):
         wget(url, path_to_data)
 
     # Unzip
-    dirpath = _unzip(path_to_data)
+    dirpath = unzip(path_to_data)
     # Import local dataset
-    image_files = _get_images_from_path(dirpath)
+    image_files = _listdir(dirpath)
     # Return
     return image_files
 
 
 # %% Recursively list files from directory
-def _get_images_from_path(dirpath, ext=['png','tiff','jpg']):
+def _listdir(dirpath, ext=['png','tiff','jpg']):
     """ Recursively collect images from path.
 
     Parameters
@@ -1724,7 +1725,7 @@ def _get_images_from_path(dirpath, ext=['png','tiff','jpg']):
 
 
 # %% unzip
-def _unzip(path_to_zip):
+def unzip(path_to_zip):
     """Unzip files.
 
     Parameters
