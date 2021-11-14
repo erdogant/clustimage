@@ -50,21 +50,30 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core functionalities</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#colorscale">Colorscale</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#imscale">imscale</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#imresize">imresize</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#wget">wget</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#unzip">unzip</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#listdir">listdir</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#set-logger">set_logger</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#clean-files">clean_files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#extract-hog">extract_hog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#extract-pca">extract_pca</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#detect-faces">detect_faces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#cluster">cluster</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#find">find</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#unique">unique</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#colorscale">Colorscale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imscale">imscale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imresize">imresize</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#core-functionalities">Core functionalities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fit-and-transform">Fit and transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detect-faces">detect_faces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cluster">cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#find">find</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unique">unique</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#generic">Generic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#wget">wget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unzip">unzip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#listdir">listdir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-logger">set_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clean-files">clean_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract-hog">extract_hog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract-pca">extract_pca</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction/Embedding</span></p>
 <ul>
@@ -178,14 +187,13 @@ This function reads the full path to the image that needs to be imported, and is
 </tr>
 </tbody>
 </table>
-</section>
 <section id="colorscale">
-<h1>Colorscale<a class="headerlink" href="#colorscale" title="Permalink to this headline"></a></h1>
+<h2>Colorscale<a class="headerlink" href="#colorscale" title="Permalink to this headline"></a></h2>
 <p>The <em>img_read</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_read()</span></code> reads the images and colour scales it based on the input parameter <code class="docutils literal notranslate"><span class="pre">grayscale</span></code>.
 This function depends on functionalities from <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> and uses the <code class="docutils literal notranslate"><span class="pre">cv2.COLOR_GRAY2RGB</span></code> setting.</p>
 </section>
 <section id="imscale">
-<h1>imscale<a class="headerlink" href="#imscale" title="Permalink to this headline"></a></h1>
+<h2>imscale<a class="headerlink" href="#imscale" title="Permalink to this headline"></a></h2>
 <p>The <em>scale</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_scale()</span></code> is only applicable for 2D-arrays (images).
 Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.</p>
 <p>The images are scaled between [0-255] by the following equation:</p>
@@ -194,54 +202,66 @@ Scaling data is an import pre-processing step to make sure all data is ranged be
 </div></blockquote>
 </section>
 <section id="imresize">
-<h1>imresize<a class="headerlink" href="#imresize" title="Permalink to this headline"></a></h1>
+<h2>imresize<a class="headerlink" href="#imresize" title="Permalink to this headline"></a></h2>
 <p>The resize function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_resize()</span></code> resizes the images into 128x128 pixels (default) or an user-defined size.
 The function depends on the functionality of <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> with the interpolation: <code class="docutils literal notranslate"><span class="pre">interpolation=cv2.INTER_AREA</span></code>.</p>
 </section>
-<section id="wget">
-<h1>wget<a class="headerlink" href="#wget" title="Permalink to this headline"></a></h1>
-<p>Get url internetstuff</p>
 </section>
-<section id="unzip">
-<h1>unzip<a class="headerlink" href="#unzip" title="Permalink to this headline"></a></h1>
-<p>unzipping</p>
-</section>
-<section id="listdir">
-<h1>listdir<a class="headerlink" href="#listdir" title="Permalink to this headline"></a></h1>
-<p>list directories</p>
-</section>
-<section id="set-logger">
-<h1>set_logger<a class="headerlink" href="#set-logger" title="Permalink to this headline"></a></h1>
-<p>Change status of the logger</p>
-</section>
-<section id="clean-files">
-<h1>clean_files<a class="headerlink" href="#clean-files" title="Permalink to this headline"></a></h1>
-<p>Cleaining files</p>
-</section>
-<section id="extract-hog">
-<h1>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this headline"></a></h1>
-<p>hog extract</p>
-</section>
-<section id="extract-pca">
-<h1>extract_pca<a class="headerlink" href="#extract-pca" title="Permalink to this headline"></a></h1>
-<p>pca extract</p>
+<section id="core-functionalities">
+<h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this headline"></a></h1>
+<p>After fit_transform:</p>
+<section id="fit-and-transform">
+<h2>Fit and transform<a class="headerlink" href="#fit-and-transform" title="Permalink to this headline"></a></h2>
+<p>Fit and transform</p>
 </section>
 <section id="detect-faces">
-<h1>detect_faces<a class="headerlink" href="#detect-faces" title="Permalink to this headline"></a></h1>
+<h2>detect_faces<a class="headerlink" href="#detect-faces" title="Permalink to this headline"></a></h2>
 <p>Detection of faces</p>
-<p>After fit_transform:</p>
 </section>
 <section id="cluster">
-<h1>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h1>
+<h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h2>
 <p>Clustering of images</p>
 </section>
 <section id="find">
-<h1>find<a class="headerlink" href="#find" title="Permalink to this headline"></a></h1>
+<h2>find<a class="headerlink" href="#find" title="Permalink to this headline"></a></h2>
 <p>Find images</p>
 </section>
 <section id="unique">
-<h1>unique<a class="headerlink" href="#unique" title="Permalink to this headline"></a></h1>
+<h2>unique<a class="headerlink" href="#unique" title="Permalink to this headline"></a></h2>
 <p>Unique images</p>
+</section>
+</section>
+<section id="generic">
+<h1>Generic<a class="headerlink" href="#generic" title="Permalink to this headline"></a></h1>
+<p>Generic functionalities</p>
+<section id="wget">
+<h2>wget<a class="headerlink" href="#wget" title="Permalink to this headline"></a></h2>
+<p>Get url internetstuff</p>
+</section>
+<section id="unzip">
+<h2>unzip<a class="headerlink" href="#unzip" title="Permalink to this headline"></a></h2>
+<p>unzipping</p>
+</section>
+<section id="listdir">
+<h2>listdir<a class="headerlink" href="#listdir" title="Permalink to this headline"></a></h2>
+<p>list directories</p>
+</section>
+<section id="set-logger">
+<h2>set_logger<a class="headerlink" href="#set-logger" title="Permalink to this headline"></a></h2>
+<p>Change status of the logger</p>
+</section>
+<section id="clean-files">
+<h2>clean_files<a class="headerlink" href="#clean-files" title="Permalink to this headline"></a></h2>
+<p>Cleaining files</p>
+</section>
+<section id="extract-hog">
+<h2>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this headline"></a></h2>
+<p>hog extract</p>
+</section>
+<section id="extract-pca">
+<h2>extract_pca<a class="headerlink" href="#extract-pca" title="Permalink to this headline"></a></h2>
+<p>pca extract</p>
+</section>
 </section>
 
 

@@ -45,14 +45,14 @@ The pre-processing has 4 steps and are exectued in this order.
 
    
 Colorscale
-''''''''''''
+^^^^^^^^^^^^
 
 The *img_read* function :func:`clustimage.clustimage.img_read` reads the images and colour scales it based on the input parameter ``grayscale``. 
 This function depends on functionalities from ``python-opencv`` and uses the ``cv2.COLOR_GRAY2RGB`` setting.
 
 
 imscale
-''''''''''''
+^^^^^^^^
 
 The *scale* function :func:`clustimage.clustimage.img_scale` is only applicable for 2D-arrays (images).
 Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.
@@ -63,60 +63,68 @@ The images are scaled between [0-255] by the following equation:
 
 
 imresize
-''''''''''''
+^^^^^^^^^
 
 The resize function :func:`clustimage.clustimage.img_resize` resizes the images into 128x128 pixels (default) or an user-defined size.
 The function depends on the functionality of ``python-opencv`` with the interpolation: ``interpolation=cv2.INTER_AREA``.
 
 
-wget
-''''''''''''
-Get url internetstuff
 
 
-unzip
-''''''''''''
-unzipping
-
-
-listdir
-''''''''''''
-list directories
-
-
-set_logger
-''''''''''''
-Change status of the logger
-
-clean_files
-''''''''''''
-Cleaining files
-
-extract_hog
-''''''''''''
-hog extract
-
-extract_pca
-''''''''''''
-pca extract
-
-
-detect_faces
-''''''''''''
-Detection of faces
-
-
-
+Core functionalities
+''''''''''''''''''''''
 After fit_transform:
 
+Fit and transform
+^^^^^^^^^^^^^^^^^^^^
+Fit and transform
+
+detect_faces
+^^^^^^^^^^^^^^
+Detection of faces
+
 cluster
-''''''''''''
+^^^^^^^^^
 Clustering of images
 
 find
-''''''''''''
+^^^^^^^
 Find images
 
 unique
-''''''''''''
+^^^^^^^^^^
 Unique images
+
+
+
+Generic
+''''''''''''''''
+Generic functionalities
+
+wget
+^^^^^^^^^
+Get url internetstuff
+
+unzip
+^^^^^^^^^
+unzipping
+
+listdir
+^^^^^^^^^
+list directories
+
+set_logger
+^^^^^^^^^^^^
+Change status of the logger
+
+clean_files
+^^^^^^^^^^^^
+Cleaining files
+
+extract_hog
+^^^^^^^^^^^^
+hog extract
+
+extract_pca
+^^^^^^^^^^^^
+pca extract

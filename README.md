@@ -13,10 +13,19 @@
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
 The aim of ``clustimage`` is to detect natural groups or clusters of images.
-Most of the packages regarding imaging rely on (deep) neural networks, and try solve the problem of predicting "whats on the image".
-However, not all challanges are supervised, and it can be quit a breath to carefully group similar images in an unsupervised manner, or simply identify the unique images.
 
-``clustimage`` is a generic approach for unsupervised clustering of images and overcomes the following challenges: 
+Image recognition is a computer vision task for identifying and verifying objects/persons on a photograph.
+We can seperate the image recognition task into the two broad tasks, namely the supervised and unsupervised task.
+In case of the supervised task, we have to classify an image into a fixed number of learned categories. Most packages rely on (deep) neural networks, and try solve the problem of predicting "whats on the image".
+In case of the unsupervised task, we do not depend on the fact that training data is required but we can interpret the input data and find natural groups or clusters.
+However, it can be quit a breath to carefully group similar images in an unsupervised manner, or simply identify the unique images.
+
+The aim of ``clustimage`` is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clusters across the feature space.
+The optimal number of clusters can be determined using well known methods suchs as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
+With ``clustimage`` we aim to determine the most robust clustering by efficiently searching across the parameter and evaluation the clusters.
+Besides clustering of images, the ``clustimage`` model can also be used to find the most similar images for a new unseen sample.
+
+``clustimage`` overcomess the following challenges: 
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.
     * 3. Finds higly similar images for a given input image.
