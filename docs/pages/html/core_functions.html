@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preprocessing &mdash; clustimage clustimage documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PCA" href="Feature%20Extraction.html" />
+    <link rel="prev" title="Installation" href="Installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> clustimage
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#quickstart">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core functionalities</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#colorscale">Colorscale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#imscale">imscale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#imresize">imresize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#wget">wget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#unzip">unzip</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#listdir">listdir</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#set-logger">set_logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#clean-files">clean_files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#extract-hog">extract_hog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#extract-pca">extract_pca</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#detect-faces">detect_faces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#cluster">cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#find">find</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#unique">unique</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Feature Extraction/Embedding</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html">PCA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#hog">HOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#tsne">tSNE</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html">Gridsearch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#silhouette">Silhouette</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">DBindex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">DBSCAN</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Prediction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="prediction.html">Prediction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Performance</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Save and Load</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clustimage.clustimage.html">API References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">clustimage</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Preprocessing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/core_functions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <hr class="docutils" id="code-directive" />
+<p>This section will describe the core functionalities that in <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>.
+Many of the functionalities are written in a generic manner to make sure that it can be used in various applications.</p>
+<section id="preprocessing">
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline"></a></h1>
+<p>The functions that handle the preprocessing of images is concentrated into the function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.imread" title="clustimage.clustimage.Clustimage.imread"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imread()</span></code></a>.
+This function reads the full path to the image that needs to be imported, and is subsequently colour-scaled (gray/rgb), scaled and resized.</p>
+<dl class="simple">
+<dt>The pre-processing has 4 steps and are exectued in this order.</dt><dd><ul class="simple">
+<li><ol class="arabic simple">
+<li><p>Import data.</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="2">
+<li><p>Scaling color pixels between [0-255]</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="3">
+<li><p>Conversion to gray-scale (user defined)</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="4">
+<li><p>Resizing (to reduce computation time)</p></li>
+</ol>
+</li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="c1"># Load example dataset</span>
+<span class="n">path_to_imgs</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Run specific function to read preproces the images</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path_to_imgs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">))</span>
+<span class="c1"># Plot the flower after preprocessing</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id1">
+<caption><span class="caption-text">Left is orignal input figure and right is after preprocessing</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figP1" src="_images/flower_original.png" /></p></td>
+<td><p><img alt="figP2" src="_images/flower_example1.png" /></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="colorscale">
+<h1>Colorscale<a class="headerlink" href="#colorscale" title="Permalink to this headline"></a></h1>
+<p>The <em>img_read</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_read()</span></code> reads the images and colour scales it based on the input parameter <code class="docutils literal notranslate"><span class="pre">grayscale</span></code>.
+This function depends on functionalities from <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> and uses the <code class="docutils literal notranslate"><span class="pre">cv2.COLOR_GRAY2RGB</span></code> setting.</p>
+</section>
+<section id="imscale">
+<h1>imscale<a class="headerlink" href="#imscale" title="Permalink to this headline"></a></h1>
+<p>The <em>scale</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_scale()</span></code> is only applicable for 2D-arrays (images).
+Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.</p>
+<p>The images are scaled between [0-255] by the following equation:</p>
+<blockquote>
+<div><p>Ximg * (255 / max(Ximg) )</p>
+</div></blockquote>
+</section>
+<section id="imresize">
+<h1>imresize<a class="headerlink" href="#imresize" title="Permalink to this headline"></a></h1>
+<p>The resize function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.img_resize()</span></code> resizes the images into 128x128 pixels (default) or an user-defined size.
+The function depends on the functionality of <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> with the interpolation: <code class="docutils literal notranslate"><span class="pre">interpolation=cv2.INTER_AREA</span></code>.</p>
+</section>
+<section id="wget">
+<h1>wget<a class="headerlink" href="#wget" title="Permalink to this headline"></a></h1>
+<p>Get url internetstuff</p>
+</section>
+<section id="unzip">
+<h1>unzip<a class="headerlink" href="#unzip" title="Permalink to this headline"></a></h1>
+<p>unzipping</p>
+</section>
+<section id="listdir">
+<h1>listdir<a class="headerlink" href="#listdir" title="Permalink to this headline"></a></h1>
+<p>list directories</p>
+</section>
+<section id="set-logger">
+<h1>set_logger<a class="headerlink" href="#set-logger" title="Permalink to this headline"></a></h1>
+<p>Change status of the logger</p>
+</section>
+<section id="clean-files">
+<h1>clean_files<a class="headerlink" href="#clean-files" title="Permalink to this headline"></a></h1>
+<p>Cleaining files</p>
+</section>
+<section id="extract-hog">
+<h1>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this headline"></a></h1>
+<p>hog extract</p>
+</section>
+<section id="extract-pca">
+<h1>extract_pca<a class="headerlink" href="#extract-pca" title="Permalink to this headline"></a></h1>
+<p>pca extract</p>
+</section>
+<section id="detect-faces">
+<h1>detect_faces<a class="headerlink" href="#detect-faces" title="Permalink to this headline"></a></h1>
+<p>Detection of faces</p>
+<p>After fit_transform:</p>
+</section>
+<section id="cluster">
+<h1>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h1>
+<p>Clustering of images</p>
+</section>
+<section id="find">
+<h1>find<a class="headerlink" href="#find" title="Permalink to this headline"></a></h1>
+<p>Find images</p>
+</section>
+<section id="unique">
+<h1>unique<a class="headerlink" href="#unique" title="Permalink to this headline"></a></h1>
+<p>Unique images</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Feature%20Extraction.html" class="btn btn-neutral float-right" title="PCA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Erdogan Taskesen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
