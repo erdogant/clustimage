@@ -2,11 +2,15 @@ from clustimage.clustimage import Clustimage
 
 from clustimage.clustimage import (
     import_example,
+    wget,
+    unzip,
+    listdir,
+    set_logger,
     )
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 # module level doc-string
 __doc__ = """

@@ -114,32 +114,36 @@ class Clustimage():
     >>> from clustimage import Clustimage
     >>>
     >>> # Init with default settings
-    >>> cl = Clustimage()
-    >>> # load example with flowers
-    >>> pathnames = cl.import_example(data='flowers')
-    >>> # Detect cluster
-    >>> results = cl.fit_transform(pathnames, min_clust=7)
+    >>> cl = Clustimage(method='pca')
+    >>>
+    >>> # load example with faces
+    >>> X = cl.import_example(data='digits')
+    >>>
+    >>> # Cluster digits
+    >>> results = cl.fit_transform(X)
+    >>>
+    >>> # Cluster evaluation
+    >>> cl.clusteval.plot()
+    >>> cl.clusteval.scatter(cl.results['xycoord'])
+    >>> cl.pca.plot()
+    >>>
+    >>> # Unique
+    >>> cl.plot_unique(img_mean=False)
+    >>> cl.results_unique.keys()
+    >>>
+    >>> # Scatter
+    >>> cl.scatter(img_mean=False, zoom=3)
+    >>>
+    >>> # Plot clustered images
+    >>> cl.plot(labels=8)
     >>>
     >>> # Plot dendrogram
     >>> cl.dendrogram()
-    >>> # Scatter
-    >>> cl.scatter(dotsize=50)
-    >>> # Plot clustered images
-    >>> cl.plot(labels=[2,8])
     >>>
-    >>> # Make prediction
-    >>> results_find = cl.find(pathnames[0:5], k=None, alpha=0.05)
+    >>> # Find images
+    >>> results_find = cl.find(X[0,:], k=None, alpha=0.05)
     >>> cl.plot_find()
     >>> cl.scatter()
-    >>> 
-    >>> # Plot the explained variance
-    >>> cl.pca.plot()
-    >>> # Make scatter plot of PC1 vs PC2
-    >>> cl.pca.scatter(legend=False, label=True)
-    >>> # Plot the evaluation of the number of clusters
-    >>> cl.clusteval.plot()
-    >>> # Make silhouette plot
-    >>> cl.clusteval.scatter(cl.results['xycoord'])
     >>>
 
     """
@@ -179,6 +183,12 @@ class Clustimage():
 
     def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
         """Group samples into clusters that are similar in their feature space.
+        
+        Description
+        -----------
+        The fit_transform function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
+        The optimal number of clusters are determined using well known methods suchs as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
+        Based on the clustering results, the unique images are also gathered.
 
         Parameters
         ----------
@@ -218,7 +228,7 @@ class Clustimage():
                 * 'weighted'
                 * 'centroid'
                 * 'median'
-        min_clust : int, (default: 2)
+        min_clust : int, (default: 3)
             Number of clusters that is evaluated greater or equals to min_clust.
         max_clust : int, (default: 25)
             Number of clusters that is evaluated smaller or equals to max_clust.
@@ -248,27 +258,41 @@ class Clustimage():
         >>> from clustimage import Clustimage
         >>>
         >>> # Init with default settings
-        >>> cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':10})
+        >>> cl = Clustimage(method='pca', grayscale=True)
+        >>>
         >>> # load example with faces
         >>> pathnames = cl.import_example(data='faces')
         >>> # Detect faces
         >>> face_results = cl.detect_faces(pathnames)
+        >>>
         >>> # Cluster extracted faces
         >>> results = cl.fit_transform(face_results['pathnames_face'])
         >>>
-        >>> # Plot dendrogram
-        >>> cl.dendrogram()
+        >>> # Cluster evaluation
+        >>> cl.clusteval.plot()
+        >>> cl.clusteval.scatter(cl.results['xycoord'])
+        >>>
+        >>> # Unique
+        >>> cl.plot_unique(img_mean=False)
+        >>> cl.results_unique.keys()
+        >>>
         >>> # Scatter
-        >>> cl.scatter(dotsize=50)
+        >>> cl.scatter(dotsize=50, img_mean=False)
+        >>>
         >>> # Plot clustered images
-        >>> cl.plot(ncols=2)
+        >>> cl.plot(labels=8)
         >>> # Plot facces
         >>> cl.plot_faces()
         >>>
-        >>> # Make prediction
-        >>> results_find = cl.find(face_results['pathnames_face'][2][0], k=None, alpha=0.05)
+        >>> # Plot dendrogram
+        >>> cl.dendrogram()
+        >>>
+        >>> # Find images
+        >>> results_find = cl.find(face_results['pathnames_face'][2], k=None, alpha=0.05)
         >>> cl.plot_find()
         >>> cl.scatter()
+        >>> cl.pca.plot()
+        >>>
 
         """
         # Clean readily fitted models to ensure correct results
@@ -334,12 +358,10 @@ class Clustimage():
                 * 'weighted'
                 * 'centroid'
                 * 'median'
-        min_clust : int, (default: 2)
+        min_clust : int, (default: 3)
             Number of clusters that is evaluated greater or equals to min_clust.
         max_clust : int, (default: 25)
             Number of clusters that is evaluated smaller or equals to max_clust.
-        savemem : bool, (default: False)
-            Save memmory when working with large datasets. Note that htis option only in case of KMeans.
 
         Returns
         -------
@@ -351,25 +373,30 @@ class Clustimage():
         -------
         >>> from clustimage import Clustimage
         >>>
-        >>> # Init with default settings
-        >>> cl = Clustimage(method='pca')
+        >>> # Init
+        >>> cl = Clustimage(method='hog')
+        >>> 
         >>> # load example with digits
-        >>> X = cl.import_example(data='digits')
+        >>> pathnames = cl.import_example(data='flowers')
+        >>>
         >>> # Find clusters
-        >>> results = cl.fit_transform(X)
-        >>> # Scatter
-        >>> cl.scatter(dotsize=25)
+        >>> results = cl.fit_transform(pathnames)
+        >>>
+        >>> # Evaluate plot
+        >>> cl.clusteval.plot()
+        >>> cl.scatter(dotsize=50, img_mean=False)
         >>>
         >>> # Change the clustering evaluation approach, metric, minimum expected nr. of clusters etc.
-        >>> labels = cl.cluster(cluster='agglomerative', evaluate='dbindex', metric='euclidean', linkage='ward', min_clust=2, max_clust=25)
+        >>> labels = cl.cluster(min_clust=5, max_clust=25)
         >>>
-        >>> # Scatter
-        >>> cl.scatter(dotsize=25)
+        >>> # Evaluate plot
+        >>> cl.clusteval.plot()
+        >>> cl.scatter(dotsize=50, img_mean=False)
         >>>
-        >>> # Plot clustered images
-        >>> cl.plot(cmap='binary')
-        >>> # Plot dendrogram
-        >>> cl.dendrogram()
+        >>> # If you want to cluster on the low-dimensional space 
+        >>> labels = cl.cluster(min_clust=5, max_clust=25, cluster_space='low', cluster='dbscan')
+        >>> cl.scatter(dotsize=50, img_mean=False)
+        >>>
 
         """
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
@@ -414,15 +441,33 @@ class Clustimage():
             raise Exception(logger.error('Results in missing! Hint: try to first fit_transform() your data!'))
 
     def unique(self, metric=None):
-        """Give the unique images back.
+        """Compute the unique images.
 
         Description
         -----------
-        Take per cluster the image that has the most similarities with others.
+        The unique images are detected by first computing the center of the cluster, and then taking the image closest to the center.
 
         Returns
         -------
         None.
+
+        Example
+        -------
+        >>> from clustimage import Clustimage
+        >>>
+        >>> # Init with default settings
+        >>> cl = Clustimage()
+        >>>
+        >>> # load example with faces
+        >>> X = cl.import_example(data='digits')
+        >>>
+        >>> # Cluster digits
+        >>> _ = cl.fit_transform(X)
+        >>>
+        >>> # Unique
+        >>> cl.plot_unique(img_mean=False)
+        >>> cl.results_unique.keys()
+        >>>
 
         """
         # Check status
@@ -468,9 +513,17 @@ class Clustimage():
 
         Description
         -----------
-        Computes K-nearest neighbour and P-values for pathnames [y] based on the fitted distribution from X using the distance metric that is defined in the fit_transform() function.
-        The empirical distribution of X is used to estimate the loc/scale/arg parameters for a theoretical distribution.
-        For each image, the probability is computed for input variables y, and returns the images that are <= alpha. If both k and alpha is specified, the union is taken.
+        Finding images can be used in two manners:
+        
+            * Based on the k-nearest neighbour 
+            * Based on significance after probability density fitting 
+        
+        In both cases, first the adjacency matrix is computed using the distance metric (default Euclidean).
+        In case of the K-nearest neighbour approach, the k nearest neighbours are determined.
+        In case of significance, the adjacency matrix is used to to estimate the loc/scale/arg parameters for various theoretical distribution.
+        The tested disributions are *['norm', 'expon', 'uniform', 'gamma', 't']*. The fitted distribution describes the similarity-distribution of samples.
+        For each new image, the probability is computed, and returns the images that are <= *alpha* in the lower bound of the distribution.
+        If both k and alpha is specified, the union of detected samples is taken.
         Note that the metric can be changed but this may lead to confusions as the results will not intuitively match the scatter plots. It is recommended to keep the metric in fit_transform() similar to that of here.
 
         Parameters
@@ -498,6 +551,25 @@ class Clustimage():
         dict.
             Images are returned that are either k-nearest neighbour or significant.
 
+        Example
+        -------
+        >>> from clustimage import Clustimage
+        >>>
+        >>> # Init with default settings
+        >>> cl = Clustimage(method='pca')
+        >>>
+        >>> # load example with faces
+        >>> X = cl.import_example(data='digits')
+        >>>
+        >>> # Cluster digits
+        >>> results = cl.fit_transform(X)
+        >>>
+        >>> # Find images
+        >>> results_find = cl.find(X[0,:], k=None, alpha=0.05)
+        >>> cl.plot_find()
+        >>> cl.scatter(zoom=3)
+        >>>
+
         """
         out = None
         if (k is None) and (alpha is None):
@@ -519,6 +591,11 @@ class Clustimage():
 
     def detect_faces(self, pathnames):
         """Detect and extract faces from images.
+        
+        Description
+        -----------
+        To cluster faces on images, we need to detect, and extract the faces from the images which is done in this function.
+        Faces and eyes are detected using ``haarcascade_frontalface_default.xml`` and ``haarcascade_eye.xml`` in ``python-opencv``.
 
         Parameters
         ----------
@@ -545,31 +622,23 @@ class Clustimage():
 
         Example
         -------
-
         >>> from clustimage import Clustimage
         >>>
         >>> # Init with default settings
-        >>> cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':10})
+        >>> cl = Clustimage(method='pca', grayscale=True)
+        >>>
         >>> # load example with faces
         >>> pathnames = cl.import_example(data='faces')
+        >>>
         >>> # Detect faces
         >>> face_results = cl.detect_faces(pathnames)
-        >>> # Cluster extracted faces
+        >>>
+        >>> # Cluster the faces
         >>> results = cl.fit_transform(face_results['pathnames_face'])
         >>>
-        >>> # Plot dendrogram
-        >>> cl.dendrogram()
-        >>> # Scatter
-        >>> cl.scatter(dotsize=100)
-        >>> # Plot clustered images
-        >>> cl.plot(ncols=2)
         >>> # Plot facces
-        >>> cl.plot_faces()
+        >>> cl.plot_faces(faces=True, eyes=True)
         >>>
-        >>> # Find image
-        >>> results_find = cl.find(face_results['pathnames_face'][2], k=None, alpha=0.05)
-        >>> cl.plot_find()
-        >>> cl.scatter()
 
         """
         # If face detection, grayscale should be True.
@@ -653,6 +722,31 @@ class Clustimage():
         feat : array-like
             NxF array for which N are the samples and F the reduced feature space.
 
+        Examples
+        --------
+        >>> import matplotlib.pyplot as plt
+        >>> from clustimage import Clustimage
+        >>> 
+        >>> # Init
+        >>> cl = Clustimage(method='hog')
+        >>> 
+        >>> # Load example data
+        >>> pathnames = cl.import_example(data='flowers')
+        >>> # Read image according the preprocessing steps
+        >>> img = cl.imread(pathnames[0], dim=(128,128))
+        >>> 
+        >>> # Extract HOG features
+        >>> img_hog = cl.extract_hog(img)
+        >>> 
+        >>> plt.figure();
+        >>> fig,axs=plt.subplots(1,2)
+        >>> axs[0].imshow(img.reshape(128,128,3))
+        >>> axs[0].axis('off')
+        >>> axs[0].set_title('Preprocessed image', fontsize=10)
+        >>> axs[1].imshow(img_hog.reshape(128,128), cmap='binary')
+        >>> axs[1].axis('off')
+        >>> axs[1].set_title('HOG', fontsize=10)
+
         """
         # If 1D-vector, make 2D-array
         if len(X.shape)==1: X = X.reshape(-1,1).T
@@ -731,8 +825,11 @@ class Clustimage():
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
             logger.info('Extracting images from: [%s]', Xraw)
-            Xraw = self.listdir(Xraw, ext=self.params['ext'])
+            Xraw = listdir(Xraw, ext=self.params['ext'])
             logger.info('Extracted images: [%s]', len(Xraw))
+
+        if isinstance(Xraw, str) and os.path.isfile(Xraw):
+            Xraw = [Xraw]
 
         # 2. Read images
         if isinstance(Xraw, list):
@@ -987,6 +1084,14 @@ class Clustimage():
     def imread(self, filepath, grayscale=1, dim=(128, 128), flatten=True):
         """Read and pre-processing of images.
 
+        Description
+        -----------
+        The pre-processing has 4 steps and are exectued in this order.
+            * 1. Import data.
+            * 2. Conversion to gray-scale (user defined)
+            * 3. Scaling color pixels between [0-255]
+            * 4. Resizing
+
         Parameters
         ----------
         filepath : str
@@ -1003,6 +1108,25 @@ class Clustimage():
         -------
         img : array-like
             Imported and processed image.
+
+        Examples
+        ---------
+        >>> # Import libraries
+        >>> from clustimage import Clustimage
+        >>> import matplotlib.pyplot as plt
+        >>> 
+        >>> # Init
+        >>> cl = Clustimage()
+        >>> 
+        >>> # Load example dataset
+        >>> pathnames = cl.import_example(data='flowers')
+        >>> # Preprocessing of the first image
+        >>> img = cl.imread(pathnames[0], dim=(128,128))
+        >>> 
+        >>> # Plot
+        >>> plt.figure()
+        >>> plt.imshow(img.reshape(128,128,3))
+        >>> plt.axis('off')
 
         """
         # Read the image
@@ -1429,8 +1553,8 @@ class Clustimage():
         _ = fig.suptitle(title, fontsize=16)
         plt.pause(0.1)
 
-    def listdir(self, dirpath, ext=['png','tiff','jpg']):
-        return _listdir(dirpath, ext=ext)
+    # def listdir(self, dirpath, ext=['png','tiff','jpg']):
+        # return _listdir(dirpath, ext=ext)
     
     def clean_files(self):
         # Cleaning
@@ -1589,6 +1713,7 @@ def imscale(img):
     -------
     img : array-like
         Scaled image.
+
     """
     try:
         # Normalizing between 0-255
@@ -1699,13 +1824,13 @@ def import_example(data='flowers', url=None):
     # Unzip
     dirpath = unzip(path_to_data)
     # Import local dataset
-    image_files = _listdir(dirpath)
+    image_files = listdir(dirpath)
     # Return
     return image_files
 
 
 # %% Recursively list files from directory
-def _listdir(dirpath, ext=['png','tiff','jpg']):
+def listdir(dirpath, ext=['png','tiff','jpg']):
     """ Recursively collect images from path.
 
     Parameters
@@ -1719,6 +1844,11 @@ def _listdir(dirpath, ext=['png','tiff','jpg']):
     -------
     getfiles : list of str.
         Full pathnames to images.
+
+    Example
+    -------
+    >>> import clustimage as cl
+    >>> pathnames = cl.listdir('c://temp//flower_images')
 
     """
     if not isinstance('dirpath', str): raise Exception(print('Error: "dirpath" should be of type string.'))
@@ -1746,6 +1876,11 @@ def unzip(path_to_zip):
     -------
     getpath : str
         Path containing the unzipped files.
+
+    Example
+    -------
+    >>> import clustimage as cl
+    >>> dirpath = cl.unzip('c://temp//flower_images.zip')
 
     """
     getpath = None
@@ -1781,6 +1916,11 @@ def wget(url, writepath):
     Returns
     -------
     None.
+
+    Example
+    -------
+    >>> import clustimage as cl
+    >>> images = cl.wget('https://erdogant.github.io/datasets/flower_images.zip', 'c://temp//flower_images.zip')
 
     """
     r = requests.get(url, stream=True)
