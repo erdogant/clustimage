@@ -26,11 +26,13 @@ With ``clustimage`` we aim to determine the most robust clustering by efficientl
 Besides clustering of images, the ``clustimage`` model can also be used to find the most similar images for a new unseen sample.
 
 ``clustimage`` overcomess the following challenges: 
+
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.
     * 3. Finds higly similar images for a given input image.
 
 ``clustimage`` is fun because:
+
     * It does not require a learning proces.
     * It can group any set of images.
     * It can return only the unique() images.
