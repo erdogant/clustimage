@@ -13,15 +13,21 @@
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
 * clustimage is a python package for unsupervised clustering of images.
-The number of avaialble images has become huge over time for which (deep) neural networks are ideal for predictive purposes.
-However, it can be quit a complex approach to grouping a set of images that are highly similar in an unsupervised manner, or to identify the "unique" images in a directory.
-With ``clustimage`` I want to overcome these challanges and created a generic approach to unsupervised cluster images.
+Most of the packages regarding imaging rely on (deep) neural networks, and try solve the problem of prediction "whats on the image".
+However, not all challanges are supervised, and it can be quit a breath to carefully group similar images in an unsupervised manner, or simply identify the unique images.
+``clustimage`` is a generic approach for unsupervised clustering of images, and I overcome the following challenges: 
+    * 1. Robustly group similar images.
+    * 2. Return the unique images.
+    * 3. Find similar images given an input image.
 
-clustimage is fun because:
-* it does not require a learning proces.
-* it can group any set of images.
-* It can return only the unique() images.
-* Many many plots to improve understanding of the feature-space and sample-sample relationships
+``clustimage`` is fun because:
+    * it does not require a learning proces.
+    * it can group any set of images.
+    * It can return only the unique() images.
+    * it can find highly similar images given an input image.
+    * It provided many plots to improve understanding of the feature-space and sample-sample relationships
+    * It is build on core statistics, such as PCA, HOG and many more, and therefore it does not has a dependency block.
+    * It works out of the box.
 
 ### Installation
 * Install clustimage from PyPI (recommended). clustimage is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
