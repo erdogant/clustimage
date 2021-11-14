@@ -155,9 +155,11 @@ class Clustimage():
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
         self.params = {}
-        self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+        # self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        # self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
         self.params['cv2_imread_colorscale'] = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+        self.params['face_cascade'] = 'cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")'
+        self.params['eye_cascade'] = 'cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")'
 
         self.params['method'] = method
         self.params['embedding'] = embedding
@@ -918,9 +920,13 @@ class Clustimage():
         X = self.preprocessing(pathname, grayscale=self.params['cv2_imread_colorscale'], dim=None, flatten=False)
         # Get the image and Convert into grayscale if required
         img = X['img'][0]
-        # img = to_gray(X['img'][0])
+
         # Detect faces using the face_cascade
-        coord_faces = self.params['face_cascade'].detectMultiScale(img, 1.3, 5)
+        face_cascade = eval(self.params['face_cascade'])
+        coord_faces = face_cascade.detectMultiScale(img, 1.3, 5)
+        # coord_faces = self.params['face_cascade'].detectMultiScale(img, 1.3, 5)
+        # Setup the eye cascade
+        eye_cascade = eval(self.params['eye_cascade'])
 
         # Collect the faces from the image
         for (x,y,w,h) in coord_faces:
@@ -935,7 +941,8 @@ class Clustimage():
             # imgstore.append(imgface.flatten())
             imgstore.append(img_flatten(imgface))
             # Detect eyes
-            eyes = self.params['eye_cascade'].detectMultiScale(imgface)
+            eyes = eye_cascade.detectMultiScale(imgface)
+            # eyes = self.params['eye_cascade'].detectMultiScale(imgface)
             if eyes==(): eyes=None
             coord_eyes.append(eyes)
         # Return
@@ -1034,14 +1041,14 @@ class Clustimage():
         # Store data
         storedata = {}
         storedata['results'] = self.results
-        storedata['results_faces'] = self.results_faces
-        storedata['results_unique'] = self.results_unique
         storedata['params'] = self.params
         storedata['params_pca'] = self.params_pca
         storedata['params_hog'] = self.params_hog
-        storedata['distfit'] = self.distfit
-        storedata['clusteval'] = self.clusteval
-        storedata['pca'] = self.pca
+        if hasattr(self,'results_faces'): storedata['results_faces'] = self.results_faces
+        if hasattr(self,'results_unique'): storedata['results_unique'] = self.results_unique
+        if hasattr(self,'distfit'): storedata['distfit'] = self.distfit
+        if hasattr(self,'clusteval'): storedata['clusteval'] = self.clusteval
+        if hasattr(self,'pca'): storedata['pca'] = self.pca
         # Save
         status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
         logger.info('Saving..')
@@ -1074,18 +1081,18 @@ class Clustimage():
         # Store in self
         if storedata is not None:
             self.results = storedata['results']
-            self.results_faces = storedata['results_faces']
-            self.results_unique = storedata['results_unique']
             self.params = storedata['params']
             self.params_pca = storedata['params_pca']
             self.params_hog = storedata['params_hog']
-            self.distfit = storedata['distfit']
-            self.clusteval = storedata['clusteval']
-            self.pca = storedata['pca']
+            self.results_faces = storedata.get('results_faces', None)
+            self.results_unique = storedata.get('results_unique', None)
+            self.distfit = storedata.get('distfit', None)
+            self.clusteval = storedata.get('clusteval', None)
+            self.pca = storedata.get('pca', None)
 
             logger.info('Load succesful!')
             # Return results
-            return self.results
+            # return self.results
         else:
             logger.warning('Could not load previous results!')
 
@@ -1334,6 +1341,8 @@ class Clustimage():
                         logger.info('[%d] similar images detected for input image: [%s]' %(len(find_img), key))
                 except:
                     pass
+        else:
+            logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
     def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, figsize=(15,10)):
         """Plot the results.

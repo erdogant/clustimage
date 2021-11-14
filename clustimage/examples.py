@@ -56,7 +56,7 @@ results = cl.fit_transform(face_results['pathnames_face'])
 
 
 out = cl.unique()
-cl.plot_unique()
+cl.plot_unique(img_mean=True)
 
 out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
 cl.plot_find()
@@ -87,6 +87,9 @@ cl.clusteval.scatter(cl.results['feat'])
 cl.clusteval.scatter(cl.results['xycoord'])
 cl.pca.plot()
 cl.pca.scatter(legend=False, label=False)
+
+cl.save(overwrite=True)
+cl.load()
 
 
 # %%
