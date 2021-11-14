@@ -19,32 +19,46 @@ clustimage
 
 Description
 -----------
-Python package clustimage is for unsupervised clustering of images.
-Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
-Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
-Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.
-The following 4 steps are taken:
+Python package clustimage is to detect natural groups or clusters of images.
+
+The aim of ``clustimage`` is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clusters across the feature space.
+The optimal number of clusters are determined using well known methods suchs as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
+With ``clustimage`` we aim to determine the most robust clustering by efficiently searching across the parameter and evaluation the clusters.
+Besides clustering of images, the ``clustimage`` model can also be used to find the most similar images for a new unseen sample.
 
 Example
 -------
 >>> from clustimage import Clustimage
 >>>
 >>> # Init with default settings
->>> cl = Clustimage()
->>> # load example with flowers
->>> path_to_imgs = cl.import_example(data='flowers')
->>> # Detect cluster
->>> results = cl.fit_transform(path_to_imgs, min_clust=10)
+>>> cl = Clustimage(method='pca')
+>>>
+>>> # load example with faces
+>>> X = cl.import_example(data='digits')
+>>>
+>>> # Cluster digits
+>>> results = cl.fit_transform(X)
+>>>
+>>> # Cluster evaluation
+>>> cl.clusteval.plot()
+>>> cl.clusteval.scatter(cl.results['xycoord'])
+>>> cl.pca.plot()
+>>>
+>>> # Unique
+>>> cl.plot_unique(img_mean=False)
+>>> cl.results_unique.keys()
+>>>
+>>> # Scatter
+>>> cl.scatter(img_mean=False, zoom=3)
+>>>
+>>> # Plot clustered images
+>>> cl.plot(labels=8)
 >>>
 >>> # Plot dendrogram
 >>> cl.dendrogram()
->>> # Scatter
->>> cl.scatter(dotsize=50)
->>> # Plot clustered images
->>> cl.plot()
 >>>
->>> # Make prediction
->>> results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+>>> # Find images
+>>> results_find = cl.find(X[0,:], k=None, alpha=0.05)
 >>> cl.plot_find()
 >>> cl.scatter()
 >>>
