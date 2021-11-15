@@ -147,7 +147,7 @@ class Clustimage():
     >>>
 
     """
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':50, 'detect_outliers':None}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':50}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self._clean()
@@ -159,8 +159,6 @@ class Clustimage():
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
         self.params = {}
-        # self.params['face_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        # self.params['eye_cascade'] = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
         self.params['cv2_imread_colorscale'] = cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
         self.params['face_cascade'] = 'cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")'
         self.params['eye_cascade'] = 'cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")'
@@ -176,6 +174,7 @@ class Clustimage():
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
 
+        if 'detect_outliers' not in params_pca: params_pca['detect_outliers'] = 'None'
         self.params_pca = params_pca
         self.params_hog = params_hog
 
@@ -513,18 +512,18 @@ class Clustimage():
 
         Description
         -----------
-        Finding images can be used in two manners:
+        Finding images can be performed in two manners:
         
             * Based on the k-nearest neighbour 
             * Based on significance after probability density fitting 
-        
-        In both cases, first the adjacency matrix is computed using the distance metric (default Euclidean).
-        In case of the K-nearest neighbour approach, the k nearest neighbours are determined.
-        In case of significance, the adjacency matrix is used to to estimate the loc/scale/arg parameters for various theoretical distribution.
-        The tested disributions are *['norm', 'expon', 'uniform', 'gamma', 't']*. The fitted distribution describes the similarity-distribution of samples.
-        For each new image, the probability is computed, and returns the images that are <= *alpha* in the lower bound of the distribution.
-        If both k and alpha is specified, the union of detected samples is taken.
-        Note that the metric can be changed but this may lead to confusions as the results will not intuitively match the scatter plots. It is recommended to keep the metric in fit_transform() similar to that of here.
+
+        In both cases, the adjacency matrix is first computed using the distance metric (default Euclidean).
+        In case of the k-nearest neighbour approach, the k nearest neighbours are determined.
+        In case of significance, the adjacency matrix is used to to estimate the best fit for the loc/scale/arg parameters across various theoretical distribution.
+        The tested disributions are *['norm', 'expon', 'uniform', 'gamma', 't']*. The fitted distribution is basically the similarity-distribution of samples.
+        For each new (unseen) input image, the probability of similarity is computed across all images, and the images are returned that are P <= *alpha* in the lower bound of the distribution.
+        If case both *k* and *alpha* are specified, the union of detected samples is taken.
+        Note that the metric can be changed in this function but this may lead to confusions as the results will not intuitively match with the scatter plots as these are determined using metric in the fit_transform() function.
 
         Parameters
         ----------
@@ -1386,12 +1385,18 @@ class Clustimage():
                 colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
                 for key in self.results['predict'].keys():
                     if self.results['predict'].get(key).get('y_idx', None) is not None:
-                        x,y = self.results['predict']['feat'].iloc[:,0:2].loc[key]
+                        x = self.results['predict']['feat'].iloc[:,0].loc[key]
+                        if len(self.results['predict']['feat'])>=2:
+                            y = self.results['predict']['feat'].iloc[:,1].loc[key]
+                        else:
+                            y=0
                         idx = self.results['predict'][key]['y_idx']
                         # Scatter
                         ax.scatter(x, y, color=colours[key], edgecolors=[0,0,0])
                         ax.text(x,y, key, color=colours[key])
-                        ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
+                        if self.results['feat'].shape[1]>=2:
+                            ax.scatter(self.results['feat'][idx][:,0], self.results['feat'][idx][:,1], edgecolors=[0,0,0])
+                                
             else:
                 logger.info('Mapping predicted results is only possible when uing method="pca".')
 

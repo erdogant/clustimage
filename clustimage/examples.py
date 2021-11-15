@@ -95,8 +95,7 @@ cl.load()
 # %%
 from clustimage import Clustimage
 # init
-cl = Clustimage(store_to_disk=True)
-cl = Clustimage(method='pca', embedding='tsne', grayscale=True, params_pca={'n_components':50}, store_to_disk=True)
+cl = Clustimage(method='pca', params_pca={'n_components':50})
 # cl = Clustimage(method='hog', embedding='tsne',grayscale=False, params_pca={'n_components':50})
 # cl = Clustimage(method='hog', embedding='tsne', grayscale=False, dim=(8,8), params_pca={'n_components':50})
 # Example data
