@@ -2,11 +2,8 @@
 
 -------------------------------------
 
-Examples
-''''''''''
-
 Caltech101 dataset
---------------------------------------------------
+''''''''''''''''''''
 
 Lets use ``clustimage`` on a the **Caltech101** dataset to clusters the images.
 The pictures of objects belonging to 101 categories. About 40 to 800 images per category. Most categories have about 50 images. The size of each image is roughly 300 x 200 pixels.
@@ -16,13 +13,14 @@ Download the dataset over here: http://www.vision.caltech.edu/Image_Datasets/Cal
 
     from clustimage import Clustimage
     # init
-    cl = Clustimage(method='pca', params_pca={'n_components':250, 'detect_outliers':None})
-    # cl = Clustimage(method='pca', params_pca={'n_components':0.95, 'detect_outliers':None})
+    cl = Clustimage(method='pca', params_pca={'n_components':250})
     # Collect samples
     # Preprocessing, feature extraction and cluster evaluation
     results = cl.fit_transform('C://101_ObjectCategories//', min_clust=30, max_clust=60)
     # Cluster without the preprocessing
     # cl.cluster(evaluate='silhouette', min_clust=30, max_clust=60)
+    # Plot unique
+    cl.plot_unique()
     # Scatter
     cl.scatter(dotsize=10)
     # Plot one of the clusters
