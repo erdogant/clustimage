@@ -35,7 +35,7 @@ Examples can be found here: :func:`clustimage.clustimage.Clustimage.detect_faces
 
 cluster
 ^^^^^^^^^
-The *cluster* function is build on ``clusteval``, which is a python package that provides various evalution methods for unsupervised cluster validation.
+The *cluster* function is build on `clusteval`_, which is a python package that provides various evalution methods for unsupervised cluster validation.
 The optimal number of clusters are determined using well known methods such as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
 This function can be run after the ``fit_transform`` function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
 Besides changing evaluation methods and metrics, it is also possible to cluster on the low-embedded feature space. This can be done setting the parameter ``cluster_space='low'``.
@@ -44,27 +44,149 @@ Examples can be found here: :func:`clustimage.clustimage.Clustimage.cluster`
 
 find
 ^^^^^^^
-The *find* function is to detect images that are similar to that of the input image.
-Finding images can be used in two manners:
+The ``find`` function :func:`clustimage.clustimage.Clustimage.find` allows to find images that are similar to that of the input image.
+Finding images can be performed in two manners:
 
     * Based on the k-nearest neighbour 
     * Based on significance after probability density fitting 
 
-In both cases, first the adjacency matrix is computed using the distance metric (default Euclidean).
-In case of the K-nearest neighbour approach, the k nearest neighbours are determined.
-In case of significance, the adjacency matrix is used to to estimate the loc/scale/arg parameters for various theoretical distribution.
-The tested disributions are *['norm', 'expon', 'uniform', 'gamma', 't']*. The fitted distribution describes the similarity-distribution of samples.
-For each new image, the probability is computed, and returns the images that are <= *alpha* in the lower bound of the distribution.
-If both k and alpha is specified, the union of detected samples is taken.
+In both cases, the adjacency matrix is first computed using the distance metric (default Euclidean).
+In case of the k-nearest neighbour approach, the k nearest neighbours are determined.
+In case of significance, the adjacency matrix is used to to estimate the best fit for the loc/scale/arg parameters across various theoretical distribution.
+The tested disributions are *['norm', 'expon', 'uniform', 'gamma', 't']*. The fitted distribution is basically the similarity-distribution of samples.
+For each new (unseen) input image, the probability of similarity is computed across all images, and the images are returned that are P <= *alpha* in the lower bound of the distribution.
+If case both *k* and *alpha* are specified, the union of detected samples is taken.
+Note that the metric can be changed in this function but this may lead to confusions as the results will not intuitively match with the scatter plots as these are determined using metric in the fit_transform() function.
 
+Example to find similar images using 1D vector as input image.
+
+.. code:: python
+
+        from clustimage import Clustimage
+
+        # Init with default settings
+        cl = Clustimage(method='pca')
+
+        # load example with digits
+        X = cl.import_example(data='digits')
+
+        # Cluster digits
+        results = cl.fit_transform(X)
+        
+        # Lets search for the following image:
+        plt.figure(); plt.imshow(X[0,:].reshape(cl.params['dim']), cmap='binary')
+
+        # Find images
+        results_find = cl.find(X[0,:], k=None, alpha=0.05)
+
+        # Show whatever is found. This looks pretty good.
+        cl.plot_find()
+        cl.scatter(zoom=3)
+
+        # Plot the probabilities
+        filename = [*results_find.keys()][1]
+        plt.figure(figsize=(8,6))
+        plt.plot(results_find[filename]['y_proba'],'.')
+        plt.grid(True)
+        plt.xlabel('samples')
+        plt.ylabel('Pvalue')
+
+
+
+.. |figCF1| image:: ../figs/find_digit.png
+.. |figCF2| image:: ../figs/find_in_pca.png
+.. |figCF3| image:: ../figs/find_proba.png
+.. |figCF4| image:: ../figs/find_results.png
+
+.. table:: Find results for digits.
+   :align: center
+
+   +----------+----------+
+   | |figCF1| | |figCF2| | 
+   +----------+----------+
+   | |figCF3| | |figCF4| | 
+   +----------+----------+
+
+
+** Example to find similar images based on the pathname as input.**
+
+.. code:: python
+
+        from clustimage import Clustimage
+
+        # Init with default settings
+        cl = Clustimage(method='pca')
+
+        # load example with flowers
+        pathnames = cl.import_example(data='flowers')
+
+        # Cluster flowers
+        results = cl.fit_transform(pathnames[1:])
+        
+        # Lets search for the following image:
+        img = cl.imread(pathnames[10])
+        plt.figure(); plt.imshow(img.reshape((128,128,3)));plt.axis('off')
+
+        # Find images
+        results_find = cl.find(pathnames[10], k=None, alpha=0.05)
+
+        # Show whatever is found. This looks pretty good.
+        cl.plot_find()
+        cl.scatter()
+
+
+.. |figCF5| image:: ../figs/find_flowers.png
+.. |figCF6| image:: ../figs/find_flowers_scatter.png
+
+.. table:: Find results for the flower using pathname as input.
+   :align: center
+
+   +----------+----------+
+   | |figCF5| | |figCF6| | 
+   +----------+----------+
+   
 Examples can be found here: :func:`clustimage.clustimage.Clustimage.find`
 
 unique
 ^^^^^^^^^^
-The unique images are detected by first computing the center of the cluster, and then taking the image closest to the center.
+The unique images can be computed using the unique :func:`clustimage.clustimage.Clustimage.unique` and are detected by first computing the center of the cluster, and then taking the image closest to the center.
+Lets demonstrate this by example and the digits dataset.
 
-:func:`clustimage.clustimage.Clustimage.unique`
+.. code:: python
 
+        from clustimage import Clustimage
+
+        # Init with default settings
+        cl = Clustimage(method='pca')
+
+        # load example with digits
+        X = cl.import_example(data='digits')
+
+        # Find natural groups of digits
+        results = cl.fit_transform(X)
+        
+        # Show the unique detected images
+        cl.results_unique.keys()
+        
+        # Plot the digit that is located in the center of the cluster
+        cl.plot_unique(img_mean=False)
+        # Average the image per cluster and plot
+        cl.plot_unique()
+        
+        # Compute again with other metric desired
+        cl.unique()
+
+
+.. |figCF7| image:: ../figs/digits_unique1.png
+.. |figCF8| image:: ../figs/digits_unique2.png
+
+.. table:: Left: the unique detected digits in the center of eacht cluster. Right: the averaged image per cluster.
+   :align: center
+
+   +----------+----------+
+   | |figCF7| | |figCF8| | 
+   +----------+----------+
+   
 
 Preprocessing
 ''''''''''''''''
@@ -188,41 +310,10 @@ Examples can be found here: :func:`clustimage.clustimage.set_logger`
 
 extract_hog
 ^^^^^^^^^^^^
-Extracting hog features.
-Examples can be found here: :func:`clustimage.clustimage.Clustimage.extract_hog`
-
-.. code:: python
-
-    import matplotlib.pyplot as plt
-    from clustimage import Clustimage
-    
-    # Init
-    cl = Clustimage(method='hog')
-    
-    # Load example data
-    pathnames = cl.import_example(data='flowers')
-    # Read image according the preprocessing steps
-    img = cl.imread(pathnames[0], dim=(128,128))
-    
-    # Extract HOG features
-    img_hog = cl.extract_hog(img)
-    
-    plt.figure();
-    fig,axs=plt.subplots(1,2)
-    axs[0].imshow(img.reshape(128,128,3))
-    axs[0].axis('off')
-    axs[0].set_title('Preprocessed image', fontsize=10)
-    axs[1].imshow(img_hog.reshape(128,128), cmap='binary')
-    axs[1].axis('off')
-    axs[1].set_title('HOG', fontsize=10)
+Histogram of Oriented Gradients (HOG), is a feature descriptor that is often used to extract features from image data. 
+Examples can be found here :func:`clustimage.clustimage.Clustimage.extract_hog` and a more detailed explanation can be found in the **Feature Extraction** - **HOG** section.
 
 
-.. |figC1| image:: ../figs/hog_example.png
 
-.. table:: Left is orignal input figure and right the hog features
-   :align: center
-
-   +----------+
-   | |figC1|  | 
-   +----------+
+.. _clusteval: https://github.com/erdogant/clusteval
 

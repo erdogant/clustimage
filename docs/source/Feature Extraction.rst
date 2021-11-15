@@ -5,10 +5,26 @@
 PCA
 ''''''''''
 
-Principal component analysis (PCA) is the process of computing the principal components.
-In ``clustimage`` the ``pca`` library utilized to extract the first 50 (default) components.
-The use of PC's for the clustering is usefull in applications with among others faces, where so called eigenfaces are computed.
+Principal component analysis (PCA) is a feature extraction approach for which we can leverage on the first few principal components and ignoring the rest.
+In ``clustimage`` the `pca`_ library utilized to extract the first 50 (default) components.
+The use of PC's for clustering is usefull in applications with among others faces, where so called eigenfaces are computed.
 The eigenface is a low-dimensional representation of face images. It is shown that principal component analysis could be used on a collection of face images to form a set of basis features.
+
+
+.. code:: python
+
+    from clustimage import Clustimage
+    # Initialize with pca and 50 PCs
+    cl = Clustimage(method='pca', params_pca={'n_components':50})
+    # Take the number of components that covers 95% of the data
+    cl = Clustimage(method='pca', params_pca={'n_components':0.95})
+    # Load example data
+    X = cl.import_example(data='digits')
+    # Preprocessing, feature extraction and cluster evaluation
+    results = cl.fit_transform(X)
+    # Extracted PC features
+    results['feat']
+
 
 HOG
 ''''''''''
@@ -34,23 +50,41 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
 
 .. code:: python
 
+    from clustimage import Clustimage
+    # Initialize with HOG
+    cl = Clustimage(method='hog')
+    # Load example data
+    X = cl.import_example(data='digits')
+    # Preprocessing, feature extraction and cluster evaluation
+    results = cl.fit_transform(X)
+    # Extracted HOG features
+    results['feat']
+
+
+If you want to solely extract HOG features, it can be performed as following:
+
+.. code:: python
+
     import matplotlib.pyplot as plt
     from clustimage import Clustimage
-    # init
-    cl = Clustimage(method='hog', dim=(128,128))
+    
+    # Init
+    cl = Clustimage(method='hog')
+    
     # Load example data
-    path_to_imgs = cl.import_example(data='flowers')
+    pathnames = cl.import_example(data='flowers')
     # Read image according the preprocessing steps
-    img = cl.imread(imread[0], dim=cl.dim)
+    img = cl.imread(pathnames[0], dim=(128,128))
+    
     # Extract HOG features
-    img_hog = cl.extract_hog(img, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1,1))
-
+    img_hog = cl.extract_hog(img)
+    
     plt.figure();
     fig,axs=plt.subplots(1,2)
-    axs[0].imshow(img.reshape([cl.dim[0], cl.dim[1],3]))
+    axs[0].imshow(img.reshape(128,128,3))
     axs[0].axis('off')
     axs[0].set_title('Preprocessed image', fontsize=10)
-    axs[1].imshow(img_hog.reshape(cl.dim), cmap='binary')
+    axs[1].imshow(img_hog.reshape(128,128), cmap='binary')
     axs[1].axis('off')
     axs[1].set_title('HOG', fontsize=10)
 
@@ -68,29 +102,5 @@ Here it can be clearly seen that the HOG image is a matrix of 8x8 vectors that i
 If an increase of HOG features is desired, you can either increasing the image dimensions (eg 256,256) or decrease the pixels per cell (eg 8,8).
 
 
-.. code:: python
 
-    # Extract HOG features.
-    img_hog = cl.extract_hog(img, pixels_per_cell=(8, 8))
-
-    # Make figure
-    plt.figure();
-    fig,axs=plt.subplots(1,2)
-    axs[0].imshow(img.reshape([cl.dim[0], cl.dim[1],3]))
-    axs[0].axis('off')
-    axs[0].set_title('Preprocessed image', fontsize=10)
-    axs[1].imshow(img_hog.reshape(cl.dim), cmap='binary')
-    axs[1].axis('off')
-    axs[1].set_title('HOG', fontsize=10)
-
-
-.. |figF2| image:: ../figs/hog_example88.png
-
-.. table:: HOG example containing 16x16 vectors
-   :align: center
-
-   +----------+
-   | |figF2|  |
-   +----------+
-
-   
+.. _pca: https://github.com/erdogant/pca

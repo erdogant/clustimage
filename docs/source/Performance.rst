@@ -3,8 +3,7 @@
 -------------------------------------
 
 Performance
-'''''''''''''
-
+''''''''''''''''''''''
 To measure the performance of various methods implementend in ``clustimage``, we can use the **digits** dataset to determine the match between clustered sampels and the true label.
 It can be seen that multiple different parameters still result in similar good performance based on the results below.
 

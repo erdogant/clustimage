@@ -35,7 +35,7 @@ Content
 
 .. toctree::
   :maxdepth: 1
-  :caption: Feature Extraction/Embedding
+  :caption: Feature Extraction
 
   Feature Extraction
 
@@ -45,12 +45,6 @@ Content
   :caption: Cluster Evaluation
 
   Cluster Evaluation
-
-.. toctree::
-  :maxdepth: 1
-  :caption: Prediction
-
-  prediction
 
 
 .. toctree::

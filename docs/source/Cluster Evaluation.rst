@@ -20,7 +20,7 @@ Lets load the **digits** dataset and see how the different methods detects the o
 
     from clustimage import Clustimage
     # init
-    cl = Clustimage(method='pca', embedding='tsne', cluster_space='high', grayscale=True, store_to_disk=True)
+    cl = Clustimage()
     # Example data
     X = cl.import_example(data='digits')
 
@@ -38,13 +38,13 @@ The silhouette can be calculated with any distance metric, such as the Euclidean
 
     # Feature extraction and cluster evaluation
     results = cl.fit_transform(X, evaluate='silhouette', cluster='agglomerative')
-
-    # Cluster differently using directly the extracted features.
-    # results = cl.cluster(, cluster='agglomerative', evaluate='silhouette', cluster_space='low')
-
+    # Cluster using different (evaluation) method.
+    # labels = cl.cluster(evaluate='silhouette', cluster='agglomerative', cluster_space='lower')
+    # Plot the cluster evaluation
+    cl.clusteval.plot()
     # Scatter
-    cl.scatter()
-    # Dendrogram with cluster evalution
+    cl.scatter(zoom=3)
+    # Dendrogram
     cl.dendrogram()
 
 
@@ -94,11 +94,9 @@ The lower the value, the tighter the clusters and the seperation between cluster
 
 .. code:: python
 
-    # Feature extraction and cluster evaluation
-    results = cl.fit_transform(X, method='dbindex', cluster='agglomerative')
-
+    # After the fit transform you can directly try some other approaches for clustering without doing the preprocessing steps.
     # Cluster differently using directly the extracted features.
-    # results = cl.cluster(cluster='agglomerative', method='dbindex', cluster_space='low')
+    results = cl.cluster(cluster='agglomerative', method='dbindex')
 
     # Scatter
     cl.scatter()
@@ -129,7 +127,7 @@ This works especially good when having samples which contains clusters of simila
 .. code:: python
 
     # Feature extraction and cluster evaluation on the low-dimensional space
-    results = cl.fit_transform(X, evaluate='silhouette', cluster='dbscan', cluster_space='low')
+    results = cl.cluster(evaluate='silhouette', cluster='dbscan', cluster_space='low')
     # Scatter
     cl.scatter()
     # Dendrogram with cluster evalution
