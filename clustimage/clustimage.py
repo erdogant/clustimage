@@ -446,9 +446,34 @@ class Clustimage():
         -----------
         The unique images are detected by first computing the center of the cluster, and then taking the image closest to the center.
 
+        Parameters
+        ----------
+        metric : str, (default: 'euclidean').
+            Distance measures. All metrics from sklearn can be used such as:
+                * 'euclidean'
+                * 'hamming'
+                * 'cityblock'
+                * 'correlation'
+                * 'cosine'
+                * 'jaccard'
+                * 'mahalanobis'
+                * 'seuclidean'
+                * 'sqeuclidean'
+                * etc
+
         Returns
         -------
-        None.
+        dict containing keys with results.
+            labels : list.
+                Cluster label of the detected image.
+            idx : list.
+                Index of the original image.
+            xycoord_center : array-like
+                Coordinates of the sample that is most centered.
+            pathnames : list.
+                Path location to the file.
+            img_mean : array-like.
+                Averaged image in the cluster.
 
         Example
         -------
@@ -547,8 +572,19 @@ class Clustimage():
 
         Returns
         -------
-        dict.
-            Images are returned that are either k-nearest neighbour or significant.
+        dict containing keys with each input image that contains the following results.
+            y_idx : list.
+                Index of the detected/predicted images.
+            distance : list.
+                Absolute distance to the input image.
+            y_proba : list
+                Probability of similarity to the input image.
+            y_filenames : list.
+                filename of the detected image.
+            y_pathnames : list.
+                Pathname to the detected image.
+            x_pathnames : list.
+                Pathname to the input image.
 
         Example
         -------
@@ -1073,7 +1109,7 @@ class Clustimage():
             idx = unique_no_sort(np.append(idx_dist, idx_k))
             # Store in dict
             logger.info('[%d] similar images found for [%s]' %(len(idx), filename))
-            store_key = {**store_key, 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'y_label': np.array(self.results['filenames'])[idx].tolist(), 'y_path': np.array(self.results['pathnames'])[idx].tolist(), 'x_path': X['pathnames'][i]}
+            store_key = {**store_key, 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'y_filenames': np.array(self.results['filenames'])[idx].tolist(), 'y_pathnames': np.array(self.results['pathnames'])[idx].tolist(), 'x_pathnames': X['pathnames'][i]}
             if todf: store_key = pd.DataFrame(store_key)
             out[filename] = store_key
 
@@ -1139,7 +1175,7 @@ class Clustimage():
         # Return
         return img
 
-    def save(self, filepath='clustimage.pkl', overwrite=False, verbose=3):
+    def save(self, filepath='clustimage.pkl', overwrite=False):
         """Save model in pickle file.
     
         Parameters
@@ -1171,9 +1207,9 @@ class Clustimage():
         if hasattr(self,'results_unique'): storedata['results_unique'] = self.results_unique
         if hasattr(self,'distfit'): storedata['distfit'] = self.distfit
         if hasattr(self,'clusteval'): storedata['clusteval'] = self.clusteval
-        if hasattr(self,'pca'): storedata['pca'] = self.pca
+        # if hasattr(self,'pca'): storedata['pca'] = self.pca
         # Save
-        status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=verbose)
+        status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=3)
         logger.info('Saving..')
         # return
         return status
@@ -1447,8 +1483,8 @@ class Clustimage():
                 try: 
                     if (self.results['predict'].get(key).get('y_idx', None) is not None):
                         # Collect images
-                        input_img = self.results['predict'][key]['x_path'][0]
-                        find_img = self.results['predict'][key]['y_path']
+                        input_img = self.results['predict'][key]['x_pathnames'][0]
+                        find_img = self.results['predict'][key]['y_pathnames']
                         # Input label
                         if isinstance(input_img, str): input_img=[input_img]
                         if isinstance(find_img, str): find_img=[find_img]
@@ -1458,7 +1494,7 @@ class Clustimage():
                         I_find = list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
                         # Combine input image with the detected images
                         imgs = I_input + I_find
-                        input_txt = basename(self.results['predict'][key]['x_path'][0])
+                        input_txt = basename(self.results['predict'][key]['x_pathnames'][0])
                         # Make the labels for the subplots
                         if not np.isnan(self.results['predict'][key]['y_proba'][0]):
                             labels = ['Input'] + list(map(lambda x: 'P={:.3g}'.format(x), self.results['predict'][key]['y_proba']))
