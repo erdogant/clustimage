@@ -5,29 +5,30 @@
 Save and Load
 ''''''''''''''
 
-Saving and loading models is desired as the learning proces of a model for ``clustimage`` can take up to hours.
-In order to accomplish this, we created two functions: function :func:`clustimage.save` and function :func:`clustimage.load`
+Saving and loading models can be used to restore previous results.
+In order to accomplish this, we created two functions: function :func:`clustimage.clustimage.Clustimage.save`. and function :func:`clustimage.clustimage.Clustimage.load`.
 Below we illustrate how to save and load models.
 
 
 Saving
 ----------------
 
-Saving a learned model can be done using the function :func:`clustimage.save`:
+Saving the model with the results:
 
 .. code:: python
 
-    import clustimage
+    from clustimage import Clustimage
 
+    # Initialize
+    cl = Clustimage(method='hog')
     # Load example data
-    X,y_true = clustimage.load_example()
 
-    # Learn model
-    model = clustimage.fit_transform(X, y_true, pos_label='bad')
+    X = cl.import_example(data='digits')
+    # Preprocessing, feature extraction and cluster evaluation
+    results = cl.fit_transform(X)
 
-    Save model
-    status = clustimage.save(model, 'learned_model_v1')
-
+    # Load model
+    cl.save('clustimage_model', overwrite=True)
 
 
 Loading
@@ -37,7 +38,7 @@ Loading a learned model can be done using the function :func:`clustimage.load`:
 
 .. code:: python
 
-    import clustimage
+    from clustimage import Clustimage
 
     # Load model
-    model = clustimage.load(model, 'learned_model_v1')
+    cl.load('clustimage_model')
