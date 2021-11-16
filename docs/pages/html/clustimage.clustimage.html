@@ -75,7 +75,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Caltech101 dataset</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
 <ul class="current">
@@ -516,10 +516,24 @@ Note that the metric can be changed in this function but this may lead to confus
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Images are returned that are either k-nearest neighbour or significant.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>y_idx<span class="classifier">list.</span></dt><dd><p>Index of the detected/predicted images.</p>
+</dd>
+<dt>distance<span class="classifier">list.</span></dt><dd><p>Absolute distance to the input image.</p>
+</dd>
+<dt>y_proba<span class="classifier">list</span></dt><dd><p>Probability of similarity to the input image.</p>
+</dd>
+<dt>y_filenames<span class="classifier">list.</span></dt><dd><p>filename of the detected image.</p>
+</dd>
+<dt>y_pathnames<span class="classifier">list.</span></dt><dd><p>Pathname to the detected image.</p>
+</dd>
+<dt>x_pathnames<span class="classifier">list.</span></dt><dd><p>Pathname to the input image.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict.</p>
+<dd class="field-odd"><p>dict containing keys with each input image that contains the following results.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -889,7 +903,7 @@ filenames : list of str.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'clustimage.pkl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.save" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'clustimage.pkl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.save" title="Permalink to this definition"></a></dt>
 <dd><p>Save model in pickle file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -935,11 +949,41 @@ filenames : list of str.</p>
 <dd><p>Compute the unique images.</p>
 <p>The unique images are detected by first computing the center of the cluster, and then taking the image closest to the center.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em></em>) – <dl class="simple">
+<dt>Distance measures. All metrics from sklearn can be used such as:</dt><dd><ul class="simple">
+<li><p>’euclidean’</p></li>
+<li><p>’hamming’</p></li>
+<li><p>’cityblock’</p></li>
+<li><p>’correlation’</p></li>
+<li><p>’cosine’</p></li>
+<li><p>’jaccard’</p></li>
+<li><p>’mahalanobis’</p></li>
+<li><p>’seuclidean’</p></li>
+<li><p>’sqeuclidean’</p></li>
+<li><p>etc</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>labels<span class="classifier">list.</span></dt><dd><p>Cluster label of the detected image.</p>
+</dd>
+<dt>idx<span class="classifier">list.</span></dt><dd><p>Index of the original image.</p>
+</dd>
+<dt>xycoord_center<span class="classifier">array-like</span></dt><dd><p>Coordinates of the sample that is most centered.</p>
+</dd>
+<dt>pathnames<span class="classifier">list.</span></dt><dd><p>Path location to the file.</p>
+</dd>
+<dt>img_mean<span class="classifier">array-like.</span></dt><dd><p>Averaged image in the cluster.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict containing keys with results.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>

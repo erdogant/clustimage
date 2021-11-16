@@ -76,7 +76,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Caltech101 dataset</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
 <ul>
@@ -145,10 +145,10 @@ It can be seen that multiple different parameters still result in similar good p
     <span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">cluster_space</span><span class="o">=</span><span class="n">combination</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">evaluate</span><span class="o">=</span><span class="n">combination</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="c1"># Compute confmat</span>
-    <span class="n">cm</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">confmatrix</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;labx&#39;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">confmatrix</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># Transform numbers to make it comparible</span>
-    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;labx&#39;</span><span class="p">]</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span>
     <span class="n">cm_argmax</span> <span class="o">=</span> <span class="n">cm</span><span class="p">[</span><span class="s1">&#39;confmat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">y_pred_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">cm_argmax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">y_pred</span><span class="p">])</span>
 

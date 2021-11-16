@@ -42,10 +42,10 @@ The following peace of code clusters the **digit** images, compares the detected
         results = cl.fit_transform(X, cluster_space=combination[2], evaluate=combination[1])
 
         # Compute confmat
-        cm = clf.confmatrix.eval(y_true, results['labx'], normalize=False)
+        cm = clf.confmatrix.eval(y_true, results['labels'], normalize=False)
 
         # Transform numbers to make it comparible
-        y_pred = results['labx']
+        y_pred = results['labels']
         cm_argmax = cm['confmat'].argmax(axis=0)
         y_pred_ = np.array([cm_argmax[i] for i in y_pred])
 

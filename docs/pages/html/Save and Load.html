@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="Examples.html" />
+    <link rel="next" title="Caltech101 dataset" href="Examples.html" />
     <link rel="prev" title="Performance" href="Performance.html" /> 
 </head>
 
@@ -80,7 +80,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Caltech101 dataset</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
 <ul>
@@ -115,32 +115,34 @@
   <hr class="docutils" id="code-directive" />
 <section id="save-and-load">
 <h1>Save and Load<a class="headerlink" href="#save-and-load" title="Permalink to this headline"></a></h1>
-<p>Saving and loading models is desired as the learning proces of a model for <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> can take up to hours.
-In order to accomplish this, we created two functions: function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.save()</span></code> and function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.load()</span></code>
+<p>Saving and loading models can be used to restore previous results.
+In order to accomplish this, we created two functions: function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.save" title="clustimage.clustimage.Clustimage.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.save()</span></code></a>. and function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.load" title="clustimage.clustimage.Clustimage.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.load()</span></code></a>.
 Below we illustrate how to save and load models.</p>
 <section id="saving">
 <h2>Saving<a class="headerlink" href="#saving" title="Permalink to this headline"></a></h2>
-<p>Saving a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.save()</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">clustimage</span>
+<p>Saving the model with the results:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
+<span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">)</span>
 <span class="c1"># Load example data</span>
-<span class="n">X</span><span class="p">,</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">load_example</span><span class="p">()</span>
 
-<span class="c1"># Learn model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">pos_label</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;digits&#39;</span><span class="p">)</span>
+<span class="c1"># Preprocessing, feature extraction and cluster evaluation</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
-<span class="n">Save</span> <span class="n">model</span>
-<span class="n">status</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;learned_model_v1&#39;</span><span class="p">)</span>
+<span class="c1"># Load model</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;clustimage_model&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="loading">
 <h2>Loading<a class="headerlink" href="#loading" title="Permalink to this headline"></a></h2>
 <p>Loading a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.load()</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Load model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">clustimage</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;learned_model_v1&#39;</span><span class="p">)</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;clustimage_model&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -151,7 +153,7 @@ Below we illustrate how to save and load models.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Performance.html" class="btn btn-neutral float-left" title="Performance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Examples.html" class="btn btn-neutral float-right" title="Caltech101 dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

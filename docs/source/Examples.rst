@@ -2,6 +2,8 @@
 
 -------------------------------------
 
+The documentation and docstrings readily contains various examples but lets make another one with many samples.
+
 Caltech101 dataset
 ''''''''''''''''''''
 
@@ -17,16 +19,25 @@ Download the dataset over here: http://www.vision.caltech.edu/Image_Datasets/Cal
     # Collect samples
     # Preprocessing, feature extraction and cluster evaluation
     results = cl.fit_transform('C://101_ObjectCategories//', min_clust=30, max_clust=60)
-    # Cluster without the preprocessing
+    # Try some other clustering (evaluation) approaches
     # cl.cluster(evaluate='silhouette', min_clust=30, max_clust=60)
-    # Plot unique
+    # Evaluate the number of clusters.
+    cl.clusteval.plot()
+    cl.clusteval.scatter(cl.results['xycoord'])
+    # Plot unique images. When comparing the unique images that are centered in the cluster vs. the average cluster imge, some clusters appear very strong.
     cl.plot_unique()
+    cl.plot_unique(img_mean=False)
     # Scatter
+    cl.scatter(dotsize=10, img_mean=False, zoom=None)
+    cl.scatter(dotsize=10, img_mean=False)
     cl.scatter(dotsize=10)
     # Plot one of the clusters
-    cl.plot(labx=40)
+    cl.plot(labels=40)
     # Plotting
     cl.dendrogram()
+
+
+
 
 With ``clustimage`` we could easily extract the features that explains 89% of the variance and detected an optimal number of clusters of 49.
 
@@ -41,6 +52,20 @@ With ``clustimage`` we could easily extract the features that explains 89% of th
    | |figE1|  | |figE2|  |
    +----------+----------+
 
+
+
+.. |figE8| image:: ../figs/unique_mean_101.png
+.. |figE9| image:: ../figs/unique_mean_101.png
+
+.. table:: Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.
+   :align: center
+
+   +----------+----------+
+   | |figE8|  | |figE9|  |
+   +----------+----------+
+
+
+
 .. |figE3| image:: ../figs/101_silhouette_plot.png
 
 .. table:: Silhouette plot
@@ -50,10 +75,11 @@ With ``clustimage`` we could easily extract the features that explains 89% of th
    | |figE3|  |
    +----------+
 
-.. |figE4| image:: ../figs/101_dendrogram.png
+.. |figE4| image:: ../figs/101_tsne_no_mean.png
 .. |figE5| image:: ../figs/101_tsne.png
 
-.. table:: Left: Dendrogram. Right: tSNE plot coloured on the cluster-labels.
+
+.. table:: Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.
    :align: center
 
    +----------+----------+
