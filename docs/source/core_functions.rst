@@ -124,7 +124,7 @@ Example to find similar images using 1D vector as input image.
         results = cl.fit_transform(pathnames[1:])
         
         # Lets search for the following image:
-        img = cl.imread(pathnames[10])
+        img = cl.imread(pathnames[10], colorscale=1)
         plt.figure(); plt.imshow(img.reshape((128,128,3)));plt.axis('off')
 
         # Find images
