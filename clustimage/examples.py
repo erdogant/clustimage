@@ -5,13 +5,63 @@
 # 
 # Read image according the preprocessing steps
 
+# %% fotos on disk
+from clustimage import Clustimage
+# Init
+cl = Clustimage(method='pca', grayscale=True)
+# Load example with faces
+face_results = cl.detect_faces('D://magweg1//')
+# Preproceesing, cluster detection
+results = cl.fit_transform(face_results['pathnames_face'])
 
-# %%
+cl.cluster(min_clust=7)
+cl.clusteval.plot()
+cl.scatter(zoom=None)
+
+# out = cl.unique()
+cl.plot_unique(img_mean=False)
+
+out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
+cl.plot_find()
+
+out = cl.find(face_results['pathnames_face'][20], k=5, alpha=None, metric='euclidean')
+cl.plot_find()
+
+cl.plot_faces(eyes=False)
+
+# cluster labels
+labels = results['labels']
+
+# Plot dendrogram
+cl.dendrogram()
+# Scatter
+cl.scatter()
+cl.scatter(zoom=None)
+# Plot faces
+cl.plot_faces(eyes=False)
+# Make plot
+cl.plot(labels=15, show_hog=True)
+# Cleaning files
+cl.clean_files()
+
+
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['feat'])
+cl.clusteval.scatter(cl.results['xycoord'])
+cl.pca.plot()
+cl.pca.scatter(legend=False, label=False)
+
+cl.save(overwrite=True)
+cl.load()
+
+
+# %% FLOWERS
 # Load library
 from clustimage import Clustimage
 
 # Init with default settings
-cl = Clustimage(method='hog')
+# cl = Clustimage(method='hog', params_hog={'orientations':8, 'pixels_per_cell':(8,8)})
+cl = Clustimage(method='pca', params_pca={'n_components':0.95})
 # load example with flowers
 pathnames = cl.import_example(data='flowers')
 # Detect cluster
@@ -25,7 +75,8 @@ cl.plot_unique(img_mean=False)
 cl.scatter(dotsize=50)
 cl.scatter(dotsize=50, img_mean=False)
 # Plot clustered images
-cl.plot(labels=[12], show_hog=True)
+cl.plot(labels=[1], show_hog=True)
+cl.plot(show_hog=False)
 # Plot dendrogram
 cl.dendrogram()
 
@@ -92,10 +143,11 @@ cl.save(overwrite=True)
 cl.load()
 
 
-# %%
+# %% DIGITS
+import matplotlib.pyplot as plt
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='pca', params_pca={'n_components':50})
+cl = Clustimage(method='pca', params_pca={'n_components':0.95})
 # cl = Clustimage(method='hog', embedding='tsne',grayscale=False, params_pca={'n_components':50})
 # cl = Clustimage(method='hog', embedding='tsne', grayscale=False, dim=(8,8), params_pca={'n_components':50})
 # Example data
@@ -106,6 +158,8 @@ results = cl.fit_transform(X)
 results_find = cl.find(X[0:2,:])
 cl.plot_find()
 
+cl.plot_unique(img_mean=False)
+
 # labx = cl.cluster()
 # labx = cl.cluster(cluster_space='high', cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=2, max_clust=25)
 
@@ -113,6 +167,7 @@ cl.plot_find()
 cl.scatter()
 # Plot the clustered images
 cl.plot(cmap='binary', labels=[1,2])
+cl.plot(cmap='binary')
 # Plotting
 cl.dendrogram()
 
@@ -144,11 +199,12 @@ axs[1].set_title('HOG', fontsize=10)
 # %%
 from clustimage import Clustimage
 # init
-cl = Clustimage(method='pca', params_pca={'n_components':250, 'detect_outliers':None})
+cl = Clustimage(method='pca', params_pca={'n_components':250})
 # cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
 # Collect samples
 # path_to_imgs = cl.get_images_from_path('D://magweg//101_ObjectCategories//')
 # Preprocessing and feature extraction
+# 
 results = cl.fit_transform('D://magweg//101_ObjectCategories//', min_clust=30, max_clust=60)
 # Cluster
 # cl.cluster(method='silhouette', min_clust=30, max_clust=60)
