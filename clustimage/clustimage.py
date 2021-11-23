@@ -34,8 +34,9 @@ import uuid
 import shutil
 import random
 
+# Configure the logger
 logger = logging.getLogger('')
-for handler in logger.handlers[:]: #get rid of existing old handlers
+for handler in logger.handlers[:]: # get rid of existing old handlers
     logger.removeHandler(handler)
 console = logging.StreamHandler()
 formatter = logging.Formatter('[clustimage] >%(levelname)s> %(message)s')
@@ -147,7 +148,7 @@ class Clustimage():
     >>>
 
     """
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':50}, params_hog={'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':0.95}, params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self._clean()
@@ -174,8 +175,12 @@ class Clustimage():
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
 
-        if 'detect_outliers' not in params_pca: params_pca['detect_outliers'] = 'None'
+        pca_defaults = {'n_components':0.95, 'detect_outliers' :None}
+        params_pca   = {**pca_defaults, **params_pca}
         self.params_pca = params_pca
+
+        hog_defaults = {'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}
+        params_hog   = {**hog_defaults, **params_hog}
         self.params_hog = params_hog
 
         set_logger(verbose=verbose)
@@ -510,7 +515,7 @@ class Clustimage():
             xycoord_center = np.mean(self.results['xycoord'][idx,:], axis=0)
 
             # Compute the average image by simply averaging the images
-            img = np.vstack(list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
+            img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
             eigen_img.append(imscale(np.mean(img, axis=0)))
 
             # dim = _check_dim(eigen_img, self.params['dim'])
@@ -735,7 +740,7 @@ class Clustimage():
         if isinstance(pathnames, list):
             filenames = list(map(basename, pathnames))
             if imread:
-                img = list(map(lambda x: self.imread(x, grayscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
+                img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
                 if flatten: img = np.vstack(img)
 
         out = {}
@@ -1116,7 +1121,7 @@ class Clustimage():
         # Return
         return out
 
-    def imread(self, filepath, grayscale=1, dim=(128, 128), flatten=True):
+    def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True):
         """Read and pre-processing of images.
 
         Description
@@ -1131,9 +1136,13 @@ class Clustimage():
         ----------
         filepath : str
             Full path to the image that needs to be imported.
-        grayscale : int, default: 1 (gray)
+        colorscale : int, default: 1 (gray)
             colour-scaling from opencv.
-            * cv2.COLOR_GRAY2RGB
+            * 0: cv2.IMREAD_GRAYSCALE
+            * 1: cv2.IMREAD_COLOR
+            * 2: cv2.IMREAD_ANYDEPTH
+            * 8: cv2.COLOR_GRAY2RGB
+            * -1: cv2.IMREAD_UNCHANGED
         dim : tuple, (default: (128,128))
             Rescale images. This is required because the feature-space need to be the same across samples.
         flatten : Bool, (default: True)
@@ -1156,16 +1165,18 @@ class Clustimage():
         >>> # Load example dataset
         >>> pathnames = cl.import_example(data='flowers')
         >>> # Preprocessing of the first image
-        >>> img = cl.imread(pathnames[0], dim=(128,128))
+        >>> img = cl.imread(pathnames[0], dim=(128,128), colorscale=1)
         >>> 
         >>> # Plot
-        >>> plt.figure()
-        >>> plt.imshow(img.reshape(128,128,3))
-        >>> plt.axis('off')
+        >>> fig, axs = plt.subplots(1,2, figsize=(15,10))
+        >>> axs[0].imshow(cv2.imread(pathnames[0])); plt.axis('off')
+        >>> axs[1].imshow(img.reshape(128,128,3)); plt.axis('off')
+        >>> fig
+        >>> 
 
         """
         # Read the image
-        img = _img_read(filepath, grayscale=grayscale)
+        img = _imread(filepath, colorscale=colorscale)
         # Scale the image
         img = imscale(img)
         # Resize the image
@@ -1362,7 +1373,7 @@ class Clustimage():
         if zoom is not None:
             for i, pathname in enumerate(pathnames):
                 if isinstance(pathname, str):
-                    img = self.imread(pathname, dim=self.params['dim'], flatten=False, grayscale=self.params['cv2_imread_colorscale'])
+                    img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False)
                 else:
                     dim = _check_dim(pathname, self.params['dim'], grayscale=self.params['grayscale'])
                     # dim = _check_dim(pathname, self.params['dim'])
@@ -1447,7 +1458,7 @@ class Clustimage():
             txtlabels = []
             # Collect all samples
             for i, file in enumerate(self.results_unique['pathnames']):
-                img = self.imread(file, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
+                img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
                 imgs.append(img)
                 txtlabels.append(('cluster %s' %(str(i))))
 
@@ -1489,9 +1500,9 @@ class Clustimage():
                         if isinstance(input_img, str): input_img=[input_img]
                         if isinstance(find_img, str): find_img=[find_img]
                         # Input images
-                        I_input = list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
+                        I_input = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
                         # Predicted label
-                        I_find = list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
+                        I_find = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
                         # Combine input image with the detected images
                         imgs = I_input + I_find
                         input_txt = basename(self.results['predict'][key]['x_pathnames'][0])
@@ -1549,10 +1560,13 @@ class Clustimage():
                     # Collect the images
                     getfiles = np.array(self.results['pathnames'])[idx]
                     # Get the images that cluster together
-                    imgs = list(map(lambda x: self.imread(x, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
+                    imgs = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
                     # Make subplots
-                    if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(getfiles)))), 2)
-                    self._make_subplots(imgs, ncols, cmap, figsize, ("Images in cluster %s" %(str(label))))
+                    if ncols is None:
+                        ncol=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
+                    else:
+                        ncol=ncols
+                    self._make_subplots(imgs, ncol, cmap, figsize, ("Images in cluster %s" %(str(label))))
     
                     # Make hog plots
                     if show_hog and (self.params['method']=='hog'):
@@ -1769,16 +1783,18 @@ def imscale(img):
 
 
 # %% Read image
-def _img_read(filepath, grayscale=1):
+def _imread(filepath, colorscale=1):
     """Read image from filepath using colour-scaling.
 
     Parameters
     ----------
     filepath : str
         path to file.
-    grayscale : int, default: 1 (gray)
+    colorscale : int, default: 1 (gray)
         colour-scaling from opencv.
-        * cv2.COLOR_GRAY2RGB
+        * 0: cv2.IMREAD_GRAYSCALE
+        * 1: cv2.IMREAD_COLOR
+        * 8: cv2.COLOR_GRAY2RGB
 
     Returns
     -------
@@ -1789,12 +1805,12 @@ def _img_read(filepath, grayscale=1):
     img=None
     if os.path.isfile(filepath):
         # Read the image
-        img = cv2.imread(filepath, grayscale)
+        img = cv2.imread(filepath, colorscale)
     else:
         logger.warning('File does not exists: %s', filepath)
     
     # In case of rgb images: make gray images compatible with RGB
-    if ((grayscale!=0) and (grayscale!=6)) and (len(img.shape)<3):
+    if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
     return img
