@@ -118,7 +118,7 @@ class Clustimage():
     >>> cl = Clustimage(method='pca')
     >>>
     >>> # load example with faces
-    >>> X = cl.import_example(data='digits')
+    >>> X = cl.import_example(data='mnist')
     >>>
     >>> # Cluster digits
     >>> results = cl.fit_transform(X)
@@ -380,7 +380,7 @@ class Clustimage():
         >>> # Init
         >>> cl = Clustimage(method='hog')
         >>> 
-        >>> # load example with digits
+        >>> # load example with digits (mnist dataset)
         >>> pathnames = cl.import_example(data='flowers')
         >>>
         >>> # Find clusters
@@ -488,7 +488,7 @@ class Clustimage():
         >>> cl = Clustimage()
         >>>
         >>> # load example with faces
-        >>> X = cl.import_example(data='digits')
+        >>> X = cl.import_example(data='mnist')
         >>>
         >>> # Cluster digits
         >>> _ = cl.fit_transform(X)
@@ -599,7 +599,7 @@ class Clustimage():
         >>> cl = Clustimage(method='pca')
         >>>
         >>> # load example with faces
-        >>> X = cl.import_example(data='digits')
+        >>> X = cl.import_example(data='mnist')
         >>>
         >>> # Cluster digits
         >>> results = cl.fit_transform(X)
@@ -1838,7 +1838,7 @@ def import_example(data='flowers', url=None):
     Parameters
     ----------
     data : str
-        Name of datasets: 'flowers', 'faces', 'digits'
+        Name of datasets: 'flowers', 'faces', 'mnist'
     url : str
         url link to to dataset.
 
@@ -1855,7 +1855,7 @@ def import_example(data='flowers', url=None):
             url='https://erdogant.github.io/datasets/faces_images.zip'
         elif data=='scenes':
             url='https://erdogant.github.io/datasets/scenes.zip'
-        elif data=='digits':
+        elif data=='mnist':
             from sklearn.datasets import load_digits
             digits = load_digits(n_class=10)
             # y = digits.target
