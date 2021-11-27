@@ -407,7 +407,7 @@ class Clustimage():
         self.params['cluster_space'] = cluster_space
 
         # Init
-        ce = clusteval(cluster=cluster, method=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
+        ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
 
         # Fit
         if cluster_space=='low':
