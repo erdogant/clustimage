@@ -337,7 +337,11 @@ cl.dendrogram()
 </p>
 
 #### TODO
-* Include hashes: https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
+* https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
+* https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/
+* https://github.com/JohannesBuchner/imagehash
+* https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
+* https://stackoverflow.com/questions/64994057/python-image-hashing
 
 #### References
 * https://github.com/erdogant/clustimage
