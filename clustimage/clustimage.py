@@ -963,8 +963,10 @@ class Clustimage():
         elif self.params['method']=='hog':
             X = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
         elif self.params['method']=='pca-hog':
-            X = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
-            X = self.extract_pca(Xraw)
+            X = {}
+            X['img'] = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
+            X['filenames'] = Xraw['filenames']
+            X = self.extract_pca(X)
         else:
             # Read images and preprocessing and flattening of images
             X = Xraw['img'].copy()
@@ -1002,20 +1004,18 @@ class Clustimage():
         if self.params['method']=='pca':
             # Transform new unseen datapoint into feature space
             Xmapped = self.pca.transform(X['img'], row_labels=X['filenames'])
-            # Compute distance from input sample to all other samples
-            Y = distance.cdist(self.results['feat'].T, Xmapped, metric=metric)
         elif self.params['method']=='pca-hog':
             # Extract Features
-            _, Xmapped = self._extract_feat(X)
+            X_feat = self.extract_hog(X['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
             # Transform new unseen datapoint into feature space
-            Xmapped = self.pca.transform(X['img'], row_labels=X['filenames'])
+            Xmapped = self.pca.transform(X_feat, row_labels=X['filenames'])
             # Compute distance from input sample to all other samples
-            Y = distance.cdist(self.results['feat'].T, Xmapped, metric=metric)
+            # Y = distance.cdist(self.results['feat'].T, Xmapped, metric=metric)
         else:
             # Extract Features
             _, Xmapped = self._extract_feat(X)
             # Compute distance from input sample to all other samples
-            Y = distance.cdist(self.results['feat'], Xmapped, metric=metric)
+        Y = distance.cdist(self.results['feat'], Xmapped, metric=metric)
 
         # Sanity check
         if np.any(np.isnan(Y)):

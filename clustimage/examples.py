@@ -10,7 +10,9 @@
 from clustimage import Clustimage
 
 # Init with settings such as PCA
-cl = Clustimage(method='pca')
+# cl = Clustimage(method='hog', params_pca={'n_components':0.95}) 
+cl = Clustimage(method='pca', params_pca={'n_components':0.95}) 
+# cl = Clustimage(method='pca', params_pca={'n_components':50}) 
 
 # load example with flowers
 pathnames = cl.import_example(data='flowers')
@@ -18,12 +20,14 @@ pathnames = cl.import_example(data='flowers')
 # Cluster flowers
 results = cl.fit_transform(pathnames)
 
+print(cl.results['feat'].shape)
+
 # Read the unseen image. Note that it is import to use the cl.imread functionality as these will perform exactly the same preprocessing steps as for the clustering.
 # img = cl.imread(unseen_image)
 # plt.figure(); plt.imshow(img.reshape((128,128,3)));plt.axis('off')
 
 # Find images using the path location.
-results_find = cl.find(pathnames[0:2], k=0, alpha=0.05)
+results_find = cl.find(pathnames[2], k=0, alpha=0.05)
 
 # Show whatever is found. This looks pretty good.
 cl.plot_find()

@@ -53,7 +53,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
             assert len(labx)==len(X)
     
     def test_find(self):
-        cl = Clustimage(method='pca', embedding='tsne', grayscale=False)
+        cl = Clustimage(method='pca', grayscale=False)
         # load example with flowers
         path_to_imgs = cl.import_example(data='flowers')
         # Extract features (raw images are not stored and handled per-image to save memory)
@@ -62,12 +62,12 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Predict
         results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
         assert np.all(np.isin([*results_find.keys()], ['feat', '0001.png', '0002.png', '0003.png', '0004.png', '0005.png']))
-        assert len(results_find['0001.png']['y_idx'])==2
-        assert len(results_find['0002.png']['y_idx'])==1
+        assert len(results_find['0001.png']['y_idx'])>=1
+        assert len(results_find['0002.png']['y_idx'])>=1
         assert len(results_find['0003.png']['y_idx'])>=30
         assert len(results_find['0004.png']['y_idx'])>=1
-        assert len(results_find['0005.png']['y_idx'])==1
-        
+        assert len(results_find['0005.png']['y_idx'])>=1
+
         results_find = cl.find(path_to_imgs[0:5], k=1, alpha=None)
         assert len(results_find['0001.png']['y_idx'])==1
         assert len(results_find['0002.png']['y_idx'])==1
