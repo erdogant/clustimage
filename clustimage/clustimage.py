@@ -74,6 +74,7 @@ class Clustimage():
         Method to be usd to extract features from images.
             * 'pca' : PCA feature extraction
             * 'hog' : hog features extraced
+            * 'pca-hog' : PCA extracted features from the HOG desriptor
             * None : No feature extraction
     embedding : str, (default: 'tsne')
         Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
@@ -153,7 +154,7 @@ class Clustimage():
         # Clean readily fitted models to ensure correct results
         self._clean()
 
-        if not np.any(np.isin(method, [None, 'pca','hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
+        if not np.any(np.isin(method, [None, 'pca','hog', 'pca-hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
         if dirpath is None: dirpath = tempfile.mkdtemp()
         if not os.path.isdir(dirpath): raise Exception(logger.error('[%s] does not exists.', dirpath))
 
@@ -175,7 +176,7 @@ class Clustimage():
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
 
-        pca_defaults = {'n_components':0.95, 'detect_outliers' :None}
+        pca_defaults = {'n_components':0.95, 'detect_outliers': None, 'random_state': None}
         params_pca   = {**pca_defaults, **params_pca}
         self.params_pca = params_pca
 
@@ -749,7 +750,7 @@ class Clustimage():
         out['filenames'] = filenames
         return out
 
-    def extract_hog(self, X, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1)):
+    def extract_hog(self, X, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), flatten=True):
         """Extract HOG features.
 
         Parameters
@@ -793,9 +794,12 @@ class Clustimage():
         # Set dim correctly for reshaping image
         dim = _check_dim(X, self.params['dim'], grayscale=self.params['grayscale'])
         # Extract hog features per image
-        feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X, disable=disable_tqdm())))
-        # Stack all hog features into one array and return
-        feat = np.vstack(feat)
+        if flatten:
+            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X, disable=disable_tqdm())))
+            # Stack all hog features in NxM array
+            feat = np.vstack(feat)
+        else:
+            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1], tqdm(X, disable=disable_tqdm())))[0]
         # Return
         return feat
 
@@ -867,9 +871,12 @@ class Clustimage():
             logger.info('Extracting images from: [%s]', Xraw)
             Xraw = listdir(Xraw, ext=self.params['ext'])
             logger.info('Extracted images: [%s]', len(Xraw))
-
+        # Check string
         if isinstance(Xraw, str) and os.path.isfile(Xraw):
             Xraw = [Xraw]
+        # Check numpy array
+        # if type(Xraw).__module__ == np.__name__:
+        #     Xraw = list(Xraw)
 
         # 2. Read images
         if isinstance(Xraw, list):
@@ -955,6 +962,9 @@ class Clustimage():
             X = self.extract_pca(Xraw)
         elif self.params['method']=='hog':
             X = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
+        elif self.params['method']=='pca-hog':
+            X = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
+            X = self.extract_pca(Xraw)
         else:
             # Read images and preprocessing and flattening of images
             X = Xraw['img'].copy()
@@ -992,12 +1002,20 @@ class Clustimage():
         if self.params['method']=='pca':
             # Transform new unseen datapoint into feature space
             Xmapped = self.pca.transform(X['img'], row_labels=X['filenames'])
+            # Compute distance from input sample to all other samples
+            Y = distance.cdist(self.results['feat'].T, Xmapped, metric=metric)
+        elif self.params['method']=='pca-hog':
+            # Extract Features
+            _, Xmapped = self._extract_feat(X)
+            # Transform new unseen datapoint into feature space
+            Xmapped = self.pca.transform(X['img'], row_labels=X['filenames'])
+            # Compute distance from input sample to all other samples
+            Y = distance.cdist(self.results['feat'].T, Xmapped, metric=metric)
         else:
             # Extract Features
             _, Xmapped = self._extract_feat(X)
-
-        # Compute distance from input sample to all other samples
-        Y = distance.cdist(self.results['feat'], Xmapped, metric=metric)
+            # Compute distance from input sample to all other samples
+            Y = distance.cdist(self.results['feat'], Xmapped, metric=metric)
 
         # Sanity check
         if np.any(np.isnan(Y)):
@@ -1450,23 +1468,41 @@ class Clustimage():
         # Restore verbose status
         set_logger(verbose=verbose)
 
-    def plot_unique(self, cmap=None, img_mean=True, figsize=(15,10)):
+    def plot_unique(self, cmap=None, img_mean=True, show_hog=False, figsize=(15,10)):
         if hasattr(self, 'results_unique') is not None:
+            # Set logger to warning-error only
+            verbose = logger.getEffectiveLevel()
+            set_logger(verbose=40)
+            # Defaults
+            imgs, imgshog = [], []
             cmap = _set_cmap(cmap, self.params['grayscale'])
+            txtlabels = list(map(lambda x: 'Cluster'+x, self.results_unique['labels'].astype(str)))
 
-            imgs = []
-            txtlabels = []
-            # Collect all samples
-            for i, file in enumerate(self.results_unique['pathnames']):
-                img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
-                imgs.append(img)
-                txtlabels.append(('cluster %s' %(str(i))))
-
-            # Make the plot
+            # Collect the image data
             if img_mean:
-                self._make_subplots(self.results_unique['img_mean'], None, cmap, figsize, title='Averaged images per cluster.', labels=txtlabels)
+                subtitle='(averaged per cluster)'
+                imgs=self.results_unique['img_mean']
+                for img in imgs:
+                    hogtmp = self.extract_hog(img, pixels_per_cell=self.params_hog['pixels_per_cell'], orientations=self.params_hog['orientations'], flatten=False)
+                    imgshog.append(hogtmp)
             else:
-                self._make_subplots(imgs, None, cmap, figsize, title='Unique images', labels=txtlabels)
+                # Collect all samples
+                subtitle='(most centroid image per cluster)'
+                for i, file in enumerate(self.results_unique['pathnames']):
+                    img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
+                    imgs.append(img)
+                    if show_hog and (self.params['method']=='hog'):
+                        idx=self.results_unique['idx'][i]
+                        hogtmp = exposure.rescale_intensity(self.results['feat'][idx,:].reshape(self.params['dim']), in_range=(0,10))
+                        imgshog.append(hogtmp)
+
+            self._make_subplots(imgs, None, cmap, figsize, title='Unique images '+subtitle, labels=txtlabels)
+
+            if show_hog and (self.params['method']=='hog'):
+                self._make_subplots(imgshog, None, 'binary', figsize, title='Unique HOG images '+subtitle, labels=txtlabels)
+
+            # Restore verbose status
+            set_logger(verbose=verbose)
         else:
             logger.warning('Plotting unique images is not possible. Hint: Try to run the unique() function first.')
 
@@ -1589,28 +1625,38 @@ class Clustimage():
                     logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
         else:
             logger.warning('Plotting is not possible. Path locations are unknown. Hint: try to set "store_to_disk=True" during initialization.')
+    
+    def _get_rows_cols(self, n, ncols=None):
+        # Setup rows and columns
+        if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(n))), 2)
+        nrows = int(np.ceil(n/ncols))
+        return nrows, ncols
 
     def _make_subplots(self, imgs, ncols, cmap, figsize, title='', labels=None):
         """Make subplots."""
         # Get appropriate dimension
         dim = self.params['dim'] if self.params['grayscale'] else np.append(self.params['dim'], 3)
-        # Get appropriate ncols
-        if ncols is None: ncols=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
-
         # Setup rows and columns
-        nrows = int(np.ceil(len(imgs)/ncols))
+        nrows, ncols = self._get_rows_cols(len(imgs), ncols=ncols)
+        # Make figure
         fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
+        
+        # Make the actual plots
         for i, ax in enumerate(axs.ravel()):
             if i<len(imgs):
-                ax.imshow(imgs[i].reshape(dim), cmap=cmap)
+                if len(imgs[i].shape)==1:
+                    ax.imshow(imgs[i].reshape(dim), cmap=cmap)
+                else:
+                    ax.imshow(imgs[i], cmap=cmap)
                 if labels is not None: ax.set_title(labels[i])
             ax.axis("off")
         _ = fig.suptitle(title, fontsize=16)
-        plt.pause(0.1)
 
-    # def listdir(self, dirpath, ext=['png','tiff','jpg']):
-        # return _listdir(dirpath, ext=ext)
-    
+        # Small pause to build the plot
+        plt.pause(0.1)
+        # Return the rows and columns
+        return nrows, ncols
+
     def clean_files(self):
         # Cleaning
         from pathlib import Path

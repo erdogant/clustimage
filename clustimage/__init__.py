@@ -10,7 +10,7 @@ from clustimage.clustimage import (
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.2.2'
+__version__ = '1.2.3'
 
 # module level doc-string
 __doc__ = """
@@ -34,7 +34,7 @@ Example
 >>> cl = Clustimage(method='pca')
 >>>
 >>> # load example with faces
->>> X = cl.import_example(data='digits')
+>>> X = cl.import_example(data='mnist')
 >>>
 >>> # Cluster digits
 >>> results = cl.fit_transform(X)

@@ -78,7 +78,7 @@ from clustimage import Clustimage
 # init
 cl = Clustimage()
 # Load example digit data
-X = cl.import_example(data='digits')
+X = cl.import_example(data='mnist')
 
 print(X)
 # Each row is an image that can be plotted after reshaping:
