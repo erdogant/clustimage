@@ -9,7 +9,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Example data
         cl = Clustimage()
         Xflowers = cl.import_example(data='flowers')
-        Xdigits = cl.import_example(data='digits')
+        Xdigits = cl.import_example(data='mnist')
         Xfaces = cl.import_example(data='faces')
         # Parameters combinations to check
         param_grid = {
@@ -26,7 +26,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Iterate over all combinations
         for combination in combinations:
             # init
-            cl = Clustimage(method=combination[0], embedding=combination[1], grayscale=combination[3], dim=combination[4], params_pca={'n_components':50, 'detect_outliers':None})
+            cl = Clustimage(method=combination[0], embedding=combination[1], grayscale=combination[3], dim=combination[4], params_pca={'n_components':50})
             # Preprocessing and feature extraction
             assert cl.fit_transform(combination[5], cluster_space=combination[2])
 

@@ -27,7 +27,7 @@ Lets load the **digits** dataset and see how the different methods detects the o
     # init
     cl = Clustimage(method='pca', embedding='tsne', cluster_space='high', grayscale=True, store_to_disk=True)
     # Example data
-    X = cl.import_example(data='digits')
+    X = cl.import_example(data='mnist')
 
 
 

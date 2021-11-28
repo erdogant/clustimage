@@ -23,7 +23,7 @@ Saving the model with the results:
     cl = Clustimage(method='hog')
     # Load example data
 
-    X = cl.import_example(data='digits')
+    X = cl.import_example(data='mnist')
     # Preprocessing, feature extraction and cluster evaluation
     results = cl.fit_transform(X)
 

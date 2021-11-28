@@ -68,7 +68,7 @@ Example to find similar images using 1D vector as input image.
         cl = Clustimage(method='pca')
 
         # load example with digits
-        X = cl.import_example(data='digits')
+        X = cl.import_example(data='mnist')
 
         # Cluster digits
         results = cl.fit_transform(X)
@@ -160,7 +160,7 @@ Lets demonstrate this by example and the digits dataset.
         cl = Clustimage(method='pca')
 
         # load example with digits
-        X = cl.import_example(data='digits')
+        X = cl.import_example(data='mnist')
 
         # Find natural groups of digits
         results = cl.fit_transform(X)

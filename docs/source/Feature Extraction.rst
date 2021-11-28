@@ -19,7 +19,7 @@ The eigenface is a low-dimensional representation of face images. It is shown th
     # Take the number of components that covers 95% of the data
     cl = Clustimage(method='pca', params_pca={'n_components':0.95})
     # Load example data
-    X = cl.import_example(data='digits')
+    X = cl.import_example(data='mnist')
     # Preprocessing, feature extraction and cluster evaluation
     results = cl.fit_transform(X)
     # Extracted PC features
@@ -54,7 +54,7 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
     # Initialize with HOG
     cl = Clustimage(method='hog')
     # Load example data
-    X = cl.import_example(data='digits')
+    X = cl.import_example(data='mnist')
     # Preprocessing, feature extraction and cluster evaluation
     results = cl.fit_transform(X)
     # Extracted HOG features
