@@ -342,6 +342,7 @@ cl.dendrogram()
 * https://github.com/JohannesBuchner/imagehash
 * https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
 * https://stackoverflow.com/questions/64994057/python-image-hashing
+* https://towardsdatascience.com/how-to-cluster-images-based-on-visual-similarity-cd6e7209fe34
 
 #### References
 * https://github.com/erdogant/clustimage
