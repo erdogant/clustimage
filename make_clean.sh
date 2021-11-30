@@ -20,5 +20,5 @@ rm -rf *.dot
 rm -rf *.png
 rm -rf *.jpg
 rm -rf .coverage*
-rm -rf .pkl
+rm -rf *.pkl
 
