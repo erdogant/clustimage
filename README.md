@@ -336,25 +336,20 @@ cl.dendrogram()
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/faces1.png" width="400" />
 </p>
 
-#### TODO
+
+### Maintainers
+
+  * Erdogan Taskesen, github: [erdogant](https://github.com/erdogant)
+  * https://github.com/erdogant/clustimage
+  * Please cite in your publications if this is useful for your research (see citation).
+  * All kinds of contributions are welcome!
+  * If you wish to buy me a <a href="https://www.buymeacoffee.com/erdogant">Coffee</a> for this work, it is very appreciated :)
+  See [LICENSE](LICENSE) for details.
+
+#### Other interesting stuff
 * https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
 * https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/
 * https://github.com/JohannesBuchner/imagehash
 * https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
 * https://stackoverflow.com/questions/64994057/python-image-hashing
-
-#### References
-* https://github.com/erdogant/clustimage
-
-#### Citation
-Please cite in your publications if this is useful for your research (see citation).
-   
-### Maintainers
-* Erdogan Taskesen, github: [erdogant](https://github.com/erdogant)
-
-### Contribute
-* All kinds of contributions are welcome!
-* If you wish to buy me a <a href="https://www.buymeacoffee.com/erdogant">Coffee</a> for this work, it is very appreciated :)
-
-### Licence
-See [LICENSE](LICENSE) for details.
+* https://towardsdatascience.com/how-to-cluster-images-based-on-visual-similarity-cd6e7209fe34
