@@ -34,6 +34,9 @@ import uuid
 import shutil
 import random
 
+import imagehash
+from PIL import Image
+
 # Configure the logger
 logger = logging.getLogger('')
 for handler in logger.handlers[:]: # get rid of existing old handlers
@@ -149,12 +152,12 @@ class Clustimage():
     >>>
 
     """
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':0.95}, params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':0.95}, params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}, params_hash={'alpha':0, 'exact_hash':True}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self._clean()
 
-        if not np.any(np.isin(method, [None, 'pca','hog', 'pca-hog'])): raise Exception(logger.error('method: "%s" is unknown', method))
+        if not (np.any(np.isin(method, [None,'pca','hog','pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         if dirpath is None: dirpath = tempfile.mkdtemp()
         if not os.path.isdir(dirpath): raise Exception(logger.error('[%s] does not exists.', dirpath))
 
@@ -176,14 +179,17 @@ class Clustimage():
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
 
+        # Hash parameters
+        self.params_hash = hash_method(hashmethod=method, alpha=params_hash['alpha'], exact_hash=params_hash['exact_hash'])
+        # PCA parameters
         pca_defaults = {'n_components':0.95, 'detect_outliers': None, 'random_state': None}
         params_pca   = {**pca_defaults, **params_pca}
         self.params_pca = params_pca
-
+        # HOG parameters
         hog_defaults = {'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}
         params_hog   = {**hog_defaults, **params_hog}
         self.params_hog = params_hog
-
+        # Set the logger
         set_logger(verbose=verbose)
 
     def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
@@ -406,24 +412,48 @@ class Clustimage():
         """
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
         self.params['cluster_space'] = cluster_space
+        ce = None
 
-        # Init
-        ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
-
-        # Fit
-        if cluster_space=='low':
-            feat = self.results['xycoord']
-            logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
+        if ('hash' in self.params['method']) and self.params_hash['exact_hash']:
+            logger.info('Updating cluster-labels based on the hash with alpha=%g change.', self.params_hash['alpha'])
+            labels = np.zeros(self.results['feat'].shape[0])*np.nan
+            if self.params_hash['alpha']>0:
+                model = distfit(method='quantile', bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], alpha=self.params_hash['alpha'])
+                # Fit theoretical distribution
+                _ = model.fit_transform(self.results['feat'])
+            # model.plot()
+            cl_label=0
+            for i in range(0, self.results['feat'].shape[0]):
+                if self.params_hash['alpha']>0:
+                    Iloc = np.where(model.predict(self.results['feat'][i,:], verbose=0)['y_proba']<=self.params_hash['alpha'])[0]
+                else:
+                    Iloc = self.results['feat'][i,:]==0
+                # Store
+                if np.all(np.isnan(labels[Iloc])):
+                    labels[Iloc]=cl_label
+                    cl_label=cl_label+1
+                else:
+                    tmplabels=labels[Iloc]
+                    uilabels = np.unique(tmplabels[~np.isnan(tmplabels)])
+                    labels[np.isin(labels, uilabels)]=uilabels[0]
+                    labels[Iloc] = uilabels[0]
         else:
-            feat = self.results['feat']
-            logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
-
-        # Fit model
-        _ = ce.fit(feat)
+            # Init
+            ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
+            # Fit
+            if cluster_space=='low':
+                feat = self.results['xycoord']
+                logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
+            else:
+                feat = self.results['feat']
+                logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
+            # Fit model
+            _ = ce.fit(feat)
+            labels = ce.results['labx']
+            logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
 
         # Store results and params
-        logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
-        self.results['labels'] = ce.results['labx']
+        self.results['labels'] = labels
         self.params['cluster_space'] = cluster_space
         self.params['metric_find'] = metric
         self.clusteval = ce
@@ -734,20 +764,26 @@ class Clustimage():
             filenames : list of str.
 
         """
-        logger.info("Reading images..")
+        out = {}
         img, filenames = None, None
-        if isinstance(pathnames, str):
-            pathnames=[pathnames]
+        if isinstance(pathnames, str): pathnames=[pathnames]
+        out['img'] = img
+        out['pathnames'] = pathnames
+        out['filenames'] = filenames
+        
+        # No need to import and process data when using hash function
+        if 'hash' in self.params['method']:
+            return out
+
+        # Read and preprocess data
         if isinstance(pathnames, list):
+            logger.info("Reading images..")
             filenames = list(map(basename, pathnames))
             if imread:
                 img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
                 if flatten: img = np.vstack(img)
 
-        out = {}
-        out['img'] = img
-        out['pathnames'] = pathnames
-        out['filenames'] = filenames
+            out['img'] = img
         return out
 
     def extract_hog(self, X, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), flatten=True):
@@ -929,7 +965,10 @@ class Clustimage():
         # Embedding using tSNE
         if self.params['embedding']=='tsne':
             logger.info('Computing embedding using %s..', self.params['embedding'])
-            xycoord = TSNE(n_components=2, learning_rate='auto', init='random').fit_transform(X)
+            if 'hash' in self.params['method']:
+                xycoord = TSNE(n_components=2, learning_rate='auto', init='random', metric='precomputed').fit_transform(X)
+            else:
+                xycoord = TSNE(n_components=2, learning_rate='auto', init='random').fit_transform(X)
         else:
             xycoord = X[:,0:2]
         # Return
@@ -967,6 +1006,12 @@ class Clustimage():
             X['img'] = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
             X['filenames'] = Xraw['filenames']
             X = self.extract_pca(X)
+        elif 'hash' in self.params['method']:
+            # Compute hash
+            hashs = list(map(self.compute_hash, Xraw['pathnames']))
+            # Build adjacency matrix with hash differences
+            X = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
+            # plt.hist(diff[np.triu_indices(diff.shape[0], k=1)], bins=50)
         else:
             # Read images and preprocessing and flattening of images
             X = Xraw['img'].copy()
@@ -974,6 +1019,9 @@ class Clustimage():
         # Message
         logger.info("Extracted features using [%s]: %s" %(self.params['method'], str(X.shape)))
         return Xraw, X
+
+    def compute_hash(self, img):
+        return self.params_hash['hashfunc'](Image.open(img))
 
     def _compute_distances(self, X, metric, alpha):
         """Compute distances and probabilities for new unseen samples.
@@ -1556,7 +1604,7 @@ class Clustimage():
         else:
             logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
-    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, figsize=(15,10)):
+    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=1, figsize=(15,10)):
         """Plot the results.
 
         Parameters
@@ -1569,6 +1617,8 @@ class Clustimage():
             'gray', 'binary',  None (uses rgb colorscheme)
         show_hog : bool, (default: False)
             Plot the hog features next to the input image.
+        min_clust : int, (default: 1)
+            Plots are created for clusters with > min_clust samples
         figsize : tuple, (default: (15, 10).
             Size of the figure (height,width).
 
@@ -1592,7 +1642,7 @@ class Clustimage():
             # Run over all labels.
             for label in tqdm(uilabels, disable=disable_tqdm()):
                 idx = np.where(self.results['labels']==label)[0]
-                if len(idx)>0:
+                if len(idx)>min_clust:
                     # Collect the images
                     getfiles = np.array(self.results['pathnames'])[idx]
                     # Get the images that cluster together
@@ -1622,7 +1672,8 @@ class Clustimage():
                         plt.tight_layout()
                         plt.show()
                 else:
-                    logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
+                    # logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
+                    pass
         else:
             logger.warning('Plotting is not possible. Path locations are unknown. Hint: try to set "store_to_disk=True" during initialization.')
     
@@ -2030,6 +2081,52 @@ def wget(url, writepath):
     with open(writepath, "wb") as fd:
         for chunk in r.iter_content(chunk_size=1024):
             fd.write(chunk)
+
+
+# %% Get image HASH function
+def hash_method(hashmethod='ahash', alpha=0, exact_hash=True):
+    """Get image hash function.
+
+    Parameters
+    ----------
+    hashmethod : str (default: 'ahash')
+        'ahash': Average hash
+        'phash': Perceptual hash
+        'dhash': Difference hash
+        'whash-haar': Haar wavelet hash
+        'whash-db4': Daubechies wavelet hash
+        'colorhash': HSV color hash
+        'crop-resistant': Crop-resistant hash
+
+    Returns
+    -------
+    hashfunc : Object
+
+    """
+    if hashmethod == 'ahash':
+        hashfunc = imagehash.average_hash
+    elif hashmethod == 'phash':
+        hashfunc = imagehash.phash
+    elif hashmethod == 'dhash':
+        hashfunc = imagehash.dhash
+    elif hashmethod == 'whash-haar':
+        hashfunc = imagehash.whash
+    elif hashmethod == 'whash-db4':
+        hashfunc = lambda img: imagehash.whash(img, mode='db4')
+    elif hashmethod == 'colorhash':
+        hashfunc = imagehash.colorhash
+    elif hashmethod == 'crop-resistant':
+        hashfunc = imagehash.crop_resistant_hash
+    else:
+        hashfunc=None
+        hashmethod=None
+    # Set the hash parameters
+    # params_hash   = {**hash_defaults, **params_hash}
+    # self.params_hash = params_hash
+    params_hash = {'hashfunc':hashfunc, 'method':hashmethod, 'alpha':alpha, 'exact_hash':exact_hash}
+    # Return the hashfunction
+    return params_hash
+
 
 # %% Main
 # if __name__ == "__main__":
