@@ -5,6 +5,31 @@
 # 
 # Read image according the preprocessing steps
 
+# %% HASHES
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Cluster on hash matrix
+cl = Clustimage(method='ahash', params_hash={'exact_hash':False})
+# Find exact hashes
+cl = Clustimage(method='ahash', params_hash={'alpha':0, 'exact_hash':True})
+# Find very close hashes
+cl = Clustimage(method='ahash', params_hash={'alpha':0.001, 'exact_hash':True})
+
+# Example data
+X = cl.import_example(data='mnist')
+# Preprocessing, feature extraction and cluster evaluation
+results = cl.fit_transform(X, min_clust=4, max_clust=15)
+# results = cl.cluster(min_clust=4, max_clust=15)
+
+# Scatter
+cl.scatter(zoom=0.5, img_mean=False)
+cl.scatter(zoom=None, img_mean=False, dotsize=100)
+
+# cl.clusteval.plot()
+# cl.plot_unique(img_mean=False)
+cl.plot(min_clust=5)
+
 # %%
 # Import library
 from clustimage import Clustimage
