@@ -725,7 +725,7 @@ class Clustimage():
         set_logger(verbose=30)
 
         # Extract faces and eyes from image
-        for pathname in tqdm(X['pathnames'], disable=disable_tqdm()):
+        for pathname in tqdm(X['pathnames'], disable=disable_tqdm(self.verbose)):
             # Extract faces
             pathnames_face, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self._extract_faces(pathname)
             # Store
