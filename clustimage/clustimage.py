@@ -1946,12 +1946,12 @@ def _imread(filepath, colorscale=1):
     if os.path.isfile(filepath):
         # Read the image
         img = cv2.imread(filepath, colorscale)
+
+        # In case of rgb images: make gray images compatible with RGB
+        if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     else:
         logger.warning('File does not exists: %s', filepath)
-    
-    # In case of rgb images: make gray images compatible with RGB
-    if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
     return img
 
