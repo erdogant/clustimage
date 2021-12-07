@@ -1025,8 +1025,13 @@ class Clustimage():
             X = self.extract_pca(X)
         elif 'hash' in self.params['method']:
             # Compute hash
-            hashs = list(map(self.compute_hash, Xraw['pathnames']))
+            hashs = list(map(self.compute_hash, tqdm(Xraw['pathnames'], disable=disable_tqdm())))
+            # Removing hashes from images that could not be read
+            idx = np.where(np.array(list(map(len, hashs)))>1)[0]
+            Xraw['pathnames'] = np.array(Xraw['pathnames'])[idx]
+            hashs=np.array(hashs)[idx]
             # Build adjacency matrix with hash differences
+            logger.info('Build adjacency matrix with %s differences.' %(self.params['method']))
             X = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
             # plt.hist(diff[np.triu_indices(diff.shape[0], k=1)], bins=50)
         else:
@@ -1038,7 +1043,13 @@ class Clustimage():
         return Xraw, X
 
     def compute_hash(self, img):
-        return self.params_hash['hashfunc'](Image.open(img))
+        imghash=[]
+        try:
+            imghash = self.params_hash['hashfunc'](Image.open(img))
+        except:
+            pass
+                
+        return imghash
 
     def _compute_distances(self, X, metric, alpha):
         """Compute distances and probabilities for new unseen samples.
