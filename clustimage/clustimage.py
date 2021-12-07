@@ -1482,7 +1482,7 @@ class Clustimage():
                 imagebox = offsetbox.AnnotationBbox( offsetbox.OffsetImage(img, cmap=cmap, zoom=zoom), xycoord[i,:] )
                 ax.add_artist(imagebox)
 
-    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, figsize=(15,10)):
+    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, figsize=(15,10)):
         """Plot the samples using a scatterplot.
 
         Parameters
@@ -1491,6 +1491,11 @@ class Clustimage():
             Dot size of the scatterpoints.
         legend : bool, (default: False)
             Plot the legend.
+        zoom : bool, (default: 0.3)
+            Plot the image in the scatterplot.
+            None : Do not plot the image.
+        text : bool, (default: True)
+            Plot the cluster labels.
         figsize : tuple, (default: (15, 10).
             Size of the figure (height,width).
 
@@ -1510,10 +1515,15 @@ class Clustimage():
         labels = self.results.get('labels', None)
         if labels is None: labels=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
 
+        if text:
+            text_labels=labels
+        else:
+            text_labels=None
+
         # Make scatterplot
         colours=np.vstack(colourmap.fromlist(labels)[0])
         title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
-        fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0], xlabel='x-axis', ylabel='y-axis')
+        fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=text_labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0], xlabel='x-axis', ylabel='y-axis')
 
         if hasattr(self, 'results_unique'):
             if img_mean:
