@@ -18,6 +18,7 @@ cl = Clustimage(method='ahash', params_hash={'alpha':0.001, 'exact_hash':True})
 
 # Example data
 X = cl.import_example(data='mnist')
+# X = 'D://magweg//101_ObjectCategories//'
 # Preprocessing, feature extraction and cluster evaluation
 results = cl.fit_transform(X, min_clust=4, max_clust=15)
 # results = cl.cluster(min_clust=4, max_clust=15)
