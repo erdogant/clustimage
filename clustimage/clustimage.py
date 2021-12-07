@@ -424,20 +424,23 @@ class Clustimage():
         ce = None
 
         if ('hash' in self.params['method']) and self.params_hash['exact_hash']:
-            logger.info('Updating cluster-labels based on the hash with alpha=%g change.', self.params_hash['alpha'])
+            logger.info('Updating cluster-labels based on the [%s] with alpha=%g change.' %(self.params['method'], self.params_hash['alpha']))
             labels = np.zeros(self.results['feat'].shape[0])*np.nan
-            if self.params_hash['alpha']>0:
+            if not self.params_hash['exact_hash']:
+                # method='parametric'
                 model = distfit(method='quantile', bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], alpha=self.params_hash['alpha'])
                 # Fit theoretical distribution
                 _ = model.fit_transform(self.results['feat'])
-            # model.plot()
+                # model.plot()
             cl_label=0
             for i in range(0, self.results['feat'].shape[0]):
-                if self.params_hash['alpha']>0:
-                    Iloc = np.where(model.predict(self.results['feat'][i,:], verbose=0)['y_proba']<=self.params_hash['alpha'])[0]
-                else:
-                    Iloc = self.results['feat'][i,:]==0
-                # Store
+                # Retrieve all hashes that are similar with minimum value
+                Iloc = self.results['feat'][i,:]<=self.params_hash['alpha']
+                # Retrieve hashes based on probabilities
+                if not self.params_hash['exact_hash']:
+                    Iloc_p = model.predict(self.results['feat'][i,:], verbose=0)['y_proba']<=self.params_hash['alpha']
+                    Iloc = np.logical_or(Iloc, Iloc_p)
+                # If nan value is found, label it with new cluster label
                 if np.all(np.isnan(labels[Iloc])):
                     labels[Iloc]=cl_label
                     cl_label=cl_label+1
@@ -779,7 +782,7 @@ class Clustimage():
         out['img'] = img
         out['pathnames'] = pathnames
         out['filenames'] = filenames
-        
+
         # No need to import and process data when using hash function
         if 'hash' in self.params['method']:
             return out
@@ -790,8 +793,11 @@ class Clustimage():
             filenames = list(map(basename, pathnames))
             if imread:
                 img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
-                if flatten: img = np.vstack(img)
-
+                # Remove the images that could not be read
+                idx = np.where(np.array(list(map(len, img)))>1)[0]
+                if flatten: img = np.vstack(np.array(img)[idx])
+            out['filenames'] = np.array(filenames)[idx]
+            out['pathnames'] = np.array(pathnames)[idx]
             out['img'] = img
         return out
 
@@ -926,7 +932,9 @@ class Clustimage():
         # 2. Read images
         if isinstance(Xraw, list):
             # Make sure that list in lists are flattend
-            Xraw = list(np.hstack(Xraw))
+            Xraw = np.hstack(Xraw)
+            # Check file existence on disk
+            Xraw = list(Xraw[list(map(os.path.isfile, Xraw))])
             # Read images and preprocessing
             X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
 
@@ -1250,14 +1258,19 @@ class Clustimage():
         >>> 
 
         """
-        # Read the image
-        img = _imread(filepath, colorscale=colorscale)
-        # Scale the image
-        img = imscale(img)
-        # Resize the image
-        img = imresize(img, dim=dim)
-        # Flatten the image
-        if flatten: img = img_flatten(img)
+        logger.debug('[%s]' %(filepath))
+        img=[]
+        try:
+            # Read the image
+            img = _imread(filepath, colorscale=colorscale)
+            # Scale the image
+            img = imscale(img)
+            # Resize the image
+            img = imresize(img, dim=dim)
+            # Flatten the image
+            if flatten: img = img_flatten(img)
+        except:
+            logger.warning('Could not read: [%s]' %(filepath))
         # Return
         return img
 
