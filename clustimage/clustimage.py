@@ -75,10 +75,19 @@ class Clustimage():
     ----------
     method : str, (default: 'pca')
         Method to be usd to extract features from images.
+            * None : No feature extraction
             * 'pca' : PCA feature extraction
             * 'hog' : hog features extraced
             * 'pca-hog' : PCA extracted features from the HOG desriptor
-            * None : No feature extraction
+            hashmethod : str (default: 'ahash')
+            * 'ahash': Average hash
+            * 'phash': Perceptual hash
+            * 'dhash': Difference hash
+            * 'whash-haar': Haar wavelet hash
+            * 'whash-db4': Daubechies wavelet hash
+            * 'colorhash': HSV color hash
+            * 'crop-resistant': Crop-resistant hash
+
     embedding : str, (default: 'tsne')
         Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
             * 'tsne' or  None
