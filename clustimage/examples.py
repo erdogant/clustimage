@@ -5,6 +5,103 @@
 # 
 # Read image according the preprocessing steps
 
+# %% fotos on disk
+from clustimage import Clustimage
+# Init
+cl = Clustimage(method='pca', grayscale=True)
+# Load example with faces
+face_results = cl.extract_faces('D://PY//DATA//IMG//faces_images//')
+# Preproceesing, cluster detection
+results = cl.fit_transform(face_results['pathnames_face'])
+
+cl.cluster(min_clust=7)
+cl.clusteval.plot()
+cl.scatter(zoom=None)
+
+# out = cl.unique()
+cl.plot_unique(img_mean=False)
+
+out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
+cl.plot_find()
+
+out = cl.find(face_results['pathnames_face'][20], k=5, alpha=None, metric='euclidean')
+cl.plot_find()
+
+cl.plot_faces(eyes=False)
+
+# cluster labels
+labels = results['labels']
+
+# Plot dendrogram
+cl.dendrogram()
+# Scatter
+cl.scatter()
+cl.scatter(zoom=None)
+# Plot faces
+cl.plot_faces(eyes=False)
+# Make plot
+cl.plot(labels=15, show_hog=True)
+# Cleaning files
+cl.clean_files()
+
+
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['feat'])
+cl.clusteval.scatter(cl.results['xycoord'])
+cl.pca.plot()
+cl.pca.scatter(legend=False, label=False)
+
+cl.save(overwrite=True)
+cl.load()
+
+# %% FACES
+from clustimage import Clustimage
+# Init
+cl = Clustimage(method='pca-hog', grayscale=True, params_hog={'orientations':8, 'pixels_per_cell':(4,4)})
+# cl = Clustimage(method='pca', grayscale=True)
+# Load example with faces
+X = cl.import_example(data='faces')
+# Detect faces
+# face_results = cl.extract_faces()
+# Preproceesing, cluster detection
+results = cl.fit_transform(X, min_clust=4, max_clust=10)
+
+
+cl.clusteval.plot(figsize=(10,6))
+
+cl.plot_unique(img_mean=True)
+cl.plot_unique(img_mean=False, show_hog=True)
+
+
+# out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
+# cl.plot_find()
+
+# out = cl.find(face_results['pathnames_face'][20], k=5, alpha=None, metric='euclidean')
+# cl.plot_find()
+
+# Plot dendrogram
+cl.dendrogram()
+# Scatter
+cl.scatter()
+cl.scatter(zoom=None)
+
+# Make plot
+cl.plot()
+cl.plot(labels=2, show_hog=True)
+# Cleaning files
+cl.clean_files()
+
+
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['feat'])
+cl.clusteval.scatter(cl.results['xycoord'])
+cl.pca.plot()
+cl.pca.scatter(legend=False, label=False)
+
+cl.save(overwrite=True)
+cl.load()
+
+
 # %% HASHES
 import matplotlib.pyplot as plt
 from clustimage import Clustimage
@@ -60,54 +157,6 @@ cl.plot_find()
 cl.scatter()
 
 
-# %% fotos on disk
-from clustimage import Clustimage
-# Init
-cl = Clustimage(method='pca', grayscale=True)
-# Load example with faces
-face_results = cl.detect_faces('D://magweg1//')
-# Preproceesing, cluster detection
-results = cl.fit_transform(face_results['pathnames_face'])
-
-cl.cluster(min_clust=7)
-cl.clusteval.plot()
-cl.scatter(zoom=None)
-
-# out = cl.unique()
-cl.plot_unique(img_mean=False)
-
-out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
-cl.plot_find()
-
-out = cl.find(face_results['pathnames_face'][20], k=5, alpha=None, metric='euclidean')
-cl.plot_find()
-
-cl.plot_faces(eyes=False)
-
-# cluster labels
-labels = results['labels']
-
-# Plot dendrogram
-cl.dendrogram()
-# Scatter
-cl.scatter()
-cl.scatter(zoom=None)
-# Plot faces
-cl.plot_faces(eyes=False)
-# Make plot
-cl.plot(labels=15, show_hog=True)
-# Cleaning files
-cl.clean_files()
-
-
-cl.clusteval.plot()
-cl.clusteval.scatter(cl.results['feat'])
-cl.clusteval.scatter(cl.results['xycoord'])
-cl.pca.plot()
-cl.pca.scatter(legend=False, label=False)
-
-cl.save(overwrite=True)
-cl.load()
 
 
 # %% FLOWERS
@@ -154,59 +203,6 @@ cl.clusteval.plot()
 # Make silhouette plot
 cl.clusteval.scatter(cl.results['xycoord'])
 
-# %% FACES
-from clustimage import Clustimage
-# Init
-cl = Clustimage(method='hog', grayscale=True, params_hog={'orientations':8, 'pixels_per_cell':(8,8)})
-# cl = Clustimage(method='pca', grayscale=True)
-# Load example with faces
-pathnames = cl.import_example(data='faces')
-# Detect faces
-face_results = cl.detect_faces(pathnames)
-# Preproceesing, cluster detection
-results = cl.fit_transform(face_results['pathnames_face'])
-
-
-cl.clusteval.plot(figsize=(10,6))
-
-
-out = cl.unique()
-cl.plot_unique(img_mean=True)
-cl.plot_unique(img_mean=False, show_hog=True)
-
-
-out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
-cl.plot_find()
-
-out = cl.find(face_results['pathnames_face'][20], k=5, alpha=None, metric='euclidean')
-cl.plot_find()
-
-cl.plot_faces(eyes=False)
-
-# cluster labels
-labels = results['labels']
-
-# Plot dendrogram
-cl.dendrogram()
-# Scatter
-cl.scatter()
-cl.scatter(zoom=None)
-# Plot faces
-cl.plot_faces(eyes=False)
-# Make plot
-cl.plot(labels=17, show_hog=True)
-# Cleaning files
-cl.clean_files()
-
-
-cl.clusteval.plot()
-cl.clusteval.scatter(cl.results['feat'])
-cl.clusteval.scatter(cl.results['xycoord'])
-cl.pca.plot()
-cl.pca.scatter(legend=False, label=False)
-
-cl.save(overwrite=True)
-cl.load()
 
 
 # %% MNIST DATAST

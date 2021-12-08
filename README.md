@@ -292,7 +292,7 @@ cl = Clustimage(method='hog', grayscale=True)
 # Load example with faces
 pathnames = cl.import_example(data='faces')
 # First we need to detect and extract the faces from the images
-face_results = cl.detect_faces(pathnames)
+face_results = cl.extract_faces(pathnames)
 # The detected faces are extracted and stored in face_resuls. We can now easily provide the pathnames of the faces that are stored in pathnames_face.
 results = cl.fit_transform(face_results['pathnames_face'])
 
