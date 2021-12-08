@@ -1992,7 +1992,11 @@ def import_example(data='flowers', url=None):
         if data=='flowers':
             url='https://erdogant.github.io/datasets/flower_images.zip'
         elif data=='faces':
-            url='https://erdogant.github.io/datasets/faces_images.zip'
+            from sklearn.datasets import fetch_olivetti_faces
+            X = fetch_olivetti_faces()
+            # y = X['target']
+            # return list(map(lambda x: x.reshape(64,64), X['data']))
+            return  X['data']
         elif data=='scenes':
             url='https://erdogant.github.io/datasets/scenes.zip'
         elif data=='mnist':
