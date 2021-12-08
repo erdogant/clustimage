@@ -5,6 +5,72 @@
 # 
 # Read image according the preprocessing steps
 
+# %% HASHES
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Cluster on hash matrix
+cl = Clustimage(method='ahash', params_hash={'exact_hash':False})
+# Find exact hashes
+cl = Clustimage(method='ahash', params_hash={'threshold':0, 'exact_hash':True})
+# Find very close hashes
+cl = Clustimage(method='ahash', params_hash={'threshold':0.001, 'exact_hash':True})
+
+# Example data
+X = cl.import_example(data='mnist')
+# X = 'D://magweg//101_ObjectCategories//'
+# Preprocessing, feature extraction and cluster evaluation
+results = cl.fit_transform(X, min_clust=4, max_clust=15)
+# results = cl.cluster(min_clust=4, max_clust=15)
+
+# Scatter
+cl.scatter(zoom=3, img_mean=False, text=False)
+cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False)
+
+# cl.clusteval.plot()
+# cl.plot_unique(img_mean=False)
+cl.plot(min_clust=5)
+
+
+# %% FACES
+from clustimage import Clustimage
+# Init
+cl = Clustimage(method='pca', grayscale=False, dim=(64,64))
+# Load example with faces
+X = cl.import_example(data='faces')
+# Preproceesing, cluster detection
+results = cl.fit_transform(X, min_clust=4, max_clust=20)
+
+cl.clusteval.plot(figsize=(10,6))
+
+# Scatter
+cl.scatter(zoom=0.2, img_mean=False)
+cl.scatter(zoom=None)
+
+
+cl.plot_unique(img_mean=True)
+cl.plot_unique(img_mean=False, show_hog=True)
+
+# Plot dendrogram
+cl.dendrogram()
+
+# Make plot
+cl.plot()
+cl.plot(labels=2, show_hog=True)
+# Cleaning files
+cl.clean_files()
+
+
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['feat'])
+cl.clusteval.scatter(cl.results['xycoord'])
+cl.pca.plot()
+cl.pca.scatter(legend=False, label=False)
+
+cl.save(overwrite=True)
+cl.load()
+
+
 # %% fotos on disk
 from clustimage import Clustimage
 # Init
@@ -54,79 +120,8 @@ cl.pca.scatter(legend=False, label=False)
 cl.save(overwrite=True)
 cl.load()
 
-# %% FACES
-from clustimage import Clustimage
-# Init
-cl = Clustimage(method='pca-hog', grayscale=True, params_hog={'orientations':8, 'pixels_per_cell':(4,4)})
-# cl = Clustimage(method='pca', grayscale=True)
-# Load example with faces
-X = cl.import_example(data='faces')
-# Detect faces
-# face_results = cl.extract_faces()
-# Preproceesing, cluster detection
-results = cl.fit_transform(X, min_clust=4, max_clust=10)
 
 
-cl.clusteval.plot(figsize=(10,6))
-
-cl.plot_unique(img_mean=True)
-cl.plot_unique(img_mean=False, show_hog=True)
-
-
-# out = cl.find(face_results['pathnames_face'][20], k=None, alpha=0.05, metric='euclidean')
-# cl.plot_find()
-
-# out = cl.find(face_results['pathnames_face'][20], k=5, alpha=None, metric='euclidean')
-# cl.plot_find()
-
-# Plot dendrogram
-cl.dendrogram()
-# Scatter
-cl.scatter()
-cl.scatter(zoom=None)
-
-# Make plot
-cl.plot()
-cl.plot(labels=2, show_hog=True)
-# Cleaning files
-cl.clean_files()
-
-
-cl.clusteval.plot()
-cl.clusteval.scatter(cl.results['feat'])
-cl.clusteval.scatter(cl.results['xycoord'])
-cl.pca.plot()
-cl.pca.scatter(legend=False, label=False)
-
-cl.save(overwrite=True)
-cl.load()
-
-
-# %% HASHES
-import matplotlib.pyplot as plt
-from clustimage import Clustimage
-
-# Cluster on hash matrix
-cl = Clustimage(method='ahash', params_hash={'exact_hash':False})
-# Find exact hashes
-cl = Clustimage(method='ahash', params_hash={'alpha':0, 'exact_hash':True})
-# Find very close hashes
-cl = Clustimage(method='ahash', params_hash={'alpha':0.001, 'exact_hash':True})
-
-# Example data
-X = cl.import_example(data='mnist')
-# X = 'D://magweg//101_ObjectCategories//'
-# Preprocessing, feature extraction and cluster evaluation
-results = cl.fit_transform(X, min_clust=4, max_clust=15)
-# results = cl.cluster(min_clust=4, max_clust=15)
-
-# Scatter
-cl.scatter(zoom=0.5, img_mean=False)
-cl.scatter(zoom=None, img_mean=False, dotsize=100)
-
-# cl.clusteval.plot()
-# cl.plot_unique(img_mean=False)
-cl.plot(min_clust=5)
 
 # %%
 # Import library
