@@ -287,14 +287,17 @@ cl.scatter()
 
 ```python
 from clustimage import Clustimage
-# Initialize with grayscale and extract HOG features.
-cl = Clustimage(method='hog', grayscale=True)
+# Initialize with PCA
+cl = Clustimage(method='pca', grayscale=True)
 # Load example with faces
-pathnames = cl.import_example(data='faces')
-# First we need to detect and extract the faces from the images
-face_results = cl.extract_faces(pathnames)
+X = cl.import_example(data='faces')
+# Initialize and run
+results = cl.fit_transform(X)
+
+# In case you need to extract the faces from the images
+# face_results = cl.extract_faces(pathnames)
 # The detected faces are extracted and stored in face_resuls. We can now easily provide the pathnames of the faces that are stored in pathnames_face.
-results = cl.fit_transform(face_results['pathnames_face'])
+# results = cl.fit_transform(face_results['pathnames_face'])
 
 # Plot the evaluation of the number of clusters. As you can see, the maximum number of cluster evaluated is 24 can perhaps be too small.
 cl.clusteval.plot()
@@ -302,7 +305,7 @@ cl.clusteval.plot()
 cl.cluster(max_clust=35)
 # And plot again. As you can see, it keeps increasing which means that it may not found any local maximum anymore.
 # When looking at the graph, we see a local maximum at 12 clusters. Lets go for that
-cl.cluster(min_clust=12, max_clust=13)
+cl.cluster(min_clust=4, max_clust=20)
 
 # Lets plot the 12 unique clusters that contain the faces
 cl.plot_unique()
