@@ -565,7 +565,7 @@ class Clustimage():
 
             # Compute the average image by simply averaging the images
             img=[]
-            if self.params['dim'] is not None:
+            if (self.params['dim'] is not None) and (self.results['pathnames'] is not None):
                 img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
             eigen_img.append(imscale(np.mean(img, axis=0)))
 
