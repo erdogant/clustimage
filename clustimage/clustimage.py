@@ -1498,7 +1498,7 @@ class Clustimage():
 
     def _add_img_to_scatter(self, ax, pathnames, xycoord, cmap=None, zoom=0.2):
         # Plot the images on top of the scatterplot
-        if zoom is not None:
+        if zoom is not None and self.params['store_to_disk']:
             for i, pathname in enumerate(pathnames):
                 if isinstance(pathname, str):
                     img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False)
@@ -1771,16 +1771,18 @@ class Clustimage():
         # Make figure
         fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
         
-        # Make the actual plots
-        for i, ax in enumerate(axs.ravel()):
-            if i<len(imgs):
-                if len(imgs[i].shape)==1:
-                    ax.imshow(imgs[i].reshape(dim), cmap=cmap)
-                else:
-                    ax.imshow(imgs[i], cmap=cmap)
-                if labels is not None: ax.set_title(labels[i])
-            ax.axis("off")
-        _ = fig.suptitle(title, fontsize=16)
+        if self.params['store_to_disk']:
+
+            # Make the actual plots
+            for i, ax in enumerate(axs.ravel()):
+                if i<len(imgs):
+                    if len(imgs[i].shape)==1:
+                        ax.imshow(imgs[i].reshape(dim), cmap=cmap)
+                    else:
+                        ax.imshow(imgs[i], cmap=cmap)
+                    if labels is not None: ax.set_title(labels[i])
+                ax.axis("off")
+            _ = fig.suptitle(title, fontsize=16)
 
         # Small pause to build the plot
         plt.pause(0.1)
