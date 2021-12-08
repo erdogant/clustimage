@@ -1712,6 +1712,10 @@ class Clustimage():
 
         # Plot the clustered images
         if (self.results.get('labels', None) is not None) and (self.results.get('pathnames', None) is not None):
+            # Set logger to error only
+            verbose = logger.getEffectiveLevel()
+            set_logger(verbose=50)
+
             # Gather labels
             if labels is None: labels = self.results['labels']
             if not isinstance(labels, list): labels = [labels]
@@ -1750,6 +1754,9 @@ class Clustimage():
                         _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
                         plt.tight_layout()
                         plt.show()
+
+                    # Restore verbose status
+                    set_logger(verbose=verbose)
                 else:
                     # logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
                     pass
