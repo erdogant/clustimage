@@ -161,7 +161,7 @@ class Clustimage():
     >>>
 
     """
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':0.95}, params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}, params_hash={'alpha':0, 'exact_hash':True}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':0.95}, params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}, params_hash={'threshold':0, 'exact_hash':True}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self._clean()
@@ -189,7 +189,7 @@ class Clustimage():
         self.params['store_to_disk'] = store_to_disk
 
         # Hash parameters
-        self.params_hash = hash_method(hashmethod=method, alpha=params_hash['alpha'], exact_hash=params_hash['exact_hash'])
+        self.params_hash = hash_method(hashmethod=method, alpha=params_hash['threshold'], exact_hash=params_hash['exact_hash'])
         # PCA parameters
         pca_defaults = {'n_components':0.95, 'detect_outliers': None, 'random_state': None}
         params_pca   = {**pca_defaults, **params_pca}
@@ -283,7 +283,7 @@ class Clustimage():
         >>> # load example with faces
         >>> pathnames = cl.import_example(data='faces')
         >>> # Detect faces
-        >>> face_results = cl.detect_faces(pathnames)
+        >>> face_results = cl.extract_faces(pathnames)
         >>>
         >>> # Cluster extracted faces
         >>> results = cl.fit_transform(face_results['pathnames_face'])
@@ -422,23 +422,26 @@ class Clustimage():
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
         self.params['cluster_space'] = cluster_space
         ce = None
-
+        
+        # If exact hash matches are required.
         if ('hash' in self.params['method']) and self.params_hash['exact_hash']:
-            logger.info('Updating cluster-labels based on the [%s] with alpha=%g change.' %(self.params['method'], self.params_hash['alpha']))
+            logger.info('Updating cluster-labels based on the [%s] with alpha=%g change.' %(self.params['method'], self.params_hash['threshold']))
             labels = np.zeros(self.results['feat'].shape[0])*np.nan
+            
+            # Exact hash matches that appear to be significantly similar based on the hashes.
             if not self.params_hash['exact_hash']:
                 # method='parametric'
-                model = distfit(method='quantile', bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], alpha=self.params_hash['alpha'])
+                model = distfit(method='quantile', bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], alpha=self.params_hash['threshold'])
                 # Fit theoretical distribution
                 _ = model.fit_transform(self.results['feat'])
                 # model.plot()
             cl_label=0
             for i in range(0, self.results['feat'].shape[0]):
                 # Retrieve all hashes that are similar with minimum value
-                Iloc = self.results['feat'][i,:]<=self.params_hash['alpha']
+                Iloc = self.results['feat'][i,:]<=self.params_hash['threshold']
                 # Retrieve hashes based on probabilities
                 if not self.params_hash['exact_hash']:
-                    Iloc_p = model.predict(self.results['feat'][i,:], verbose=0)['y_proba']<=self.params_hash['alpha']
+                    Iloc_p = model.predict(self.results['feat'][i,:], verbose=0)['y_proba']<=self.params_hash['threshold']
                     Iloc = np.logical_or(Iloc, Iloc_p)
                 # If nan value is found, label it with new cluster label
                 if np.all(np.isnan(labels[Iloc])):
@@ -558,7 +561,9 @@ class Clustimage():
             xycoord_center = np.mean(self.results['xycoord'][idx,:], axis=0)
 
             # Compute the average image by simply averaging the images
-            img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
+            img=[]
+            if self.params['dim'] is not None:
+                img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
             eigen_img.append(imscale(np.mean(img, axis=0)))
 
             # dim = _check_dim(eigen_img, self.params['dim'])
@@ -672,7 +677,7 @@ class Clustimage():
         self.params['metric_find'] = metric
         return self.results['predict']
 
-    def detect_faces(self, pathnames):
+    def extract_faces(self, pathnames):
         """Detect and extract faces from images.
         
         Description
@@ -714,7 +719,7 @@ class Clustimage():
         >>> pathnames = cl.import_example(data='faces')
         >>>
         >>> # Detect faces
-        >>> face_results = cl.detect_faces(pathnames)
+        >>> face_results = cl.extract_faces(pathnames)
         >>>
         >>> # Cluster the faces
         >>> results = cl.fit_transform(face_results['pathnames_face'])
@@ -728,7 +733,7 @@ class Clustimage():
         if (not self.params['grayscale']): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
 
         # Read and pre-proces the input images
-        X = self._import_data(pathnames, imread=False)
+        X = self._import_data(pathnames, imread=True)
         # Create empty list
         faces = {'img':[], 'pathnames':[], 'filenames':[], 'pathnames_face':[], 'coord_faces':[], 'coord_eyes':[]}
         
@@ -737,7 +742,7 @@ class Clustimage():
         set_logger(verbose=30)
 
         # Extract faces and eyes from image
-        for pathname in tqdm(X['pathnames'], disable=disable_tqdm(self.verbose)):
+        for pathname in tqdm(X['pathnames'], disable=disable_tqdm()):
             # Extract faces
             pathnames_face, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self._extract_faces(pathname)
             # Store
@@ -765,6 +770,9 @@ class Clustimage():
             Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
         dim : tuple, (default: (128,128))
             Rescale images. This is required because the feature-space need to be the same across samples.
+        imread : Bool, (default: True)
+            True: Import the input pathnames and store in dict.
+            False: Do not import image.
         flatten : Bool, (default: True)
             Flatten the processed NxMxC array to a 1D-vector
 
@@ -776,29 +784,40 @@ class Clustimage():
             filenames : list of str.
 
         """
-        out = {}
-        img, filenames = None, None
-        if isinstance(pathnames, str): pathnames=[pathnames]
-        out['img'] = img
-        out['pathnames'] = pathnames
-        out['filenames'] = filenames
-
-        # No need to import and process data when using hash function
-        if 'hash' in self.params['method']:
+        if not imread:
+            out={}
+            out['filenames'] = None
+            out['pathnames'] = None
+            out['img'] = pathnames
             return out
 
+        # Filter images on min-number of pixels in image
+        min_nr_pixels = 10
+        # Check file existence on disk
+        if isinstance(pathnames, str): pathnames=[pathnames]
+        pathnames = list(np.array(pathnames)[list(map(os.path.isfile, pathnames))])
+        filenames = list(map(basename, pathnames))
+        idx = range(0, len(pathnames))
+        # Output dict
+        out = {'img':None, 'pathnames':pathnames, 'filenames':filenames}
+
+        # No need to import and process data when using hash function but we do not to check the image size and readability.
+        logger.info("Reading and checking images (images with < %.0d pixels are removed).", (min_nr_pixels))
+        if 'hash' in self.params['method']:
+            flatten=False
+
         # Read and preprocess data
-        if isinstance(pathnames, list):
-            logger.info("Reading images..")
-            filenames = list(map(basename, pathnames))
-            if imread:
-                img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
-                # Remove the images that could not be read
-                idx = np.where(np.array(list(map(len, img)))>1)[0]
-                if flatten: img = np.vstack(np.array(img)[idx])
-            out['filenames'] = np.array(filenames)[idx]
-            out['pathnames'] = np.array(pathnames)[idx]
-            out['img'] = img
+        img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
+
+        # Remove the images that could not be read
+        idx = np.where(np.array(list(map(len, img)))>min_nr_pixels)[0]
+        img = np.array(img)[idx]
+        if flatten: img = np.vstack(img)
+
+        # Remove not readable images and return
+        out['filenames'] = np.array(filenames)[idx]
+        out['pathnames'] = np.array(pathnames)[idx]
+        out['img'] = img
         return out
 
     def extract_hog(self, X, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), flatten=True):
@@ -933,13 +952,10 @@ class Clustimage():
         if isinstance(Xraw, list):
             # Make sure that list in lists are flattend
             Xraw = np.hstack(Xraw)
-            # Check file existence on disk
-            Xraw = list(Xraw[list(map(os.path.isfile, Xraw))])
             # Read images and preprocessing
             X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
-
         # 3. If input is array-like. Make sure X becomes compatible.
-        if isinstance(Xraw, np.ndarray):
+        elif isinstance(Xraw, np.ndarray) and (not 'hash' in self.params['method']):
             # Make 2D
             if len(Xraw.shape)==1:
                 Xraw = Xraw.reshape(-1,1).T
@@ -1025,11 +1041,12 @@ class Clustimage():
             X = self.extract_pca(X)
         elif 'hash' in self.params['method']:
             # Compute hash
-            hashs = list(map(self.compute_hash, tqdm(Xraw['pathnames'], disable=disable_tqdm())))
+            # hashs = list(map(self.compute_hash, tqdm(Xraw['pathnames'], disable=disable_tqdm())))
+            hashs = list(map(self.compute_hash, tqdm(Xraw['img'], disable=disable_tqdm())))
             # Removing hashes from images that could not be read
-            idx = np.where(np.array(list(map(len, hashs)))>1)[0]
-            Xraw['pathnames'] = np.array(Xraw['pathnames'])[idx]
-            hashs=np.array(hashs)[idx]
+            # idx = np.where(np.array(list(map(len, hashs)))>1)[0]
+            # Xraw['pathnames'] = np.array(Xraw['pathnames'])[idx]
+            # hashs=np.array(hashs)[idx]
             # Build adjacency matrix with hash differences
             logger.info('Build adjacency matrix with %s differences.' %(self.params['method']))
             X = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
@@ -1045,7 +1062,8 @@ class Clustimage():
     def compute_hash(self, img):
         imghash=[]
         try:
-            imghash = self.params_hash['hashfunc'](Image.open(img))
+            imghash = self.params_hash['hashfunc'](Image.fromarray(img))
+            # imghash = self.params_hash['hashfunc'](Image.open(img))
         except:
             pass
                 
@@ -1313,6 +1331,7 @@ class Clustimage():
         storedata['params'] = self.params
         storedata['params_pca'] = self.params_pca
         storedata['params_hog'] = self.params_hog
+        storedata['params_hash'] = self.params_hash
         if hasattr(self,'results_faces'): storedata['results_faces'] = self.results_faces
         if hasattr(self,'results_unique'): storedata['results_unique'] = self.results_unique
         if hasattr(self,'distfit'): storedata['distfit'] = self.distfit
@@ -1353,6 +1372,7 @@ class Clustimage():
             self.params = storedata['params']
             self.params_pca = storedata['params_pca']
             self.params_hog = storedata['params_hog']
+            self.params_hash = storedata['params_hash']
             self.results_faces = storedata.get('results_faces', None)
             self.results_unique = storedata.get('results_unique', None)
             self.distfit = storedata.get('distfit', None)
@@ -1432,7 +1452,7 @@ class Clustimage():
                 # Pause to plot to screen
                 plt.pause(0.1)
         else:
-            logger.warning('Nothing to plot. First detect faces with ".detect_faces(pathnames)"')
+            logger.warning('Nothing to plot. First detect faces with ".extract_faces(pathnames)"')
         
         set_logger(verbose=verbose)
 
@@ -1482,11 +1502,14 @@ class Clustimage():
                 imagebox = offsetbox.AnnotationBbox( offsetbox.OffsetImage(img, cmap=cmap, zoom=zoom), xycoord[i,:] )
                 ax.add_artist(imagebox)
 
-    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, figsize=(15,10)):
+    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, plt_all=False, figsize=(15,10)):
         """Plot the samples using a scatterplot.
 
         Parameters
         ----------
+        plt_all : bool, (default: False)
+            False: Only plot the controid images.
+            True: Plot all images on top of the scatter.
         dotsize : int, (default: 15)
             Dot size of the scatterpoints.
         legend : bool, (default: False)
@@ -1514,7 +1537,7 @@ class Clustimage():
         # Get the cluster labels
         labels = self.results.get('labels', None)
         if labels is None: labels=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
-
+        
         if text:
             text_labels=labels
         else:
@@ -1531,6 +1554,10 @@ class Clustimage():
             else:
                 X = self.results_unique['pathnames']
             self._add_img_to_scatter(ax, cmap=cmap, zoom=zoom, pathnames=X, xycoord=self.results_unique['xycoord_center'])
+
+        if plt_all:
+            self._add_img_to_scatter(ax, cmap=cmap, zoom=zoom, pathnames=self.results['pathnames'], xycoord=self.results['xycoord'])
+
 
         # Scatter the predicted cases
         if (self.results.get('predict', None) is not None):
@@ -1943,15 +1970,15 @@ def _imread(filepath, colorscale=1):
 
     """
     img=None
-    if os.path.isfile(filepath):
-        # Read the image
-        img = cv2.imread(filepath, colorscale)
+    # if os.path.isfile(filepath):
+    # Read the image
+    img = cv2.imread(filepath, colorscale)
 
-        # In case of rgb images: make gray images compatible with RGB
-        if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
-            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-    else:
-        logger.warning('File does not exists: %s', filepath)
+    # In case of rgb images: make gray images compatible with RGB
+    if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    # else:
+    #     logger.warning('File does not exists: %s', filepath)
 
     return img
 
@@ -2170,7 +2197,7 @@ def hash_method(hashmethod='ahash', alpha=0, exact_hash=True):
     # Set the hash parameters
     # params_hash   = {**hash_defaults, **params_hash}
     # self.params_hash = params_hash
-    params_hash = {'hashfunc':hashfunc, 'method':hashmethod, 'alpha':alpha, 'exact_hash':exact_hash}
+    params_hash = {'hashfunc':hashfunc, 'method':hashmethod, 'threshold':alpha, 'exact_hash':exact_hash}
     # Return the hashfunction
     return params_hash
 
