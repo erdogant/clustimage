@@ -13,7 +13,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         Xfaces = cl.import_example(data='faces')
         # Parameters combinations to check
         param_grid = {
-        	'method':['pca', 'hog', None],
+        	'method':['ahash', 'pca', 'hog', None],
         	'embedding':['tsne', None],
         	'cluster_space' : ['high', 'low'],
         	'grayscale' : [True, False],
@@ -79,10 +79,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Init
         cl = Clustimage(method='pca', grayscale=True, params_pca={'n_components':14})
         # Load example with faces
-        pathnames = cl.import_example(data='faces')
-        # Detect faces
-        face_results = cl.extract_faces(pathnames)
-        assert np.all(np.isin([*cl.results_faces.keys()], ['img', 'pathnames', 'filenames', 'pathnames_face', 'coord_faces', 'coord_eyes']))
+        X = cl.import_example(data='flowers')
         # Cluster
-        results = cl.fit_transform(face_results['pathnames_face'])
+        results = cl.fit_transform(X)
         assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']))
