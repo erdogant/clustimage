@@ -5,6 +5,43 @@
 # 
 # Read image according the preprocessing steps
 
+# %%
+from clustimage import Clustimage
+
+# init with PCA method
+cl = Clustimage(method='pca',
+                embedding='tsne',
+                grayscale=False,
+                dim=(128,128),
+                params_pca={'n_components':0.95},
+                store_to_disk=False)
+
+# Load MNIST example data
+X = cl.import_example(data='mnist')
+
+# There are 1797 digits in total, each with 64 features which is the flattened 8x8 grayscale image.
+# print(X.shape)
+# (1797, 64)
+
+# print(X)
+# array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],
+#        [ 0.,  0.,  0., ..., 10.,  0.,  0.],
+#        [ 0.,  0.,  0., ..., 16.,  9.,  0.],
+#        ...,
+#        [ 0.,  0.,  1., ...,  6.,  0.,  0.],
+#        [ 0.,  0.,  2., ..., 12.,  0.,  0.],
+#        [ 0.,  0., 10., ..., 12.,  1.,  0.]])
+
+# Preprocessing, feature extraction, embedding and cluster evaluation
+results = cl.fit_transform(X,
+                           cluster='agglomerative',
+                           evaluate='silhouette',
+                           metric='euclidean',
+                           linkage='ward',
+                           min_clust=3,
+                           max_clust=25,
+                           cluster_space='high')
+
 # %% HASHES
 import matplotlib.pyplot as plt
 from clustimage import Clustimage
