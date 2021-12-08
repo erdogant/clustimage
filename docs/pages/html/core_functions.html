@@ -52,7 +52,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Core functionalities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#fit-and-transform">Fit and transform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#detect-faces">detect_faces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract-faces">extract_faces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cluster">cluster</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#find">find</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#unique">unique</a></li>
@@ -135,7 +135,7 @@ Many of the functionalities are written in a generic manner which allows to be u
 <blockquote>
 <div><ul class="simple">
 <li><p>fit_transform</p></li>
-<li><p>detect_faces</p></li>
+<li><p>extract_faces</p></li>
 <li><p>cluster</p></li>
 <li><p>find</p></li>
 <li><p>unique</p></li>
@@ -148,12 +148,12 @@ The optimal number of clusters are determined using well known methods such as <
 Based on the clustering results, the unique images are also gathered.</p>
 <p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a></p>
 </section>
-<section id="detect-faces">
-<h2>detect_faces<a class="headerlink" href="#detect-faces" title="Permalink to this headline"></a></h2>
+<section id="extract-faces">
+<h2>extract_faces<a class="headerlink" href="#extract-faces" title="Permalink to this headline"></a></h2>
 <p>To cluster faces on images, we first need to detect, and extract the faces from the images.
-The <em>detect_faces</em> function does this task.
+The <em>extract_faces</em> function does this task.
 Faces and eyes are detected using <code class="docutils literal notranslate"><span class="pre">haarcascade_frontalface_default.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">haarcascade_eye.xml</span></code> in <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code>.</p>
-<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.detect_faces" title="clustimage.clustimage.Clustimage.detect_faces"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.detect_faces()</span></code></a></p>
+<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_faces" title="clustimage.clustimage.Clustimage.extract_faces"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_faces()</span></code></a></p>
 </section>
 <section id="cluster">
 <h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h2>

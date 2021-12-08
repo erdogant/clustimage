@@ -10,7 +10,7 @@ Core functionalities
 The are 5 core functionalities of ``clustimage`` that allows to preprocess the input images, robustly determines the optimal number of clusters, and then optimize the clusters if desired.
 
     * fit_transform
-    * detect_faces
+    * extract_faces
     * cluster
     * find
     * unique
@@ -24,13 +24,13 @@ Based on the clustering results, the unique images are also gathered.
 Examples can be found here: :func:`clustimage.clustimage.Clustimage.fit_transform`
 
 
-detect_faces
+extract_faces
 ^^^^^^^^^^^^^^
 To cluster faces on images, we first need to detect, and extract the faces from the images.
-The *detect_faces* function does this task.
+The *extract_faces* function does this task.
 Faces and eyes are detected using ``haarcascade_frontalface_default.xml`` and ``haarcascade_eye.xml`` in ``python-opencv``.
 
-Examples can be found here: :func:`clustimage.clustimage.Clustimage.detect_faces`
+Examples can be found here: :func:`clustimage.clustimage.Clustimage.extract_faces`
 
 
 cluster
