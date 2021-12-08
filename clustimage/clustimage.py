@@ -1901,7 +1901,7 @@ def store_to_disk(Xraw, dim, tempdir):
         pathname = os.path.join(tempdir, filename)
         # Write to disk
         img = imscale(Xraw[i,:].reshape(dim))
-        cv2.imwrite(pathname, Xraw[i,:].reshape(dim))
+        cv2.imwrite(pathname, img)
         filenames.append(filename)
         pathnames.append(pathname)
     return pathnames, filenames
