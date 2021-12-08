@@ -189,7 +189,7 @@ class Clustimage():
         self.params['store_to_disk'] = store_to_disk
 
         # Hash parameters
-        self.params_hash = hash_method(hashmethod=method, alpha=params_hash['threshold'], exact_hash=params_hash['exact_hash'])
+        self.params_hash = hash_method(method, params_hash)
         # PCA parameters
         pca_defaults = {'n_components':0.95, 'detect_outliers': None, 'random_state': None}
         params_pca   = {**pca_defaults, **params_pca}
@@ -423,9 +423,12 @@ class Clustimage():
         self.params['cluster_space'] = cluster_space
         ce = None
         
+        if len(self.results['feat'])==0:
+            return None
+        
         # If exact hash matches are required.
         if ('hash' in self.params['method']) and self.params_hash['exact_hash']:
-            logger.info('Updating cluster-labels based on the [%s] with alpha=%g change.' %(self.params['method'], self.params_hash['threshold']))
+            logger.info('Updating cluster-labels based on the [%s] with threshold=%g change.' %(self.params['method'], self.params_hash['threshold']))
             labels = np.zeros(self.results['feat'].shape[0])*np.nan
             
             # Exact hash matches that appear to be significantly similar based on the hashes.
@@ -955,7 +958,7 @@ class Clustimage():
             # Read images and preprocessing
             X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
         # 3. If input is array-like. Make sure X becomes compatible.
-        elif isinstance(Xraw, np.ndarray) and (not 'hash' in self.params['method']):
+        elif isinstance(Xraw, np.ndarray):
             # Make 2D
             if len(Xraw.shape)==1:
                 Xraw = Xraw.reshape(-1,1).T
@@ -963,6 +966,9 @@ class Clustimage():
             pathnames, filenames = None, None
             # Check dim
             self.params['dim'] = _check_dim(Xraw, self.params['dim'])
+            # Scale the image
+            logger.info('Scaling images..')
+            Xraw = np.vstack(list(map(lambda x: imscale(x), Xraw)))
             # Store to disk
             if self.params['store_to_disk']:
                 pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'])
@@ -995,6 +1001,9 @@ class Clustimage():
         xycoord : array-like.
             x,y coordinates after embedding or alternatively the first 2 features.
         """
+        if X.shape[0]<=2:
+            return [0,0]
+
         # Embedding using tSNE
         if self.params['embedding']=='tsne':
             logger.info('Computing embedding using %s..', self.params['embedding'])
@@ -1882,6 +1891,7 @@ def store_to_disk(Xraw, dim, tempdir):
         filename = str(uuid.uuid4())+'.png'
         pathname = os.path.join(tempdir, filename)
         # Write to disk
+        img = imscale(Xraw[i,:].reshape(dim))
         cv2.imwrite(pathname, Xraw[i,:].reshape(dim))
         filenames.append(filename)
         pathnames.append(pathname)
@@ -2158,7 +2168,7 @@ def wget(url, writepath):
 
 
 # %% Get image HASH function
-def hash_method(hashmethod='ahash', alpha=0, exact_hash=True):
+def hash_method(hashmethod, params_hash):
     """Get image hash function.
 
     Parameters
@@ -2194,10 +2204,13 @@ def hash_method(hashmethod='ahash', alpha=0, exact_hash=True):
     else:
         hashfunc=None
         hashmethod=None
+    
+    hash_defaults={'threshold':0, 'exact_hash':True}
     # Set the hash parameters
-    # params_hash   = {**hash_defaults, **params_hash}
+    params_hash = {**hash_defaults, **params_hash}
     # self.params_hash = params_hash
-    params_hash = {'hashfunc':hashfunc, 'method':hashmethod, 'threshold':alpha, 'exact_hash':exact_hash}
+    params_hash['hashfunc'] = hashfunc
+    params_hash['method'] = hashmethod
     # Return the hashfunction
     return params_hash
 
