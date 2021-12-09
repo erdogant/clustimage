@@ -4,32 +4,69 @@
 # print(clustimage.__version__)
 # 
 # Read image according the preprocessing steps
-
-# %% HASHES
-import matplotlib.pyplot as plt
+# %%
 from clustimage import Clustimage
 
-# Cluster on hash matrix
-cl = Clustimage(method='ahash', params_hash={'exact_hash':False})
-# Find exact hashes
-cl = Clustimage(method='ahash', params_hash={'threshold':0, 'exact_hash':True})
-# Find very close hashes
-cl = Clustimage(method='ahash', params_hash={'threshold':0.001, 'exact_hash':True})
-
-# Example data
+# Initialize
+cl = Clustimage(method='pca')
+# Import data
+X = cl.import_example(data='flowers')
 X = cl.import_example(data='mnist')
-# X = 'D://magweg//101_ObjectCategories//'
-# Preprocessing, feature extraction and cluster evaluation
-results = cl.fit_transform(X, min_clust=4, max_clust=15)
-# results = cl.cluster(min_clust=4, max_clust=15)
+X = cl.import_example(data='faces')
+# Check whether in is dir, list of files or array-like
+X = cl.import_data(X)
+# Extract features using method
+Xfeat = cl.extract_feat(X)
+# Embedding using tSNE
+xycoord = cl.embedding(Xfeat)
+# Cluster
+labels = cl.cluster()
+# Return
+results = cl.results
 
-# Scatter
-cl.scatter(zoom=3, img_mean=False, text=False)
-cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False)
+# Or all in one run
+# results = cl.fit_transform(X)
 
-# cl.clusteval.plot()
-# cl.plot_unique(img_mean=False)
-cl.plot(min_clust=5)
+# Plots
+cl.clusteval.plot()
+cl.scatter()
+cl.plot_unique()
+cl.plot()
+cl.dendrogram()
+
+# Find
+results_find = cl.find(X[0], k=0, alpha=0.05)
+cl.plot_find()
+
+
+# %%
+# Import library
+from clustimage import Clustimage
+
+# Init with settings such as PCA
+# cl = Clustimage(method='hog', params_pca={'n_components':0.95}) 
+cl = Clustimage(method='pca', params_pca={'n_components':0.95}) 
+# cl = Clustimage(method='pca', params_pca={'n_components':50}) 
+
+# load example with flowers
+pathnames = cl.import_example(data='flowers')
+
+# Cluster flowers
+results = cl.fit_transform(pathnames)
+
+print(cl.results['feat'].shape)
+
+# Read the unseen image. Note that it is import to use the cl.imread functionality as these will perform exactly the same preprocessing steps as for the clustering.
+# img = cl.imread(unseen_image)
+# plt.figure(); plt.imshow(img.reshape((128,128,3)));plt.axis('off')
+
+# Find images using the path location.
+results_find = cl.find(pathnames[2], k=0, alpha=0.05)
+
+# Show whatever is found. This looks pretty good.
+cl.plot_find()
+cl.scatter()
+
 
 
 # %% FACES
@@ -69,6 +106,32 @@ cl.pca.scatter(legend=False, label=False)
 
 cl.save(overwrite=True)
 cl.load()
+
+# %% HASHES
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Cluster on hash matrix
+cl = Clustimage(method='ahash', params_hash={'exact_hash':False})
+# Find exact hashes
+cl = Clustimage(method='ahash', params_hash={'threshold':0, 'exact_hash':True})
+# Find very close hashes
+cl = Clustimage(method='ahash', params_hash={'threshold':0.001, 'exact_hash':True})
+
+# Example data
+X = cl.import_example(data='mnist')
+# X = 'D://magweg//101_ObjectCategories//'
+# Preprocessing, feature extraction and cluster evaluation
+results = cl.fit_transform(X, min_clust=4, max_clust=15)
+# results = cl.cluster(min_clust=4, max_clust=15)
+
+# Scatter
+cl.scatter(zoom=3, img_mean=False, text=False)
+cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False)
+
+# cl.clusteval.plot()
+# cl.plot_unique(img_mean=False)
+cl.plot(min_clust=5)
 
 
 # %% fotos on disk
@@ -110,7 +173,6 @@ cl.plot(labels=15, show_hog=True)
 # Cleaning files
 cl.clean_files()
 
-
 cl.clusteval.plot()
 cl.clusteval.scatter(cl.results['feat'])
 cl.clusteval.scatter(cl.results['xycoord'])
@@ -119,37 +181,6 @@ cl.pca.scatter(legend=False, label=False)
 
 cl.save(overwrite=True)
 cl.load()
-
-
-
-
-# %%
-# Import library
-from clustimage import Clustimage
-
-# Init with settings such as PCA
-# cl = Clustimage(method='hog', params_pca={'n_components':0.95}) 
-cl = Clustimage(method='pca', params_pca={'n_components':0.95}) 
-# cl = Clustimage(method='pca', params_pca={'n_components':50}) 
-
-# load example with flowers
-pathnames = cl.import_example(data='flowers')
-
-# Cluster flowers
-results = cl.fit_transform(pathnames)
-
-print(cl.results['feat'].shape)
-
-# Read the unseen image. Note that it is import to use the cl.imread functionality as these will perform exactly the same preprocessing steps as for the clustering.
-# img = cl.imread(unseen_image)
-# plt.figure(); plt.imshow(img.reshape((128,128,3)));plt.axis('off')
-
-# Find images using the path location.
-results_find = cl.find(pathnames[2], k=0, alpha=0.05)
-
-# Show whatever is found. This looks pretty good.
-cl.plot_find()
-cl.scatter()
 
 
 
@@ -222,7 +253,7 @@ cl.scatter(zoom=None, img_mean=False)
 cl.clusteval.plot()
 cl.clusteval.scatter(X)
 
-cl.pca.plot()
+# cl.pca.plot()
 
 
 cl.plot_unique(img_mean=True, show_hog=True)

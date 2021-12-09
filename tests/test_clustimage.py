@@ -34,7 +34,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         cl = Clustimage()
         X = cl.import_example(data='flowers')
         results = cl.fit_transform(X)
-        assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']))
+        assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'filenames', 'labels']))
         assert len(cl.cluster())==len(X)
     
         # Parameters combinations to check
@@ -82,4 +82,4 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_example(data='flowers')
         # Cluster
         results = cl.fit_transform(X)
-        assert np.all(np.isin([*cl.results.keys()], ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']))
+        assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'filenames', 'labels']))

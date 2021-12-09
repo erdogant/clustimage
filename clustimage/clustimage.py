@@ -164,7 +164,7 @@ class Clustimage():
     def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128,128), dim_face=(64,64), dirpath=None, store_to_disk=True, ext=['png','tiff','jpg'], params_pca={'n_components':0.95}, params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)}, params_hash={'threshold':0, 'exact_hash':True}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
-        self._clean()
+        self.clean()
 
         if not (np.any(np.isin(method, [None,'pca','hog','pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         if dirpath is None: dirpath = tempfile.mkdtemp()
@@ -315,20 +315,14 @@ class Clustimage():
         >>>
 
         """
-        # Clean readily fitted models to ensure correct results
-        self._clean()
+        # Cleaning
+        self.clean()
         # Check whether in is dir, list of files or array-like
-        X = self._import_data(X)
+        _ = self.import_data(X)
         # Extract features using method
-        raw, X = self._extract_feat(X)
+        _ = self.extract_feat(self.results)
         # Embedding using tSNE
-        xycoord = self._compute_embedding(X)
-        # Store results
-        self.results = {}
-        self.results['feat'] = X
-        self.results['xycoord'] = xycoord
-        self.results['pathnames'] = raw['pathnames']
-        self.results['filenames'] = raw['filenames']
+        _ = self.embedding(self.results['feat'])
         # Cluster
         self.cluster(cluster=cluster, evaluate=evaluate, cluster_space=cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
         # Return
@@ -550,6 +544,11 @@ class Clustimage():
         """
         # Check status
         self._check_status()
+        # Check whether embedding is performed
+        if self.results['xycoord'] is None:
+            logger.warning('Missing x,y coordinates in results dict. Hint: try to first run: cl.embedding(Xfeat)')
+            return None
+
         if metric is None: metric=self.params_clusteval['metric']
         eigen_img, pathnames, center_idx, center_coord = [], [], [], []
         # Unique labels
@@ -560,9 +559,7 @@ class Clustimage():
             # Get cluster label
             idx = np.where(self.results['labels']==label)[0]
             # Compute center of cluster
-            # self.results['feat'][idx,:].mean(axis=0)
             xycoord_center = np.mean(self.results['xycoord'][idx,:], axis=0)
-
             # Compute the average image by simply averaging the images
             img=[]
             if (self.params['dim'] is not None) and (self.results['pathnames'] is not None):
@@ -669,7 +666,7 @@ class Clustimage():
         logger.info('Find similar images with metric [%s], k-nearest neighbors: %s and under alpha: %s ' %(metric, str(k), str(alpha)))
 
         # Check whether in is dir, list of files or array-like
-        Xnew = self._import_data(Xnew)
+        Xnew = self.import_data(Xnew, find=True)
         # Compute distance
         Y, feat = self._compute_distances(Xnew, metric=metric, alpha=alpha)
         # Collect the samples
@@ -736,7 +733,7 @@ class Clustimage():
         if (not self.params['grayscale']): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
 
         # Read and pre-proces the input images
-        X = self._import_data(pathnames, imread=True)
+        X = self.import_data(pathnames, imread=True)
         # Create empty list
         faces = {'img':[], 'pathnames':[], 'filenames':[], 'pathnames_face':[], 'coord_faces':[], 'coord_eyes':[]}
         
@@ -788,11 +785,7 @@ class Clustimage():
 
         """
         if not imread:
-            out={}
-            out['filenames'] = None
-            out['pathnames'] = None
-            out['img'] = pathnames
-            return out
+            return {'filenames': None, 'pathnames': pathnames, 'img': None}
 
         # Filter images on min-number of pixels in image
         min_nr_pixels = 10
@@ -901,7 +894,7 @@ class Clustimage():
         # Return
         return self.pca.results['PC'].values
 
-    def _import_data(self, Xraw, imread=True, flatten=True):
+    def import_data(self, Xraw, imread=True, flatten=True, find=False):
         """Import images and return in an consistent manner.
 
         Description
@@ -944,19 +937,24 @@ class Clustimage():
             logger.info('Extracting images from: [%s]', Xraw)
             Xraw = listdir(Xraw, ext=self.params['ext'])
             logger.info('Extracted images: [%s]', len(Xraw))
+
         # Check string
         if isinstance(Xraw, str) and os.path.isfile(Xraw):
             Xraw = [Xraw]
-        # Check numpy array
-        # if type(Xraw).__module__ == np.__name__:
-        #     Xraw = list(Xraw)
 
         # 2. Read images
         if isinstance(Xraw, list):
             # Make sure that list in lists are flattend
             Xraw = np.hstack(Xraw)
-            # Read images and preprocessing
-            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
+            # Do not store in the object if the find functionality is used
+            if find:
+                return self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
+            else:
+                defaults = self.results
+                # Read images and preprocessing
+                self.results = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
+                # Add remaining output variables
+                self.results = {**defaults, **self.results}
         # 3. If input is array-like. Make sure X becomes compatible.
         elif isinstance(Xraw, np.ndarray):
             # Make 2D
@@ -974,10 +972,16 @@ class Clustimage():
                 pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'])
 
             # Make dict
-            X = {'img': Xraw, 'pathnames':pathnames, 'filenames':filenames}
-        return X
+            if find:
+                return {'img': Xraw, 'pathnames': pathnames, 'filenames': filenames}
+            else:
+                self.results['img'] = Xraw
+                self.results['pathnames'] = pathnames
+                self.results['filenames'] = filenames
+        # Return
+        return self.results
 
-    def _clean(self):
+    def clean(self):
         """Clean or removing previous results and models to ensure correct working."""
         if hasattr(self, 'results'):
             logger.info('Cleaning previous fitted model results')
@@ -987,8 +991,10 @@ class Clustimage():
             if hasattr(self, 'distfit'): del self.distfit
             if hasattr(self, 'clusteval'): del self.clusteval
             if hasattr(self, 'pca'): del self.pca
+        # Store results
+        self.results = {'img':None, 'feat':None, 'xycoord':None, 'pathnames':None, 'labels': None}
 
-    def _compute_embedding(self, X):
+    def embedding(self, X):
         """Compute the embedding for the extracted features.
 
         Parameters
@@ -1014,24 +1020,22 @@ class Clustimage():
         else:
             xycoord = X[:,0:2]
         # Return
-        return xycoord
+        self.results['xycoord'] = xycoord
+        # Return
+        return self.results['xycoord']
 
-    def _extract_feat(self, Xraw):
+    def extract_feat(self, Xraw):
         """Extract features based on the input data X.
 
         Parameters
         ----------
-        Xinput : dict containing keys:
+        Xraw : dict containing keys:
             img : array-like.
             pathnames : list of str.
             filenames : list of str.
 
         Returns
         -------
-        Xraw : dict containing keys:
-            img : array-like.
-            pathnames : list of str.
-            filenames : list of str.
         X : array-like
             Extracted features.
 
@@ -1040,14 +1044,14 @@ class Clustimage():
         logger.info('Extracting features using method: [%s]', self.params['method'])
         # Extract features
         if self.params['method']=='pca':
-            X = self.extract_pca(Xraw)
+            Xfeat = self.extract_pca(Xraw)
         elif self.params['method']=='hog':
-            X = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
+            Xfeat = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
         elif self.params['method']=='pca-hog':
-            X = {}
-            X['img'] = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
-            X['filenames'] = Xraw['filenames']
-            X = self.extract_pca(X)
+            Xfeat = {}
+            Xfeat['img'] = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
+            Xfeat['filenames'] = Xraw['filenames']
+            Xfeat = self.extract_pca(Xfeat)
         elif 'hash' in self.params['method']:
             # Compute hash
             # hashs = list(map(self.compute_hash, tqdm(Xraw['pathnames'], disable=disable_tqdm())))
@@ -1058,15 +1062,18 @@ class Clustimage():
             # hashs=np.array(hashs)[idx]
             # Build adjacency matrix with hash differences
             logger.info('Build adjacency matrix with %s differences.' %(self.params['method']))
-            X = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
+            Xfeat = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
             # plt.hist(diff[np.triu_indices(diff.shape[0], k=1)], bins=50)
         else:
             # Read images and preprocessing and flattening of images
-            X = Xraw['img'].copy()
+            Xfeat = Xraw['img'].copy()
 
         # Message
-        logger.info("Extracted features using [%s]: %s" %(self.params['method'], str(X.shape)))
-        return Xraw, X
+        logger.info("Extracted features using [%s]: %s" %(self.params['method'], str(Xfeat.shape)))
+        # Store results
+        self.results['feat'] = Xfeat
+        # Return
+        return self.results['feat']
 
     def compute_hash(self, img):
         imghash=[]
@@ -1116,7 +1123,7 @@ class Clustimage():
             # Y = distance.cdist(self.results['feat'].T, Xmapped, metric=metric)
         else:
             # Extract Features
-            _, Xmapped = self._extract_feat(X)
+            Xmapped = self.extract_feat(X, method=self.params['method'])
             # Compute distance from input sample to all other samples
         Y = distance.cdist(self.results['feat'], Xmapped, metric=metric)
 
@@ -1538,6 +1545,9 @@ class Clustimage():
         """
         # Check status
         self._check_status()
+        if self.results['xycoord'] is None:
+            logger.warning('Missing x,y coordinates in results dict. Hint: try to first run: cl.embedding(Xfeat)')
+            return None
         # Set default settings
         cmap = plt.cm.gray if self.params['grayscale'] else None
         # Set logger to warning-error only
@@ -1557,7 +1567,7 @@ class Clustimage():
         title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
         fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=text_labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0], xlabel='x-axis', ylabel='y-axis')
 
-        if hasattr(self, 'results_unique'):
+        if hasattr(self,'results_unique'):
             if img_mean:
                 X = self.results_unique['img_mean']
             else:
@@ -1566,7 +1576,6 @@ class Clustimage():
 
         if plt_all:
             self._add_img_to_scatter(ax, cmap=cmap, zoom=zoom, pathnames=self.results['pathnames'], xycoord=self.results['xycoord'])
-
 
         # Scatter the predicted cases
         if (self.results.get('predict', None) is not None):
@@ -1596,7 +1605,7 @@ class Clustimage():
         set_logger(verbose=verbose)
 
     def plot_unique(self, cmap=None, img_mean=True, show_hog=False, figsize=(15,10)):
-        if hasattr(self, 'results_unique') is not None:
+        if hasattr(self,'results_unique'):
             # Set logger to warning-error only
             verbose = logger.getEffectiveLevel()
             set_logger(verbose=40)
@@ -1631,7 +1640,7 @@ class Clustimage():
             # Restore verbose status
             set_logger(verbose=verbose)
         else:
-            logger.warning('Plotting unique images is not possible. Hint: Try to run the unique() function first.')
+            logger.warning('Plotting unique images is not possible. Hint: Try first to run: cl.unique()')
 
     def plot_find(self, cmap=None, figsize=(15,10)):
         """Plot the input image together with the predicted images.
