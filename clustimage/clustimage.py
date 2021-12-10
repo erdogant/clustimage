@@ -200,6 +200,8 @@ class Clustimage():
         self.params_hog = params_hog
         # Set the logger
         set_logger(verbose=verbose)
+        # This value is set to True when the find functionality is used to make sure specified subroutines are used.
+        self.find_func = False
 
     def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
         """Group samples into clusters that are similar in their feature space.
@@ -212,11 +214,11 @@ class Clustimage():
 
         Parameters
         ----------
-        X : str, list or array-like.
+        X : [str of list] or [np.array].
             The input can be:
                 * "c://temp//" : Path to directory with images
                 * ['c://temp//image1.png', 'c://image2.png', ...] : List of exact pathnames.
-                * [[.., ..], [.., ..], ...] : Array-like matrix in the form of [sampels x features]
+                * [[.., ..], [.., ..], ...] : np.array matrix in the form of [sampels x features]
         cluster : str, (default: 'agglomerative')
             Type of clustering.
                 * 'agglomerative'
@@ -421,7 +423,7 @@ class Clustimage():
             return None
         
         # If exact hash matches are required.
-        if ('hash' in self.params['method']) and self.params_hash['exact_hash']:
+        if (self.params['method'] is not None) and ('hash' in self.params['method']) and self.params_hash['exact_hash']:
             logger.info('Updating cluster-labels based on the [%s] with threshold=%g change.' %(self.params['method'], self.params_hash['threshold']))
             labels = np.zeros(self.results['feat'].shape[0])*np.nan
             
@@ -660,19 +662,21 @@ class Clustimage():
 
         """
         out = None
+        self.find_func=True
         if (k is None) and (alpha is None):
             raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
         if metric is None: metric=self.params_clusteval['metric']
         logger.info('Find similar images with metric [%s], k-nearest neighbors: %s and under alpha: %s ' %(metric, str(k), str(alpha)))
 
         # Check whether in is dir, list of files or array-like
-        Xnew = self.import_data(Xnew, find=True)
+        Xnew = self.import_data(Xnew)
         # Compute distance
         Y, feat = self._compute_distances(Xnew, metric=metric, alpha=alpha)
         # Collect the samples
         out = self._collect_pca(Xnew, Y, k, alpha, feat, todf=True)
 
         # Store
+        self.find_func = False
         self.results['predict'] = out
         self.params['metric_find'] = metric
         return self.results['predict']
@@ -733,7 +737,7 @@ class Clustimage():
         if (not self.params['grayscale']): logger.warning('It is advisable to set "grayscale=True" when detecting faces.')
 
         # Read and pre-proces the input images
-        X = self.import_data(pathnames, imread=True)
+        X = self.import_data(pathnames)
         # Create empty list
         faces = {'img':[], 'pathnames':[], 'filenames':[], 'pathnames_face':[], 'coord_faces':[], 'coord_eyes':[]}
         
@@ -759,7 +763,7 @@ class Clustimage():
         self.results_faces = faces
         return faces
 
-    def preprocessing(self, pathnames, grayscale, dim, imread=True, flatten=True):
+    def preprocessing(self, pathnames, grayscale, dim, flatten=True):
         """Pre-processing the input images and returning consistent output.
 
         Parameters
@@ -770,9 +774,6 @@ class Clustimage():
             Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
         dim : tuple, (default: (128,128))
             Rescale images. This is required because the feature-space need to be the same across samples.
-        imread : Bool, (default: True)
-            True: Import the input pathnames and store in dict.
-            False: Do not import image.
         flatten : Bool, (default: True)
             Flatten the processed NxMxC array to a 1D-vector
 
@@ -784,11 +785,8 @@ class Clustimage():
             filenames : list of str.
 
         """
-        if not imread:
-            return {'filenames': None, 'pathnames': pathnames, 'img': None}
-
         # Filter images on min-number of pixels in image
-        min_nr_pixels = 10
+        min_nr_pixels = 8
         # Check file existence on disk
         if isinstance(pathnames, str): pathnames=[pathnames]
         pathnames = list(np.array(pathnames)[list(map(os.path.isfile, pathnames))])
@@ -799,14 +797,14 @@ class Clustimage():
 
         # No need to import and process data when using hash function but we do not to check the image size and readability.
         logger.info("Reading and checking images (images with < %.0d pixels are removed).", (min_nr_pixels))
-        if 'hash' in self.params['method']:
+        if (self.params['method'] is not None) and ('hash' in self.params['method']):
             flatten=False
 
         # Read and preprocess data
         img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
 
         # Remove the images that could not be read
-        idx = np.where(np.array(list(map(len, img)))>min_nr_pixels)[0]
+        idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
         img = np.array(img)[idx]
         if flatten: img = np.vstack(img)
 
@@ -894,7 +892,7 @@ class Clustimage():
         # Return
         return self.pca.results['PC'].values
 
-    def import_data(self, Xraw, imread=True, flatten=True, find=False):
+    def import_data(self, Xraw, flatten=True):
         """Import images and return in an consistent manner.
 
         Description
@@ -943,16 +941,18 @@ class Clustimage():
             Xraw = [Xraw]
 
         # 2. Read images
-        if isinstance(Xraw, list):
+        if isinstance(Xraw, list) or isinstance(Xraw[0], str):
             # Make sure that list in lists are flattend
             Xraw = np.hstack(Xraw)
             # Do not store in the object if the find functionality is used
-            if find:
-                return self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
+            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten)
+            # 
+            if self.find_func:
+                return X
             else:
                 defaults = self.results
                 # Read images and preprocessing
-                self.results = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, imread=imread)
+                self.results = X
                 # Add remaining output variables
                 self.results = {**defaults, **self.results}
         # 3. If input is array-like. Make sure X becomes compatible.
@@ -972,7 +972,7 @@ class Clustimage():
                 pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'])
 
             # Make dict
-            if find:
+            if self.find_func:
                 return {'img': Xraw, 'pathnames': pathnames, 'filenames': filenames}
             else:
                 self.results['img'] = Xraw
@@ -1013,7 +1013,7 @@ class Clustimage():
         # Embedding using tSNE
         if self.params['embedding']=='tsne':
             logger.info('Computing embedding using %s..', self.params['embedding'])
-            if 'hash' in self.params['method']:
+            if (self.params['method'] is not None) and ('hash' in self.params['method']):
                 xycoord = TSNE(n_components=2, learning_rate='auto', init='random', metric='precomputed').fit_transform(X)
             else:
                 xycoord = TSNE(n_components=2, learning_rate='auto', init='random').fit_transform(X)
@@ -1052,7 +1052,7 @@ class Clustimage():
             Xfeat['img'] = self.extract_hog(Xraw['img'], orientations=self.params_hog['orientations'], pixels_per_cell=self.params_hog['pixels_per_cell'], cells_per_block=self.params_hog['cells_per_block'])
             Xfeat['filenames'] = Xraw['filenames']
             Xfeat = self.extract_pca(Xfeat)
-        elif 'hash' in self.params['method']:
+        elif (self.params['method'] is not None) and ('hash' in self.params['method']):
             # Compute hash
             # hashs = list(map(self.compute_hash, tqdm(Xraw['pathnames'], disable=disable_tqdm())))
             hashs = list(map(self.compute_hash, tqdm(Xraw['img'], disable=disable_tqdm())))
@@ -1382,7 +1382,7 @@ class Clustimage():
         # Load
         storedata = pypickle.load(filepath, verbose=verbose)
 
-        # Store in self
+        # Restore the data in self
         if storedata is not None:
             self.results = storedata['results']
             self.params = storedata['params']
@@ -1394,6 +1394,7 @@ class Clustimage():
             self.distfit = storedata.get('distfit', None)
             self.clusteval = storedata.get('clusteval', None)
             self.pca = storedata.get('pca', None)
+            self.find_func = False
 
             logger.info('Load succesful!')
             # Return results
