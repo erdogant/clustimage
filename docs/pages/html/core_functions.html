@@ -52,8 +52,11 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Core functionalities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#fit-and-transform">Fit and transform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#extract-faces">extract_faces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#import-data">import_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract-feat">extract_feat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#embedding">embedding</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cluster">cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract-faces">extract_faces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#find">find</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#unique">unique</a></li>
 </ul>
@@ -134,11 +137,11 @@ Many of the functionalities are written in a generic manner which allows to be u
 <p>The are 5 core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> that allows to preprocess the input images, robustly determines the optimal number of clusters, and then optimize the clusters if desired.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>fit_transform</p></li>
-<li><p>extract_faces</p></li>
-<li><p>cluster</p></li>
-<li><p>find</p></li>
-<li><p>unique</p></li>
+<li><p>fit_transform()</p></li>
+<li><p>extract_faces()</p></li>
+<li><p>cluster()</p></li>
+<li><p>find()</p></li>
+<li><p>unique()</p></li>
 </ul>
 </div></blockquote>
 <section id="fit-and-transform">
@@ -147,13 +150,92 @@ Many of the functionalities are written in a generic manner which allows to be u
 The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 Based on the clustering results, the unique images are also gathered.</p>
 <p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a></p>
+<p>The fit_transform contains 4 core functionalities that can also be used seperatly which provides more control:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>import_data()</p></li>
+<li><p>extract_feat()</p></li>
+<li><p>embedding()</p></li>
+<li><p>cluster()</p></li>
+</ul>
+</div></blockquote>
 </section>
-<section id="extract-faces">
-<h2>extract_faces<a class="headerlink" href="#extract-faces" title="Permalink to this headline"></a></h2>
-<p>To cluster faces on images, we first need to detect, and extract the faces from the images.
-The <em>extract_faces</em> function does this task.
-Faces and eyes are detected using <code class="docutils literal notranslate"><span class="pre">haarcascade_frontalface_default.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">haarcascade_eye.xml</span></code> in <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code>.</p>
-<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_faces" title="clustimage.clustimage.Clustimage.extract_faces"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_faces()</span></code></a></p>
+<section id="import-data">
+<h2>import_data<a class="headerlink" href="#import-data" title="Permalink to this headline"></a></h2>
+<p>The input for the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.import_data" title="clustimage.clustimage.Clustimage.import_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.import_data()</span></code></a> can have multiple forms; path to directory, list of strings and and array-like input.
+The following steps are used for which the parameters needs to be set during initialization:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Images are imported with specific extention ([‘png’,’tiff’,’jpg’]),</p></li>
+<li><p>Each input image can be grayscaled.</p></li>
+<li><p>Resizing images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.</p></li>
+<li><p>Independent of the input, a dict is returned in a consistent manner.</p></li>
+</ol>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
+<span class="c1"># Import data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Check whether in is dir, list of files or array-like</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># dict_keys([&#39;img&#39;, &#39;feat&#39;, &#39;xycoord&#39;, &#39;pathnames&#39;, &#39;labels&#39;, &#39;filenames&#39;])</span>
+<span class="c1"># Note that only the keys img, pathnames and filenames are filled.</span>
+</pre></div>
+</div>
+</section>
+<section id="extract-feat">
+<h2>extract_feat<a class="headerlink" href="#extract-feat" title="Permalink to this headline"></a></h2>
+<p>Extracting of features is performed in the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_feat" title="clustimage.clustimage.Clustimage.extract_feat"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_feat()</span></code></a> function.
+There are different options the extract features from the image as lised below. Note that these settings needs to be set during initialization.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘pca’ : PCA feature extraction</p></li>
+<li><p>‘hog’ : hog features extraced</p></li>
+<li><p>‘pca-hog’ : PCA extracted features from the HOG desriptor</p></li>
+<li><p>‘ahash’: Average hash</p></li>
+<li><p>‘phash’: Perceptual hash</p></li>
+<li><p>‘dhash’: Difference hash</p></li>
+<li><p>‘whash-haar’: Haar wavelet hash</p></li>
+<li><p>‘whash-db4’: Daubechies wavelet hash</p></li>
+<li><p>‘colorhash’: HSV color hash</p></li>
+<li><p>‘crop-resistant’: Crop-resistant hash</p></li>
+<li><p>None : No feature extraction</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
+<span class="c1"># Import data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Check whether in is dir, list of files or array-like</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Extract features using method</span>
+<span class="n">Xfeat</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_feat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># dict_keys([&#39;img&#39;, &#39;feat&#39;, &#39;xycoord&#39;, &#39;pathnames&#39;, &#39;labels&#39;, &#39;filenames&#39;])</span>
+<span class="c1"># At this point, the key: &#39;feat&#39; is filled.</span>
+</pre></div>
+</div>
+</section>
+<section id="embedding">
+<h2>embedding<a class="headerlink" href="#embedding" title="Permalink to this headline"></a></h2>
+<p>The embedding is performed using tSNE in the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.embedding" title="clustimage.clustimage.Clustimage.embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.embedding()</span></code></a> function.
+The coordinates are used for vizualiation purposes only but if desired. However, when setting the <code class="docutils literal notranslate"><span class="pre">cluster_space</span></code> parameter to ‘low’ in the <code class="docutils literal notranslate"><span class="pre">cluster</span></code> function, the clustering will be performed in the low-dimensional tSNE space.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
+<span class="c1"># Import data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Check whether in is dir, list of files or array-like</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Extract features using method</span>
+<span class="n">Xfeat</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_feat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Embedding using tSNE</span>
+<span class="n">xycoord</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">Xfeat</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># dict_keys([&#39;img&#39;, &#39;feat&#39;, &#39;xycoord&#39;, &#39;pathnames&#39;, &#39;labels&#39;, &#39;filenames&#39;])</span>
+<span class="c1"># At this point, the key: &#39;xycoord&#39; is filled.</span>
+</pre></div>
+</div>
 </section>
 <section id="cluster">
 <h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h2>
@@ -161,7 +243,31 @@ Faces and eyes are detected using <code class="docutils literal notranslate"><sp
 The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 This function can be run after the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
 Besides changing evaluation methods and metrics, it is also possible to cluster on the low-embedded feature space. This can be done setting the parameter <code class="docutils literal notranslate"><span class="pre">cluster_space='low'</span></code>.</p>
-<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
+<span class="c1"># Import data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Check whether in is dir, list of files or array-like</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Extract features using method</span>
+<span class="n">Xfeat</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_feat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Embedding using tSNE</span>
+<span class="n">xycoord</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">Xfeat</span><span class="p">)</span>
+<span class="c1"># Cluster</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">cluster</span><span class="o">=</span><span class="s1">&#39;agglomerative&#39;</span><span class="p">,</span> <span class="n">evaluate</span><span class="o">=</span><span class="s1">&#39;silhouette&#39;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;euclidean&#39;</span><span class="p">,</span> <span class="n">linkage</span><span class="o">=</span><span class="s1">&#39;ward&#39;</span><span class="p">,</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">max_clust</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">cluster_space</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># dict_keys([&#39;img&#39;, &#39;feat&#39;, &#39;xycoord&#39;, &#39;pathnames&#39;, &#39;labels&#39;, &#39;filenames&#39;])</span>
+<span class="c1"># At this point, the key: &#39;labels&#39; is filled.</span>
+</pre></div>
+</div>
+<p>More examples can also be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a></p>
+</section>
+<section id="extract-faces">
+<h2>extract_faces<a class="headerlink" href="#extract-faces" title="Permalink to this headline"></a></h2>
+<p>To cluster faces on images, we first need to detect, and extract the faces from the images.
+The <em>extract_faces</em> function does this task.
+Faces and eyes are detected using <code class="docutils literal notranslate"><span class="pre">haarcascade_frontalface_default.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">haarcascade_eye.xml</span></code> in <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code>.</p>
+<p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_faces" title="clustimage.clustimage.Clustimage.extract_faces"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_faces()</span></code></a></p>
 </section>
 <section id="find">
 <h2>find<a class="headerlink" href="#find" title="Permalink to this headline"></a></h2>
@@ -196,7 +302,7 @@ Note that the metric can be changed in this function but this may lead to confus
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">();</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;dim&#39;</span><span class="p">]),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 
 <span class="c1"># Find images</span>
-<span class="n">results_find</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">results_find</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">,:],</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
 
 <span class="c1"># Show whatever is found. This looks pretty good.</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_find</span><span class="p">()</span>

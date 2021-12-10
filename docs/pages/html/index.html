@@ -109,12 +109,10 @@
              
   <section id="clustimage-s-documentation">
 <h1>clustimage’s documentation!<a class="headerlink" href="#clustimage-s-documentation" title="Permalink to this headline"></a></h1>
-<p>The aim of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is to detect natural groups or clusters of images.
-Many computer vision tasks rely on (deep) neural networks, and aim to solve the problem of predicting “whats on the image”.
-However, not all tasks require supervised approaches, and it can be quit a breath to carefully group similar images in an unsupervised manner, or simply extract the unique images out of a huge set of images.
-<code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is a generic approach for unsupervised images clustering and overcomes the following challenges:</p>
-<blockquote>
-<div><ul class="simple">
+<p>The aim of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is to detect natural groups or clusters of images.</p>
+<p>Many computer vision tasks rely on (deep) neural networks, and aim to predict “what’s on the image”. However, not all tasks require supervised approaches or neural networks. With an unsupervised approach, we can aim to determine natural groups or clusters of images without being constrained to a fixed number of (learned) categories. In this blog, I will summarize the concepts of unsupervised clustering, followed by a hands-on tutorial on how to pre-process images, extract features (PCA, HOG), and group images with high similarity taking into account the goodness of the clustering. I will demonstrate the clustering of the MNIST dataset, the 101 objects dataset, the flower dataset, and finally the clustering of faces using the Olivetti dataset. All results are derived using the Python library clustimage.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">clustimage</span></code> is a generic approach for unsupervised images clustering and overcomes the following challenges:</dt><dd><ul class="simple">
 <li><ol class="arabic simple">
 <li><p>Robustly groups similar images.</p></li>
 </ol>
@@ -124,11 +122,16 @@ However, not all tasks require supervised approaches, and it can be quit a breat
 </ol>
 </li>
 <li><ol class="arabic simple" start="3">
+<li><p>Many plots for deeper exploration.</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="4">
 <li><p>Finds higly similar images for a given input image.</p></li>
 </ol>
 </li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </section>
 <section id="content">
 <h1>Content<a class="headerlink" href="#content" title="Permalink to this headline"></a></h1>

@@ -231,6 +231,12 @@ feat : array-like.</p>
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.clean" title="Permalink to this definition"></a></dt>
+<dd><p>Clean or removing previous results and models to ensure correct working.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.clean_files">
 <span class="sig-name descname"><span class="pre">clean_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.clean_files" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -373,6 +379,23 @@ feat : array-like.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.embedding">
+<span class="sig-name descname"><span class="pre">embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.embedding" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the embedding for the extracted features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>array-like</em>) – NxM array for which N are the samples and M the features.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>xycoord</strong> – x,y coordinates after embedding or alternatively the first 2 features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array-like.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.extract_faces">
 <span class="sig-name descname"><span class="pre">extract_faces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.extract_faces" title="Permalink to this definition"></a></dt>
 <dd><p>Detect and extract faces from images.</p>
@@ -427,6 +450,25 @@ pathnames : list of str.</p>
 <span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.extract_feat">
+<span class="sig-name descname"><span class="pre">extract_feat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xraw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.extract_feat" title="Permalink to this definition"></a></dt>
+<dd><p>Extract features based on the input data X.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Xraw</strong> (<em>dict containing keys:</em>) – img : array-like.
+pathnames : list of str.
+filenames : list of str.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>X</strong> – Extracted features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array-like</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -581,11 +623,11 @@ Based on the clustering results, the unique images are also gathered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>str</em><em>, </em><em>list</em><em> or </em><em>array-like.</em>) – <dl class="simple">
+<li><p><strong>X</strong> (<em>[</em><em>str of list</em><em>] or </em><em>[</em><em>np.array</em><em>]</em><em></em>) – <dl class="simple">
 <dt>The input can be:</dt><dd><ul>
 <li><p>”c://temp//” : Path to directory with images</p></li>
 <li><p>[‘c://temp//image1.png’, ‘c://image2.png’, …] : List of exact pathnames.</p></li>
-<li><p>[[.., ..], [.., ..], …] : Array-like matrix in the form of [sampels x features]</p></li>
+<li><p>[[.., ..], [.., ..], …] : np.array matrix in the form of [sampels x features]</p></li>
 </ul>
 </dd>
 </dl>
@@ -713,6 +755,56 @@ feat : array-like.</p>
 <span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.import_data">
+<span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xraw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.import_data" title="Permalink to this definition"></a></dt>
+<dd><p>Import images and return in an consistent manner.</p>
+<p>The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
+This requires that each of the input needs to be processed in its own manner but each should return the same structure to make it compatible across all functions.
+The following steps are used for the import:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Images are imported with specific extention ([‘png’,’tiff’,’jpg’]),</p></li>
+<li><p>Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.</p></li>
+<li><p>Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.</p></li>
+<li><p>Images are saved to disk in case a array-like input is given.</p></li>
+<li><p>Independent of the input, a dict is returned in a consistent manner.</p></li>
+</ol>
+</div></blockquote>
+<p>Processing the input depends on the input:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Xraw</strong> (<em>str</em><em>, </em><em>list</em><em> or </em><em>array-like.</em>) – <dl class="simple">
+<dt>The input can be:</dt><dd><ul class="simple">
+<li><p>”c://temp//” : Path to directory with images</p></li>
+<li><p>[‘c://temp//image1.png’, ‘c://image2.png’, …] : List of exact pathnames.</p></li>
+<li><p>[[.., ..], [.., ..], …] : Array-like matrix in the form of [sampels x features]</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>Object.</em></p></li>
+<li><p><strong>model</strong> (<em>dict</em>) – dict containing keys with results.
+img : array-like.</p>
+<blockquote>
+<div><p>Pre-processed images</p>
+</div></blockquote>
+<dl class="simple">
+<dt>pathnames<span class="classifier">list of str.</span></dt><dd><p>Full path to images that are used in the model.</p>
+</dd>
+<dt>filenames<span class="classifier">list of str.</span></dt><dd><p>Filename of the input images.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -900,7 +992,7 @@ feat : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.preprocessing">
-<span class="sig-name descname"><span class="pre">preprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imread</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.preprocessing" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">preprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.preprocessing" title="Permalink to this definition"></a></dt>
 <dd><p>Pre-processing the input images and returning consistent output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -908,8 +1000,6 @@ feat : array-like.</p>
 <li><p><strong>pathnames</strong> (<em>list of str.</em>) – Full path to images that are used in the model.</p></li>
 <li><p><strong>grayscale</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Colorscaling the image to gray. This can be usefull when clustering e.g., faces.</p></li>
 <li><p><strong>dim</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>128</em><em>,</em><em>128</em><em>)</em><em>)</em>) – Rescale images. This is required because the feature-space need to be the same across samples.</p></li>
-<li><p><strong>imread</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – True: Import the input pathnames and store in dict.
-False: Do not import image.</p></li>
 <li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
 </ul>
 </dd>
@@ -1050,7 +1140,7 @@ None : Do not plot the image.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.hash_method">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">hash_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hashmethod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ahash'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.hash_method" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">hash_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hashmethod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.hash_method" title="Permalink to this definition"></a></dt>
 <dd><p>Get image hash function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

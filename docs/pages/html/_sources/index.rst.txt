@@ -2,12 +2,14 @@ clustimage's documentation!
 ============================
 
 The aim of ``clustimage`` is to detect natural groups or clusters of images.
-Many computer vision tasks rely on (deep) neural networks, and aim to solve the problem of predicting "whats on the image".
-However, not all tasks require supervised approaches, and it can be quit a breath to carefully group similar images in an unsupervised manner, or simply extract the unique images out of a huge set of images.
+
+Many computer vision tasks rely on (deep) neural networks, and aim to predict "what's on the image". However, not all tasks require supervised approaches or neural networks. With an unsupervised approach, we can aim to determine natural groups or clusters of images without being constrained to a fixed number of (learned) categories. In this blog, I will summarize the concepts of unsupervised clustering, followed by a hands-on tutorial on how to pre-process images, extract features (PCA, HOG), and group images with high similarity taking into account the goodness of the clustering. I will demonstrate the clustering of the MNIST dataset, the 101 objects dataset, the flower dataset, and finally the clustering of faces using the Olivetti dataset. All results are derived using the Python library clustimage.
+
 ``clustimage`` is a generic approach for unsupervised images clustering and overcomes the following challenges: 
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.
-    * 3. Finds higly similar images for a given input image.
+    * 3. Many plots for deeper exploration.
+    * 4. Finds higly similar images for a given input image.
 
 
 Content

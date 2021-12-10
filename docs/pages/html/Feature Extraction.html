@@ -115,14 +115,22 @@
 In <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> the <a class="reference external" href="https://github.com/erdogant/pca">pca</a> library utilized to extract the first 50 (default) components.
 The use of PC’s for clustering is usefull in applications with among others faces, where so called eigenfaces are computed.
 The eigenface is a low-dimensional representation of face images. It is shown that principal component analysis could be used on a collection of face images to form a set of basis features.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
-<span class="c1"># Initialize with pca and 50 PCs</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize with pca and 50 PCs</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">params_pca</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span><span class="mi">50</span><span class="p">})</span>
 <span class="c1"># Take the number of components that covers 95% of the data</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">params_pca</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span><span class="mf">0.95</span><span class="p">})</span>
+
 <span class="c1"># Load example data</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">)</span>
-<span class="c1"># Preprocessing, feature extraction and cluster evaluation</span>
+
+<span class="c1"># Check whether in is dir, list of files or array-like</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Extract features using method</span>
+<span class="n">Xfeat</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_feat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Alternatively, the features are also stored in the results dict</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
+
+<span class="c1"># Alternatively, the features are also stored in the results dict using the run-at-once function.</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="c1"># Extracted PC features</span>
 <span class="n">results</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
@@ -152,18 +160,26 @@ For example, if the use-case is to group faces or cars, HOG-features can do a gr
 <li><p>cells_per_block : number of cells per block (default: 1, 1).</p></li>
 </ul>
 </div></blockquote>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
-<span class="c1"># Initialize with HOG</span>
-<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize with HOG</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">,</span> <span class="n">params_hog</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;orientations&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;pixels_per_cell&#39;</span><span class="p">:(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="s1">&#39;cells_per_block&#39;</span><span class="p">:(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)})</span>
+
 <span class="c1"># Load example data</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">)</span>
-<span class="c1"># Preprocessing, feature extraction and cluster evaluation</span>
+
+<span class="c1"># Check whether in is dir, list of files or array-like</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Extract features using method</span>
+<span class="n">Xfeat</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">extract_feat</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Alternatively, the features are also stored in the results dict</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
+
+<span class="c1"># Alternatively, the features are also stored in the results dict using the run-at-once function.</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="c1"># Extracted HOG features</span>
+<span class="c1"># Extracted PC features</span>
 <span class="n">results</span><span class="p">[</span><span class="s1">&#39;feat&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>If you want to solely extract HOG features, it can be performed as following:</p>
+<p>Another approach to extract HOG features by directly using the extract_hog functionality:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 

@@ -13,17 +13,25 @@ The eigenface is a low-dimensional representation of face images. It is shown th
 
 .. code:: python
 
-    from clustimage import Clustimage
-    # Initialize with pca and 50 PCs
-    cl = Clustimage(method='pca', params_pca={'n_components':50})
-    # Take the number of components that covers 95% of the data
-    cl = Clustimage(method='pca', params_pca={'n_components':0.95})
-    # Load example data
-    X = cl.import_example(data='mnist')
-    # Preprocessing, feature extraction and cluster evaluation
-    results = cl.fit_transform(X)
-    # Extracted PC features
-    results['feat']
+	# Initialize with pca and 50 PCs
+	cl = Clustimage(method='pca', params_pca={'n_components':50})
+	# Take the number of components that covers 95% of the data
+	cl = Clustimage(method='pca', params_pca={'n_components':0.95})
+
+	# Load example data
+	X = cl.import_example(data='mnist')
+
+	# Check whether in is dir, list of files or array-like
+	X = cl.import_data(X)
+	# Extract features using method
+	Xfeat = cl.extract_feat(X)
+	# Alternatively, the features are also stored in the results dict
+	cl.results['feat']
+
+	# Alternatively, the features are also stored in the results dict using the run-at-once function.
+	results = cl.fit_transform(X)
+	# Extracted PC features
+	results['feat']
 
 
 HOG
@@ -50,18 +58,26 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
 
 .. code:: python
 
-    from clustimage import Clustimage
-    # Initialize with HOG
-    cl = Clustimage(method='hog')
-    # Load example data
-    X = cl.import_example(data='mnist')
-    # Preprocessing, feature extraction and cluster evaluation
-    results = cl.fit_transform(X)
-    # Extracted HOG features
-    results['feat']
+	# Initialize with HOG
+	cl = Clustimage(method='hog', params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)})
+
+	# Load example data
+	X = cl.import_example(data='mnist')
+
+	# Check whether in is dir, list of files or array-like
+	X = cl.import_data(X)
+	# Extract features using method
+	Xfeat = cl.extract_feat(X)
+	# Alternatively, the features are also stored in the results dict
+	cl.results['feat']
+
+	# Alternatively, the features are also stored in the results dict using the run-at-once function.
+	results = cl.fit_transform(X)
+	# Extracted PC features
+	results['feat']
 
 
-If you want to solely extract HOG features, it can be performed as following:
+Another approach to extract HOG features by directly using the extract_hog functionality:
 
 .. code:: python
 
