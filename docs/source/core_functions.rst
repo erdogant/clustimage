@@ -9,11 +9,11 @@ Core functionalities
 ''''''''''''''''''''''
 The are 5 core functionalities of ``clustimage`` that allows to preprocess the input images, robustly determines the optimal number of clusters, and then optimize the clusters if desired.
 
-    * fit_transform
-    * extract_faces
-    * cluster
-    * find
-    * unique
+    * fit_transform()
+    * extract_faces()
+    * cluster()
+    * find()
+    * unique()
     
 Fit and transform
 ^^^^^^^^^^^^^^^^^^^^
@@ -22,6 +22,119 @@ The optimal number of clusters are determined using well known methods such as *
 Based on the clustering results, the unique images are also gathered.
 
 Examples can be found here: :func:`clustimage.clustimage.Clustimage.fit_transform`
+
+The fit_transform contains 4 core functionalities that can also be used seperatly which provides more control: 
+
+    * import_data()
+    * extract_feat()
+    * embedding()
+    * cluster()
+
+
+import_data
+^^^^^^^^^^^^^^
+The input for the :func:`clustimage.clustimage.Clustimage.import_data` can have multiple forms; path to directory, list of strings and and array-like input.
+The following steps are used for which the parameters needs to be set during initialization:
+
+    1. Images are imported with specific extention (['png','tiff','jpg']), 
+    2. Each input image can be grayscaled.
+    3. Resizing images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
+    4. Independent of the input, a dict is returned in a consistent manner.
+
+.. code:: python
+
+	# Initialize
+	cl = Clustimage(method='pca')
+	# Import data
+	X = cl.import_example(data='flowers')
+	# Check whether in is dir, list of files or array-like
+	X = cl.import_data(X)
+	print(cl.results.keys())
+	# dict_keys(['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames'])
+	# Note that only the keys img, pathnames and filenames are filled.
+
+
+extract_feat
+^^^^^^^^^^^^^^
+Extracting of features is performed in the :func:`clustimage.clustimage.Clustimage.extract_feat` function.
+There are different options the extract features from the image as lised below. Note that these settings needs to be set during initialization.
+
+    * 'pca' : PCA feature extraction
+    * 'hog' : hog features extraced
+    * 'pca-hog' : PCA extracted features from the HOG desriptor
+    * 'ahash': Average hash
+    * 'phash': Perceptual hash
+    * 'dhash': Difference hash
+    * 'whash-haar': Haar wavelet hash
+    * 'whash-db4': Daubechies wavelet hash
+    * 'colorhash': HSV color hash
+    * 'crop-resistant': Crop-resistant hash
+    * None : No feature extraction
+
+.. code:: python
+
+	# Initialize
+	cl = Clustimage(method='pca')
+	# Import data
+	X = cl.import_example(data='flowers')
+	# Check whether in is dir, list of files or array-like
+	X = cl.import_data(X)
+	# Extract features using method
+	Xfeat = cl.extract_feat(X)
+	print(cl.results.keys())
+	# dict_keys(['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames'])
+	# At this point, the key: 'feat' is filled.
+
+
+embedding
+^^^^^^^^^^^^^^
+The embedding is performed using tSNE in the :func:`clustimage.clustimage.Clustimage.embedding` function.
+The coordinates are used for vizualiation purposes only but if desired. However, when setting the ``cluster_space`` parameter to 'low' in the ``cluster`` function, the clustering will be performed in the low-dimensional tSNE space.
+
+.. code:: python
+
+	# Initialize
+	cl = Clustimage(method='pca')
+	# Import data
+	X = cl.import_example(data='flowers')
+	# Check whether in is dir, list of files or array-like
+	X = cl.import_data(X)
+	# Extract features using method
+	Xfeat = cl.extract_feat(X)
+	# Embedding using tSNE
+	xycoord = cl.embedding(Xfeat)
+	print(cl.results.keys())
+	# dict_keys(['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames'])
+	# At this point, the key: 'xycoord' is filled.
+
+
+cluster
+^^^^^^^^^
+The *cluster* function is build on `clusteval`_, which is a python package that provides various evalution methods for unsupervised cluster validation.
+The optimal number of clusters are determined using well known methods such as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
+This function can be run after the ``fit_transform`` function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
+Besides changing evaluation methods and metrics, it is also possible to cluster on the low-embedded feature space. This can be done setting the parameter ``cluster_space='low'``.
+
+.. code:: python
+
+	# Initialize
+	cl = Clustimage(method='pca')
+	# Import data
+	X = cl.import_example(data='flowers')
+	# Check whether in is dir, list of files or array-like
+	X = cl.import_data(X)
+	# Extract features using method
+	Xfeat = cl.extract_feat(X)
+	# Embedding using tSNE
+	xycoord = cl.embedding(Xfeat)
+	# Cluster
+	labels = cl.cluster(cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high')
+	print(cl.results.keys())
+	# dict_keys(['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames'])
+	# At this point, the key: 'labels' is filled.
+
+
+More examples can also be found here: :func:`clustimage.clustimage.Clustimage.cluster`
 
 
 extract_faces
@@ -32,15 +145,6 @@ Faces and eyes are detected using ``haarcascade_frontalface_default.xml`` and ``
 
 Examples can be found here: :func:`clustimage.clustimage.Clustimage.extract_faces`
 
-
-cluster
-^^^^^^^^^
-The *cluster* function is build on `clusteval`_, which is a python package that provides various evalution methods for unsupervised cluster validation.
-The optimal number of clusters are determined using well known methods such as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
-This function can be run after the ``fit_transform`` function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
-Besides changing evaluation methods and metrics, it is also possible to cluster on the low-embedded feature space. This can be done setting the parameter ``cluster_space='low'``.
-
-Examples can be found here: :func:`clustimage.clustimage.Clustimage.cluster`
 
 find
 ^^^^^^^
@@ -77,7 +181,7 @@ Example to find similar images using 1D vector as input image.
         plt.figure(); plt.imshow(X[0,:].reshape(cl.params['dim']), cmap='binary')
 
         # Find images
-        results_find = cl.find(X[0,:], k=None, alpha=0.05)
+        results_find = cl.find(X[0:3,:], k=None, alpha=0.05)
 
         # Show whatever is found. This looks pretty good.
         cl.plot_find()

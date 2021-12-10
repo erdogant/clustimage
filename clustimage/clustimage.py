@@ -897,7 +897,7 @@ class Clustimage():
 
         Description
         -----------
-        The input for the fit_transform() can have multiple forms; path to directory, list of strings and and array-like input.
+        The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
         This requires that each of the input needs to be processed in its own manner but each should return the same structure to make it compatible across all functions.
         The following steps are used for the import:
             1. Images are imported with specific extention (['png','tiff','jpg']), 

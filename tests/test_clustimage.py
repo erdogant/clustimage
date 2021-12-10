@@ -121,8 +121,12 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Example data
         cl = Clustimage()
         Xflowers = cl.import_example(data='flowers')
+        Xflowers=Xflowers[0:50]
         Xdigits = cl.import_example(data='mnist')
+        Xdigits=Xdigits[0:50,:]
         Xfaces = cl.import_example(data='faces')
+        Xfaces=Xfaces[0:50,:]
+        
         # Parameters combinations to check
         param_grid = {
         	'method':['ahash', 'pca', 'hog', None],
@@ -136,7 +140,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         allNames = param_grid.keys()
         combinations = list(it.product(*(param_grid[Name] for Name in allNames)))
         # Iterate over all combinations
-        for i, combination in enumerate(tqdm(combinations)):
+        for i, combination in enumerate(combinations):
             # init
             cl = Clustimage(method=combination[0], embedding=combination[1], grayscale=combination[3], dim=combination[4], verbose=30, params_pca={'n_components':50})
             # Preprocessing and feature extraction
