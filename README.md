@@ -227,11 +227,15 @@ cl.clusteval.scatter(cl.results['xycoord'])
 cl.scatter(dotsize=50, zoom=None)
 cl.scatter(dotsize=50, zoom=0.5)
 cl.scatter(dotsize=50, zoom=0.5, img_mean=False)
+cl.scatter(dotsize=50, zoom=0.5, img_mean=False)
+cl.scatter(zoom=1.2, plt_all=True, figsize=(150,100))
+
 ```
 <p align="center">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter.png" width="300" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs_mean.png" width="300" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs.png" width="300" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_scatter_all.png" width="300" />
 </p>
 
 #### Plot the clustered images
