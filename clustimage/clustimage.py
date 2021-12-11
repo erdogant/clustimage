@@ -147,6 +147,7 @@ class Clustimage():
     >>>
     >>> # Scatter
     >>> cl.scatter(img_mean=False, zoom=3)
+    >>> cl.scatter(zoom=8, plt_all=True, figsize=(150,100))
     >>>
     >>> # Plot clustered images
     >>> cl.plot(labels=8)

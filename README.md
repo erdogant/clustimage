@@ -139,6 +139,7 @@ cl.scatter(zoom=None)
 
 # Include images scatterplot
 cl.scatter(zoom=4)
+cl.scatter(zoom=8, plt_all=True, figsize=(150,100))
 
 ```
 <p align="center">
@@ -146,6 +147,9 @@ cl.scatter(zoom=4)
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig21_tsne.png" width="400" />
 </p>
 
+<p align="center">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/scatter_mnist_all.png" width="400" />
+</p>
 
 
 #### Plot the clustered images

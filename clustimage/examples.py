@@ -65,8 +65,7 @@ results_find = cl.find(pathnames[2], k=0, alpha=0.05)
 
 # Show whatever is found. This looks pretty good.
 cl.plot_find()
-cl.scatter(plt_all=True, figsize=(150,100))
-
+cl.scatter(zoom=1.2, plt_all=True, figsize=(150,100))
 
 
 
