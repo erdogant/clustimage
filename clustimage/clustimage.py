@@ -1552,9 +1552,6 @@ class Clustimage():
             return None
         # Set default settings
         cmap = plt.cm.gray if self.params['grayscale'] else None
-        # Set logger to warning-error only
-        verbose = logger.getEffectiveLevel()
-        set_logger(verbose=40)
         # Get the cluster labels
         labels = self.results.get('labels', None)
         if labels is None: labels=np.zeros_like(self.results['xycoord'][:,0]).astype(int)
@@ -1565,8 +1562,18 @@ class Clustimage():
             text_labels=None
 
         # Make scatterplot
+        if hasattr(self.params, 'cluster_space'):
+            title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
+        else:
+            title = ('tSNE plot.')
+            logger.warning('Run .fit_transform() or .cluster() to colour based on the samples on the cluster labels.')
+
+        # Set logger to warning-error only
+        verbose = logger.getEffectiveLevel()
+        set_logger(verbose=40)
+
+        # Scatter
         colours=np.vstack(colourmap.fromlist(labels)[0])
-        title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
         fig, ax = scatterd(self.results['xycoord'][:,0], self.results['xycoord'][:,1], s=dotsize, c=colours, label=text_labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0,0,0], xlabel='x-axis', ylabel='y-axis')
 
         if hasattr(self,'results_unique'):
