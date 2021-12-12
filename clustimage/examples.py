@@ -4,6 +4,78 @@
 # print(clustimage.__version__)
 # 
 # Read image according the preprocessing steps
+
+# %% 101_ObjectCategories
+# import clustimage as cl
+# pathnames = cl.listdir('D://magweg//101_ObjectCategories//')
+# idx=[]
+# for i in range(0,500):
+#     idx.append(np.random.randint(9000))
+# idx = np.unique(np.array(idx))
+# pathnames = list(np.array(pathnames)[idx])
+# print(len(pathnames))
+
+from clustimage import Clustimage
+# init
+cl = Clustimage(method='pca', params_pca={'n_components':0.95}, dim=(60,60), grayscale=True)
+# cl = Clustimage(method='pca-hog', grayscale=True, params_hog={'pixels_per_cell':(4,4)})
+# Collect samples
+
+# Preprocessing and feature extraction
+# 
+pathnames='D://magweg//101_ObjectCategories//'
+pathnames='D://magweg//archive//images//'
+
+# Check whether in is dir, list of files or array-like
+X = cl.import_data(pathnames)
+# Extract features using method
+Xfeat = cl.extract_feat(X)
+# Embedding using tSNE
+xycoord = cl.embedding(Xfeat)
+cl.scatter(zoom=None)
+# Cluster
+labels = cl.cluster(min_clust=5, max_clust=50)
+
+
+# results = cl.fit_transform(pathnames, min_clust=60, max_clust=110)
+results = cl.fit_transform(pathnames, min_clust=15, max_clust=50)
+# Cluster
+# cl.cluster(evaluate='silhouette', min_clust=15, max_clust=60)
+
+cl.clusteval.plot()
+cl.pca.plot()
+
+# Scatter
+cl.scatter(dotsize=8, zoom=None)
+cl.scatter(dotsize=8, zoom=1, img_mean=False)
+
+# uiimgs = cl.unique()
+cl.plot_unique(img_mean=True, show_hog=True)
+cl.plot_unique(img_mean=False)
+
+# Plot the clustered images
+cl.plot()
+# Plotting
+cl.dendrogram()
+
+import os
+y_pred = results['labx']
+y_true=[]
+for path in results['pathnames']:
+    getpath=os.path.split(results['pathnames'][0])[0]
+    y_true.append(os.path.split(getpath)[1])
+
+#
+cl.model.plot()
+cl.model.scatter(legend=False)
+cl.model.results.keys()
+
+#
+from clusteval import clusteval
+ce = clusteval()
+ce.fit()
+
+
 # %%
 from clustimage import Clustimage
 
@@ -299,59 +371,6 @@ axs[1].axis('off')
 axs[1].set_title('HOG', fontsize=10)
 
 
-# %% 101_ObjectCategories
-# import clustimage as cl
-# pathnames = cl.listdir('D://magweg//101_ObjectCategories//')
-# idx=[]
-# for i in range(0,500):
-#     idx.append(np.random.randint(9000))
-# idx = np.unique(np.array(idx))
-# pathnames = list(np.array(pathnames)[idx])
-# print(len(pathnames))
 
-from clustimage import Clustimage
-# init
-# cl = Clustimage(method='pca', params_pca={'n_components':0.95})
-cl = Clustimage(method='pca-hog', grayscale=True, params_hog={'pixels_per_cell':(4,4)})
-# Collect samples
-
-# Preprocessing and feature extraction
-# 
-results = cl.fit_transform('D://magweg//101_ObjectCategories//', min_clust=60, max_clust=110)
-results = cl.fit_transform(pathnames, min_clust=15, max_clust=50)
-# Cluster
-# cl.cluster(evaluate='silhouette', min_clust=15, max_clust=60)
-
-cl.clusteval.plot()
-cl.pca.plot()
-
-# Scatter
-cl.scatter(dotsize=8, zoom=0.2, img_mean=True)
-cl.scatter(dotsize=8, zoom=None)
-
-# uiimgs = cl.unique()
-cl.plot_unique(img_mean=True, show_hog=True)
-cl.plot_unique(img_mean=False)
-
-# Plot the clustered images
-cl.plot(labels=8)
-# Plotting
-cl.dendrogram()
-
-import os
-y_pred = results['labx']
-y_true=[]
-for path in results['pathnames']:
-    getpath=os.path.split(results['pathnames'][0])[0]
-    y_true.append(os.path.split(getpath)[1])
 
 # %%
-cl.model.plot()
-cl.model.scatter(legend=False)
-cl.model.results.keys()
-
-# %%
-from clusteval import clusteval
-ce = clusteval()
-ce.fit()
-
