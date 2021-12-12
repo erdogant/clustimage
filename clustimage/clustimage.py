@@ -1562,11 +1562,11 @@ class Clustimage():
             text_labels=None
 
         # Make scatterplot
-        if hasattr(self.params, 'cluster_space'):
-            title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
-        else:
+        if self.params.get('cluster_space', None) is None:
             title = ('tSNE plot.')
             logger.warning('Run .fit_transform() or .cluster() to colour based on the samples on the cluster labels.')
+        else:
+            title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
 
         # Set logger to warning-error only
         verbose = logger.getEffectiveLevel()
