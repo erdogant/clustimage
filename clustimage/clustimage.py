@@ -104,7 +104,7 @@ class Clustimage():
     params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
         Parameters to extract hog features.
     verbose : int, (default: 20)
-        Print progress to screen. The default is 3.
+        Print progress to screen. The default is 20.
         60: None, 40: Error, 30: Warn, 20: Info, 10: Debug
 
     Returns
@@ -916,6 +916,10 @@ class Clustimage():
                 * "c://temp//" : Path to directory with images
                 * ['c://temp//image1.png', 'c://image2.png', ...] : List of exact pathnames.
                 * [[.., ..], [.., ..], ...] : Array-like matrix in the form of [sampels x features]
+        flatten : Bool, (default: True)
+            Flatten the processed NxMxC array to a 1D-vector
+        black_list : list, (default: None)
+            Exclude directory with all subdirectories from processing.
 
         Returns
         -------
@@ -2095,7 +2099,7 @@ def import_example(data='flowers', url=None):
 
 
 # %% Recursively list files from directory
-def listdir(dirpath, ext=['png','tiff','jpg']):
+def listdir(dirpath, ext=['png','tiff','jpg'], black_list=None):
     """ Recursively collect images from path.
 
     Parameters
@@ -2104,6 +2108,8 @@ def listdir(dirpath, ext=['png','tiff','jpg']):
         Path to directory; "/tmp" or "c://temp/" 
     ext : list, default: ['png','tiff','jpg']
         extentions to collect form directories.
+    black_list : list, (default: ['undouble'])
+        Exclude directory with all subdirectories from processing.
 
     Returns
     -------
@@ -2118,12 +2124,17 @@ def listdir(dirpath, ext=['png','tiff','jpg']):
     """
     if not isinstance('dirpath', str): raise Exception(print('Error: "dirpath" should be of type string.'))
     if not os.path.isdir(dirpath): raise Exception(print('Error: The directory can not be found: %s.' %dirpath))
-    
+
     getfiles = []
-    for iext in ext:
-        for root, _, filenames in os.walk(dirpath):
-            for filename in fnmatch.filter(filenames, '*.'+iext):
-                getfiles.append(os.path.join(root, filename))
+    for root, _, filenames in os.walk(dirpath):
+        # Check if the (sub)directory is black listed
+        bl_found = np.isin(os.path.split(root)[1], black_list)
+        if (black_list is None) or (not bl_found):
+            for iext in ext:
+                for filename in fnmatch.filter(filenames, '*.'+iext):
+                    getfiles.append(os.path.join(root, filename))
+        else:
+            logger.info('Excluded: <%s>' %(root))
     logger.info('[%s] files are collected recursively from path: [%s]', len(getfiles), dirpath)
     return getfiles
 
