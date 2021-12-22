@@ -170,6 +170,9 @@ class Clustimage():
         if not (np.any(np.isin(method, [None,'pca','hog','pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         if dirpath is None: dirpath = tempfile.mkdtemp()
         if not os.path.isdir(dirpath): raise Exception(logger.error('[%s] does not exists.', dirpath))
+        if (np.any(np.isin(method, ['hog','pca-hog']))) and ~grayscale:
+            logger.warning('Parameter grayscale is set to True coz you are using method="%s"' %(method))
+            grayscale=True
 
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
@@ -204,7 +207,7 @@ class Clustimage():
         # This value is set to True when the find functionality is used to make sure specified subroutines are used.
         self.find_func = False
 
-    def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
+    def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high', black_list=None):
         """Group samples into clusters that are similar in their feature space.
         
         Description
@@ -259,6 +262,9 @@ class Clustimage():
             Selection of the features that are used for clustering. This can either be on high or low feature space.
                 * 'high' : Original feature space.
                 * 'low' : Input are the xycoordinates that are determined by "embedding". Thus either tSNE coordinates or the first two PCs or HOGH features.
+        black_list : list, (default: None)
+            Exclude directory with all subdirectories from processing.
+            * example: ['undouble']
 
         Returns
         -------
@@ -321,7 +327,7 @@ class Clustimage():
         # Cleaning
         self.clean()
         # Check whether in is dir, list of files or array-like
-        _ = self.import_data(X)
+        _ = self.import_data(X, black_list=black_list)
         # Extract features using method
         _ = self.extract_feat(self.results)
         # Embedding using tSNE
