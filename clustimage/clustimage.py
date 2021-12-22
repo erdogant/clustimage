@@ -893,7 +893,7 @@ class Clustimage():
         # Return
         return self.pca.results['PC'].values
 
-    def import_data(self, Xraw, flatten=True):
+    def import_data(self, Xraw, flatten=True, black_list=None):
         """Import images and return in an consistent manner.
 
         Description
@@ -938,7 +938,7 @@ class Clustimage():
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
             logger.info('Extracting images from: [%s]', Xraw)
-            Xraw = listdir(Xraw, ext=self.params['ext'])
+            Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list)
             logger.info('Extracted images: [%s]', len(Xraw))
 
         # Check string
