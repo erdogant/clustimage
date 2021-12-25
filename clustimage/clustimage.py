@@ -803,7 +803,7 @@ class Clustimage():
         out = {'img':None, 'pathnames':pathnames, 'filenames':filenames}
 
         # No need to import and process data when using hash function but we do not to check the image size and readability.
-        logger.info("Reading and checking images (images with < %.0d pixels are removed).", (min_nr_pixels))
+        logger.info("Reading and checking images.", (min_nr_pixels))
         if (self.params['method'] is not None) and ('hash' in self.params['method']):
             flatten=False
 
@@ -811,6 +811,9 @@ class Clustimage():
         img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
 
         # Remove the images that could not be read
+        if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
+            logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
+
         idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
         img = np.array(img)[idx]
         if flatten: img = np.vstack(img)
