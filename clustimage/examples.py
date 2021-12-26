@@ -5,6 +5,34 @@
 # 
 # Read image according the preprocessing steps
 
+# Import library
+from clustimage import Clustimage
+
+# init with default parameters
+cl = Clustimage()
+
+# load example with flowers
+path = cl.import_example(data='flowers')
+
+# Run the model to find the optimal clusters
+results = cl.fit_transform(path, min_clust=3)
+
+# %%
+# Import library
+from clustimage import Clustimage
+
+# Init with settings such as PCA
+# cl = Clustimage(method='hog', params_pca={'n_components':0.95}) 
+cl = Clustimage(method='pca', params_pca={'n_components':0.95}) 
+# cl = Clustimage(method='pca', params_pca={'n_components':50}) 
+
+# load example with flowers
+path = cl.import_example(data='flowers')
+
+# Cluster flowers
+results = cl.fit_transform(pathnames)
+
+
 # %% 101_ObjectCategories
 # import clustimage as cl
 # pathnames = cl.listdir('D://magweg//101_ObjectCategories//')
