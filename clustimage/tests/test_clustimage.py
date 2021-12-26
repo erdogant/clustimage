@@ -44,6 +44,16 @@ class TestCLUSTIMAGE(unittest.TestCase):
         _ = cl.extract_feat(X)
         assert cl.results['feat'].shape==(X['img'].shape[0], 154)
 
+        # Init with settings such as PCA
+        cl = Clustimage(method='hog', verbose=50)
+        # load example with flowers
+        pathnames = cl.import_example(data='flowers')
+        # Cluster flowers
+        results = cl.fit_transform(pathnames)
+        # Read the unseen image. Note that the find functionality also performs exactly the same preprocessing steps as for the clustering.
+        results_find = cl.find(pathnames[0:2], k=0, alpha=0.05)
+        
+
     def test_embedding(self):
         cl = Clustimage(method='pca')
         # Import flowers example
@@ -145,4 +155,3 @@ class TestCLUSTIMAGE(unittest.TestCase):
             cl = Clustimage(method=combination[0], embedding=combination[1], grayscale=combination[3], dim=combination[4], verbose=30, params_pca={'n_components':50})
             # Preprocessing and feature extraction
             assert cl.fit_transform(combination[5], cluster_space=combination[2])
-
