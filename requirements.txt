@@ -16,3 +16,4 @@ opencv-python
 pypickle
 imagehash
 scatterd
+requests
