@@ -1137,7 +1137,7 @@ class Clustimage():
             # Y = distance.cdist(self.results['feat'].T, Xmapped, metric=metric)
         else:
             # Extract Features
-            Xmapped = self.extract_feat(X, method=self.params['method'])
+            Xmapped = self.extract_feat(X)
             # Compute distance from input sample to all other samples
         Y = distance.cdist(self.results['feat'], Xmapped, metric=metric)
 
