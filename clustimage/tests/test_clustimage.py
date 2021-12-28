@@ -101,9 +101,11 @@ class TestCLUSTIMAGE(unittest.TestCase):
         path_to_imgs = cl.import_example(data='flowers')
         # Extract features (raw images are not stored and handled per-image to save memory)
         results = cl.fit_transform(path_to_imgs, min_clust=10)
-    
+        # Check nr. of features
+        featshape = cl.results['feat'].shape
         # Predict
-        # results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+        results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
+        assert  cl.results['feat'].shape==featshape
         # assert np.all(np.isin([*results_find.keys()], ['feat', '0001.png', '0002.png', '0003.png', '0004.png', '0005.png']))
         # assert len(results_find['0001.png']['y_idx'])>=1
         # assert len(results_find['0002.png']['y_idx'])>=1
