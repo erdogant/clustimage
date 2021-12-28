@@ -1028,9 +1028,9 @@ class Clustimage():
         if self.params['embedding']=='tsne':
             logger.info('Computing embedding using %s..', self.params['embedding'])
             if (self.params['method'] is not None) and ('hash' in self.params['method']):
-                xycoord = TSNE(n_components=2, learning_rate='auto', init='random', metric='precomputed').fit_transform(X)
+                xycoord = TSNE(n_components=2, init='random', metric='precomputed').fit_transform(X)
             else:
-                xycoord = TSNE(n_components=2, learning_rate='auto', init='random').fit_transform(X)
+                xycoord = TSNE(n_components=2, init='random').fit_transform(X)
         else:
             xycoord = X[:,0:2]
         # Return
