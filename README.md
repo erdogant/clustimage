@@ -410,9 +410,4 @@ cl.plot_find()
   See [LICENSE](LICENSE) for details.
 
 #### Other interesting stuff
-* https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
-* https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/
-* https://github.com/JohannesBuchner/imagehash
-* https://ourcodeworld.com/articles/read/1006/how-to-determine-whether-2-images-are-equal-or-not-with-the-perceptual-hash-in-python
-* https://stackoverflow.com/questions/64994057/python-image-hashing
 * https://towardsdatascience.com/how-to-cluster-images-based-on-visual-similarity-cd6e7209fe34
