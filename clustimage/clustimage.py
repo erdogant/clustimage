@@ -864,8 +864,8 @@ class Clustimage():
 
         """
         # Must be flattend array
-        if len(X.shape)>1:
-            raise Exception(logger.error('Input must be flattend grayscale image. Hint: During init set "grayscale=True" or imread(colorscale=0, flatten=True)'))
+        # if len(X.shape)>1:
+            # raise Exception(logger.error('Input must be flattend grayscale image. Hint: During init set "grayscale=True" or imread(colorscale=0, flatten=True)'))
         # If 1D-vector, make 2D-array
         if len(X.shape)==1:
             X = X.reshape(-1,1).T
