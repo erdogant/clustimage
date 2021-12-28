@@ -4,6 +4,46 @@
 # print(clustimage.__version__)
 # 
 
+# %%
+from clustimage import Clustimage
+
+# Initialize
+cl = Clustimage(method='pca')
+
+# Import data
+Xraw = cl.import_example(data='flowers')
+Xraw = cl.import_example(data='mnist')
+Xraw = cl.import_example(data='faces')
+
+# Check whether in is dir, list of files or array-like
+X = cl.import_data(Xraw)
+
+# Extract features using method
+Xfeat = cl.extract_feat(X)
+
+# Embedding using tSNE
+xycoord = cl.embedding(Xfeat)
+
+# Cluster
+labels = cl.cluster()
+
+# Return
+results = cl.results
+
+# Or all in one run
+# results = cl.fit_transform(X)
+
+# Plots
+cl.clusteval.plot()
+cl.scatter()
+cl.plot_unique()
+cl.plot()
+cl.dendrogram()
+
+# Find
+results_find = cl.find(Xraw[0], k=0, alpha=0.05)
+cl.plot_find()
+
 # %% Run clustimage
 from clustimage import Clustimage
 

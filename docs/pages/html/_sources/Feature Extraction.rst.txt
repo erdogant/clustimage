@@ -72,6 +72,8 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
 	cl.results['feat']
 
 	# Alternatively, the features are also stored in the results dict using the run-at-once function.
+	X = cl.import_example(data='mnist')
+	# Fit and transform
 	results = cl.fit_transform(X)
 	# Extracted PC features
 	results['feat']
@@ -90,14 +92,14 @@ Another approach to extract HOG features by directly using the extract_hog funct
     # Load example data
     pathnames = cl.import_example(data='flowers')
     # Read image according the preprocessing steps
-    img = cl.imread(pathnames[0], dim=(128,128))
+    img = cl.imread(pathnames[0], dim=(128,128), colorscale=0)
     
     # Extract HOG features
     img_hog = cl.extract_hog(img)
     
     plt.figure();
     fig,axs=plt.subplots(1,2)
-    axs[0].imshow(img.reshape(128,128,3))
+    axs[0].imshow(img.reshape(128,128))
     axs[0].axis('off')
     axs[0].set_title('Preprocessed image', fontsize=10)
     axs[1].imshow(img_hog.reshape(128,128), cmap='binary')

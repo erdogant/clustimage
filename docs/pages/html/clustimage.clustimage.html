@@ -166,7 +166,7 @@ Final step in pre-processing is resizing all images in the same dimension such a
 <li><p><strong>ext</strong> (<em>list</em><em>, </em><em>(</em><em>default:</em><em> [</em><em>'png'</em><em>,</em><em>'tiff'</em><em>,</em><em>'jpg'</em><em>]</em><em>)</em>) – Images with the file extentions are used.</p></li>
 <li><p><strong>params_pca</strong> (<em>dict</em><em>, </em><em>default: {'n_components':50</em><em>, </em><em>'detect_outliers':None}</em>) – Parameters to initialize the pca model.</p></li>
 <li><p><strong>params_hog</strong> (<em>dict</em><em>, </em><em>default: {'orientations':9</em><em>, </em><em>'pixels_per_cell':</em><em>(</em><em>16</em><em>,</em><em>16</em><em>)</em><em>, </em><em>'cells_per_block':</em><em>(</em><em>1</em><em>,</em><em>1</em><em>)</em><em>}</em>) – Parameters to extract hog features.</p></li>
-<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>(</em><em>default: 20</em><em>)</em>) – Print progress to screen. The default is 3.
+<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>(</em><em>default: 20</em><em>)</em>) – Print progress to screen. The default is 20.
 60: None, 40: Error, 30: Warn, 20: Info, 10: Debug</p></li>
 </ul>
 </dd>
@@ -216,6 +216,7 @@ feat : array-like.</p>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Scatter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">plt_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Plot clustered images</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
@@ -615,7 +616,7 @@ Note that the metric can be changed in this function but this may lead to confus
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.fit_transform">
-<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'agglomerative'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'silhouette'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linkage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ward'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.fit_transform" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'agglomerative'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'silhouette'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linkage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ward'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.fit_transform" title="Permalink to this definition"></a></dt>
 <dd><p>Group samples into clusters that are similar in their feature space.</p>
 <p>The fit_transform function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
 The optimal number of clusters are determined using well known methods suchs as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
@@ -689,6 +690,8 @@ Based on the clustering results, the unique images are also gathered.</p>
 </dd>
 </dl>
 </p></li>
+<li><p><strong>black_list</strong> (<em>list</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Exclude directory with all subdirectories from processing.
+* example: [‘undouble’]</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -759,7 +762,7 @@ feat : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.import_data">
-<span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xraw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.import_data" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xraw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.import_data" title="Permalink to this definition"></a></dt>
 <dd><p>Import images and return in an consistent manner.</p>
 <p>The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
 This requires that each of the input needs to be processed in its own manner but each should return the same structure to make it compatible across all functions.
@@ -776,15 +779,19 @@ The following steps are used for the import:</p>
 <p>Processing the input depends on the input:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>Xraw</strong> (<em>str</em><em>, </em><em>list</em><em> or </em><em>array-like.</em>) – <dl class="simple">
-<dt>The input can be:</dt><dd><ul class="simple">
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Xraw</strong> (<em>str</em><em>, </em><em>list</em><em> or </em><em>array-like.</em>) – <dl class="simple">
+<dt>The input can be:</dt><dd><ul>
 <li><p>”c://temp//” : Path to directory with images</p></li>
 <li><p>[‘c://temp//image1.png’, ‘c://image2.png’, …] : List of exact pathnames.</p></li>
 <li><p>[[.., ..], [.., ..], …] : Array-like matrix in the form of [sampels x features]</p></li>
 </ul>
 </dd>
 </dl>
-</p>
+</p></li>
+<li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
+<li><p><strong>black_list</strong> (<em>list</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Exclude directory with all subdirectories from processing.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul>
@@ -1214,13 +1221,14 @@ None : Do not plot the image.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.listdir">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">listdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.listdir" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">listdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.listdir" title="Permalink to this definition"></a></dt>
 <dd><p>Recursively collect images from path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dirpath</strong> (<em>str</em>) – Path to directory; “/tmp” or “c://temp/”</p></li>
 <li><p><strong>ext</strong> (<em>list</em><em>, </em><em>default:</em><em> [</em><em>'png'</em><em>,</em><em>'tiff'</em><em>,</em><em>'jpg'</em><em>]</em>) – extentions to collect form directories.</p></li>
+<li><p><strong>black_list</strong> (<em>list</em><em>, </em><em>(</em><em>default:</em><em> [</em><em>'undouble'</em><em>]</em><em>)</em>) – Exclude directory with all subdirectories from processing.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
