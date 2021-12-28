@@ -863,10 +863,20 @@ class Clustimage():
         >>> axs[1].set_title('HOG', fontsize=10)
 
         """
+        # Must be flattend array
+        if len(X.shape)>1:
+            raise Exception(logger.error('Input must be flattend grayscale image. Hint: During init set "grayscale=True" or imread(colorscale=0, flatten=True)'))
         # If 1D-vector, make 2D-array
-        if len(X.shape)==1: X = X.reshape(-1,1).T
+        if len(X.shape)==1:
+            X = X.reshape(-1,1).T
+
         # Set dim correctly for reshaping image
         dim = _check_dim(X, self.params['dim'], grayscale=self.params['grayscale'])
+
+        # Reshape data
+        # if len(X.shape)==1:
+        # X = X.reshape(dim)
+
         # Extract hog features per image
         if flatten:
             feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X, disable=disable_tqdm())))
@@ -1082,12 +1092,13 @@ class Clustimage():
             # Read images and preprocessing and flattening of images
             Xfeat = Xraw['img'].copy()
 
+        # Store results
+        if not self.find_func:
+            self.results['feat'] = Xfeat
         # Message
         logger.info("Extracted features using [%s]: %s" %(self.params['method'], str(Xfeat.shape)))
-        # Store results
-        self.results['feat'] = Xfeat
         # Return
-        return self.results['feat']
+        return Xfeat
 
     def compute_hash(self, img):
         imghash=[]
@@ -1640,9 +1651,10 @@ class Clustimage():
             if img_mean:
                 subtitle='(averaged per cluster)'
                 imgs=self.results_unique['img_mean']
-                for img in imgs:
-                    hogtmp = self.extract_hog(img, pixels_per_cell=self.params_hog['pixels_per_cell'], orientations=self.params_hog['orientations'], flatten=False)
-                    imgshog.append(hogtmp)
+                if (self.params['method']=='hog'):
+                    for img in imgs:
+                        hogtmp = self.extract_hog(img, pixels_per_cell=self.params_hog['pixels_per_cell'], orientations=self.params_hog['orientations'], flatten=False)
+                        imgshog.append(hogtmp)
             else:
                 # Collect all samples
                 subtitle='(most centroid image per cluster)'
@@ -1871,18 +1883,19 @@ class Clustimage():
 def _check_dim(Xraw, dim, grayscale=None):
     dimOK=False
     # Determine the dimension based on the length of the 1D-vector.
-    # if len(Xraw.shape)==1:
-        # Xraw=np.c_[Xraw, Xraw].T
-    if len(Xraw.shape)==1:
-        Xraw = Xraw.reshape(-1,1).T
-
-    # Compute dim based on vector length
-    dimX = int(np.sqrt(Xraw.shape[1]))
-
-    if (dimX!=dim[0]) or (dimX!=dim[1]):
-        logger.warning('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(dim), str([int(dimX)]*2), str([int(dimX)]*2) ))
+    # if len(Xraw.shape)>=2:
+        # dim = Xraw.shape
+        # dimOK=True
 
     if not dimOK:
+        if len(Xraw.shape)==1:
+            Xraw = Xraw.reshape(-1,1).T
+        # Compute dim based on vector length
+        dimX = int(np.sqrt(Xraw.shape[1]))
+    
+        if (len(Xraw.shape)==1) and ((dimX!=dim[0]) or (dimX!=dim[1])):
+            logger.warning('The default dim=%s of the image does not match with the input: %s. Set dim=%s during initialization!' %(str(dim), str([int(dimX)]*2), str([int(dimX)]*2) ))
+
         try:
             Xraw[0,:].reshape(dim)
             dimOK=True
