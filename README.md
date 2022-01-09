@@ -401,7 +401,14 @@ cl.plot_find()
 ```
 ### Example: Extract images belonging to clusters
 
-After obtaining the results using the cl.fit_transform() or cl.cluster() it is straightforward to determine the images belonging to the cluster-labels.
+The results obtained from the cl.fit_transform() or cl.cluster() is a dictionary containing the following keys:
+
+    * img       : image vector of the preprocessed images
+    * feat      : Features extracted for the images
+    * xycoord   : X and Y coordinates from the embedding
+    * pathnames : Absolute path location to the image file
+    * filenames : File names of the image file
+    * labels    : Cluster labels
 
 ```python
 
