@@ -110,18 +110,15 @@
            <div itemprop="articleBody">
              
   <hr class="docutils" id="code-directive" />
-<p>The documentation and docstrings readily contains various examples but lets make another one with many samples.</p>
-<p>The results obtained from the cl.fit_transform() or cl.cluster() is a dictionary containing the following keys:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>img       : image vector of the preprocessed images</p></li>
-<li><p>feat      : Features extracted for the images</p></li>
-<li><p>xycoord   : X and Y coordinates from the embedding</p></li>
-<li><p>pathnames : Absolute path location to the image file</p></li>
-<li><p>filenames : File names of the image file</p></li>
-<li><p>labels    : Cluster labels</p></li>
-</ul>
-</div></blockquote>
+<p>The results obtained from the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a> or <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a> is a dictionary containing the following keys:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*  img       : Image vector of the preprocessed images.
+*  feat      : Extracted feature.
+*  xycoord   : X and Y coordinates from the embedding.
+*  pathnames : Absolute path location to the image file.
+*  filenames : File names of the image file.
+*  labels    : Cluster labels.
+</pre></div>
+</div>
 <section id="results">
 <h1>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
@@ -165,7 +162,8 @@
 </section>
 <section id="caltech101-dataset">
 <h1>Caltech101 dataset<a class="headerlink" href="#caltech101-dataset" title="Permalink to this headline"></a></h1>
-<p>Lets use <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> on a the <strong>Caltech101</strong> dataset to clusters the images.
+<p>The documentation and docstrings readily contains various examples but lets make another one with many samples.
+In this example, the <strong>Caltech101</strong> dataset will be clustered!
 The pictures of objects belonging to 101 categories. About 40 to 800 images per category. Most categories have about 50 images. The size of each image is roughly 300 x 200 pixels.
 Download the dataset over here: <a class="reference external" href="http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download">http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download</a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>

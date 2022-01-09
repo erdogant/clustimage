@@ -2,16 +2,17 @@
 
 -------------------------------------
 
-The documentation and docstrings readily contains various examples but lets make another one with many samples.
+The results obtained from the :func:`clustimage.clustimage.Clustimage.fit_transform` or :func:`clustimage.clustimage.Clustimage.cluster` is a dictionary containing the following keys:
 
-The results obtained from the cl.fit_transform() or cl.cluster() is a dictionary containing the following keys:
+.. code-block:: bash
 
-    * img       : image vector of the preprocessed images
-    * feat      : Features extracted for the images
-    * xycoord   : X and Y coordinates from the embedding
-    * pathnames : Absolute path location to the image file
-    * filenames : File names of the image file
-    * labels    : Cluster labels
+     *  img       : Image vector of the preprocessed images.
+     *  feat      : Extracted feature.
+     *  xycoord   : X and Y coordinates from the embedding.
+     *  pathnames : Absolute path location to the image file.
+     *  filenames : File names of the image file.
+     *  labels    : Cluster labels.
+
 
 
 Results
@@ -60,7 +61,8 @@ Results
 Caltech101 dataset
 ''''''''''''''''''''
 
-Lets use ``clustimage`` on a the **Caltech101** dataset to clusters the images.
+The documentation and docstrings readily contains various examples but lets make another one with many samples.
+In this example, the **Caltech101** dataset will be clustered!
 The pictures of objects belonging to 101 categories. About 40 to 800 images per category. Most categories have about 50 images. The size of each image is roughly 300 x 200 pixels.
 Download the dataset over here: http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download
 
