@@ -75,7 +75,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Caltech101 dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#caltech101-dataset">Caltech101 dataset</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
 <ul class="current">
@@ -112,7 +113,7 @@
 <p>Python package clustimage is for unsupervised clustering of images.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">Clustimage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tsne'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_face</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(64,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_to_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'n_components':</span> <span class="pre">0.95}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'cells_per_block':</span> <span class="pre">(1,</span> <span class="pre">1),</span> <span class="pre">'orientations':</span> <span class="pre">8,</span> <span class="pre">'pixels_per_cell':</span> <span class="pre">(8,</span> <span class="pre">8)}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'exact_hash':</span> <span class="pre">True,</span> <span class="pre">'threshold':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">Clustimage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tsne'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_face</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(64,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_to_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'n_components':</span> <span class="pre">0.95}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'cells_per_block':</span> <span class="pre">(1,</span> <span class="pre">1),</span> <span class="pre">'orientations':</span> <span class="pre">8,</span> <span class="pre">'pixels_per_cell':</span> <span class="pre">(8,</span> <span class="pre">8)}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'exact_hash':</span> <span class="pre">True,</span> <span class="pre">'threshold':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage" title="Permalink to this definition"></a></dt>
 <dd><p>Clustering of images.</p>
 <p>Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
 Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
@@ -758,6 +759,26 @@ feat : array-like.</p>
 <span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.get_dim">
+<span class="sig-name descname"><span class="pre">get_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xraw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.get_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Determine dimension for image vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Xraw</strong> (<em>array-like float</em>) – Image vector.</p></li>
+<li><p><strong>dim</strong> (<em>tuple</em><em> (</em><em>int</em><em>, </em><em>int</em><em>)</em>) – Dimension of the image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

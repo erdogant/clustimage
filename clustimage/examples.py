@@ -1,8 +1,7 @@
 # %%
-# import clustimage
-# print(dir(clustimage))
-# print(clustimage.__version__)
-# 
+import clustimage
+print(dir(clustimage))
+print(clustimage.__version__)
 
 # %%
 from clustimage import Clustimage

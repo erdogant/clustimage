@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Caltech101 dataset &mdash; clustimage clustimage documentation</title>
+  <title>Results &mdash; clustimage clustimage documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -76,7 +76,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Caltech101 dataset</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#caltech101-dataset">Caltech101 dataset</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
 <ul>
@@ -98,7 +99,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Caltech101 dataset</li>
+      <li>Results</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Examples.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -110,6 +111,58 @@
              
   <hr class="docutils" id="code-directive" />
 <p>The documentation and docstrings readily contains various examples but lets make another one with many samples.</p>
+<p>The results obtained from the cl.fit_transform() or cl.cluster() is a dictionary containing the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>img       : image vector of the preprocessed images</p></li>
+<li><p>feat      : Features extracted for the images</p></li>
+<li><p>xycoord   : X and Y coordinates from the embedding</p></li>
+<li><p>pathnames : Absolute path location to the image file</p></li>
+<li><p>filenames : File names of the image file</p></li>
+<li><p>labels    : Cluster labels</p></li>
+</ul>
+</div></blockquote>
+<section id="results">
+<h1>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
+<span class="c1"># Import data</span>
+<span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Cluster flowers</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">pathnames</span><span class="p">)</span>
+
+<span class="c1"># All results are stored in a dict:</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># Which is the same as:</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># dict_keys([&#39;img&#39;, &#39;feat&#39;, &#39;xycoord&#39;, &#39;pathnames&#39;, &#39;labels&#39;, &#39;filenames&#39;])</span>
+
+<span class="c1"># Extracting images that belong to cluster label=0:</span>
+<span class="n">label</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Iloc</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">label</span>
+<span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;pathnames&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+
+<span class="c1"># Extracting xy-coordinates for the scatterplot for cluster 0:</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">xycoord</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xycoord</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">xycoord</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Cluster </span><span class="si">%.0d</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">label</span><span class="p">)</span>
+
+<span class="c1"># Plot the images for cluster 0:</span>
+<span class="n">imgs</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+<span class="c1"># Make sure you get the right dimension</span>
+<span class="n">dim</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">get_dim</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">][</span><span class="mi">0</span><span class="p">,:])</span>
+<span class="c1"># Plot</span>
+<span class="k">for</span> <span class="n">img</span><span class="p">,</span> <span class="n">pathname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">pathnames</span><span class="p">):</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">pathname</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="caltech101-dataset">
 <h1>Caltech101 dataset<a class="headerlink" href="#caltech101-dataset" title="Permalink to this headline"></a></h1>
 <p>Lets use <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> on a the <strong>Caltech101</strong> dataset to clusters the images.
