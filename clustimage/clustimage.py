@@ -575,7 +575,7 @@ class Clustimage():
                 img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
             eigen_img.append(imscale(np.mean(img, axis=0)))
 
-            # dim = _check_dim(eigen_img, self.params['dim'])
+            # dim = self._get_dim(eigen_img)
             # plt.figure();plt.imshow(eigen_img.reshape(dim))
 
             # Compute distance across all samples
@@ -871,7 +871,7 @@ class Clustimage():
             X = X.reshape(-1,1).T
 
         # Set dim correctly for reshaping image
-        dim = _check_dim(X, self.params['dim'], grayscale=self.params['grayscale'])
+        dim = self.get_dim(X)
 
         # Reshape data
         # if len(X.shape)==1:
@@ -987,7 +987,7 @@ class Clustimage():
             # Check dimensions
             pathnames, filenames = None, None
             # Check dim
-            self.params['dim'] = _check_dim(Xraw, self.params['dim'])
+            self.params['dim'] = self.get_dim(Xraw)
             # Scale the image
             logger.info('Scaling images..')
             Xraw = np.vstack(list(map(lambda x: imscale(x), Xraw)))
@@ -1536,8 +1536,8 @@ class Clustimage():
                 if isinstance(pathname, str):
                     img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False)
                 else:
-                    dim = _check_dim(pathname, self.params['dim'], grayscale=self.params['grayscale'])
-                    # dim = _check_dim(pathname, self.params['dim'])
+                    dim = self.get_dim(pathname)
+                    # dim = self.get_dim(pathname)
                     # plt.figure();plt.imshow(eigen_img.reshape(dim))
                     img = pathname.reshape(dim)
                 # Make hte plot
@@ -1858,6 +1858,24 @@ class Clustimage():
         else:
             logger.info('Nothing to clean.')
 
+    def get_dim(self, Xraw, dim=None):
+        """Determine dimension for image vector.
+
+        Parameters
+        ----------
+        Xraw : array-like float
+            Image vector.
+        dim : tuple (int, int)
+            Dimension of the image.
+
+        Returns
+        -------
+        None.
+
+        """
+        if dim is None: dim = self.params['dim']
+        return _get_dim(Xraw, dim=dim)
+
     def import_example(self, data='flowers', url=None):
         """Import example dataset from github source.
 
@@ -1880,7 +1898,7 @@ class Clustimage():
 
 
 # %% Store images to disk
-def _check_dim(Xraw, dim, grayscale=None):
+def _get_dim(Xraw, dim, grayscale=None):
     dimOK=False
     # Determine the dimension based on the length of the 1D-vector.
     # if len(Xraw.shape)>=2:
@@ -1936,7 +1954,7 @@ def _check_dim(Xraw, dim, grayscale=None):
 def store_to_disk(Xraw, dim, tempdir):
     """Store to disk."""
     # Determine the dimension based on the length of the vector.
-    dim = _check_dim(Xraw, dim)
+    dim = _get_dim(Xraw, dim)
     # Store images to disk
     pathnames, filenames = [], []
     logger.info('Writing images to tempdir [%s]', tempdir)
