@@ -399,6 +399,49 @@ cl.dendrogram()
 results_find = cl.find(Xraw[0], k=0, alpha=0.05)
 cl.plot_find()
 ```
+### Example: Extract images belonging to clusters
+
+After obtaining the results using the cl.fit_transform() or cl.cluster() it is straightforward to determine the images belonging to the cluster-labels.
+
+```python
+
+# Import library
+from clustimage import Clustimage
+# Initialize
+cl = Clustimage(method='pca')
+# Import data
+pathnames = cl.import_example(data='flowers')
+# Cluster flowers
+results = cl.fit_transform(pathnames)
+
+# All results are stored in a dict:
+print(cl.results.keys())
+# Which is the same as:
+print(results.keys())
+
+dict_keys(['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames'])
+
+# Extracting images that belong to cluster label=0:
+Iloc = cl.results['labels']==0
+cl.results['pathnames'][Iloc]
+
+# Extracting xy-coordinates for the scatterplot for cluster 0:
+import matplotlib.pyplot as plt
+xycoord = cl.results['xycoord'][Iloc]
+plt.scatter(xycoord[:,0], xycoord[:,1])
+
+# Plot the images for cluster 0:
+# Images in cluster 0
+imgs = np.where(cl.results['img'][Iloc])[0]
+# Make sure you get the right dimension
+dim = cl.get_dim(cl.results['img'][Iloc][0,:])
+# Plot
+for img in imgs:
+  plt.figure()
+  plt.imshow(img.reshape(dim))
+  plt.title()
+
+```
 
 ### Maintainers
 
