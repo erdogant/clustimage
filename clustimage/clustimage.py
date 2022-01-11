@@ -2192,12 +2192,12 @@ def import_example(data='flowers', url=None):
 
 # %% Recursively list files from directory
 def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
-    """ Recursively collect images from path.
+    """Collect recursive images from path.
 
     Parameters
     ----------
     dirpath : str
-        Path to directory; "/tmp" or "c://temp/" 
+        Path to directory; "/tmp" or "c://temp/"
     ext : list, default: ['png','tiff','jpg']
         extentions to collect form directories.
     black_list : list, (default: ['undouble'])
