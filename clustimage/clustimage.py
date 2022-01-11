@@ -194,7 +194,7 @@ class Clustimage():
         self.params['store_to_disk'] = store_to_disk
 
         # Hash parameters
-        self.params_hash = hash_method(method, params_hash)
+        self.params_hash = get_params_hash(method, params_hash)
         # PCA parameters
         pca_defaults = {'n_components': 0.95, 'detect_outliers': None, 'random_state': None}
         params_pca = {**pca_defaults, **params_pca}
@@ -339,7 +339,7 @@ class Clustimage():
         return self.results
 
     def cluster(self, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
-        """Detection of the optimal number of clusters given the input set of features.
+        """Detect the optimal number of clusters given the input set of features.
 
         Description
         -----------
@@ -399,7 +399,7 @@ class Clustimage():
         >>>
         >>> # Init
         >>> cl = Clustimage(method='hog')
-        >>> 
+        >>>
         >>> # load example with digits (mnist dataset)
         >>> pathnames = cl.import_example(data='flowers')
         >>>
@@ -417,7 +417,7 @@ class Clustimage():
         >>> cl.clusteval.plot()
         >>> cl.scatter(dotsize=50, img_mean=False)
         >>>
-        >>> # If you want to cluster on the low-dimensional space 
+        >>> # If you want to cluster on the low-dimensional space.
         >>> labels = cl.cluster(min_clust=5, max_clust=25, cluster_space='low', cluster='dbscan')
         >>> cl.scatter(dotsize=50, img_mean=False)
         >>>
@@ -602,8 +602,8 @@ class Clustimage():
         -----------
         Finding images can be performed in two manners:
 
-            * Based on the k-nearest neighbour 
-            * Based on significance after probability density fitting 
+            * Based on the k-nearest neighbour
+            * Based on significance after probability density fitting
 
         In both cases, the adjacency matrix is first computed using the distance metric (default Euclidean).
         In case of the k-nearest neighbour approach, the k nearest neighbours are determined.
@@ -842,18 +842,18 @@ class Clustimage():
         --------
         >>> import matplotlib.pyplot as plt
         >>> from clustimage import Clustimage
-        >>> 
+        >>>
         >>> # Init
         >>> cl = Clustimage(method='hog')
-        >>> 
+        >>>
         >>> # Load example data
         >>> pathnames = cl.import_example(data='flowers')
         >>> # Read image according the preprocessing steps
         >>> img = cl.imread(pathnames[0], dim=(128,128))
-        >>> 
+        >>>
         >>> # Extract HOG features
         >>> img_hog = cl.extract_hog(img)
-        >>> 
+        >>>
         >>> plt.figure();
         >>> fig,axs=plt.subplots(1,2)
         >>> axs[0].imshow(img.reshape(128,128,3))
@@ -1107,6 +1107,19 @@ class Clustimage():
         return Xfeat
 
     def compute_hash(self, img):
+        """Compute hash.
+
+        Parameters
+        ----------
+        img : numpy-array
+            Image.
+
+        Returns
+        -------
+        imghash : numpy-array
+            Hash.
+
+        """
         imghash=[]
         try:
             imghash = self.params_hash['hashfunc'](Image.fromarray(img))
@@ -1246,7 +1259,6 @@ class Clustimage():
 
     def _collect_pca(self, X, Y, k, alpha, feat, todf=True):
         """Collect the samples that are closest in according the metric."""
-
         filenames = X['filenames']
         out = {}
         out['feat'] = feat
@@ -1317,21 +1329,21 @@ class Clustimage():
         >>> # Import libraries
         >>> from clustimage import Clustimage
         >>> import matplotlib.pyplot as plt
-        >>> 
+        >>>
         >>> # Init
         >>> cl = Clustimage()
-        >>> 
+        >>>
         >>> # Load example dataset
         >>> pathnames = cl.import_example(data='flowers')
         >>> # Preprocessing of the first image
         >>> img = cl.imread(pathnames[0], dim=(128,128), colorscale=1)
-        >>> 
+        >>>
         >>> # Plot
         >>> fig, axs = plt.subplots(1,2, figsize=(15,10))
         >>> axs[0].imshow(cv2.imread(pathnames[0])); plt.axis('off')
         >>> axs[1].imshow(img.reshape(128,128,3)); plt.axis('off')
         >>> fig
-        >>> 
+        >>>
 
         """
         logger.debug('[%s]' %(filepath))
@@ -1643,6 +1655,25 @@ class Clustimage():
         set_logger(verbose=verbose)
 
     def plot_unique(self, cmap=None, img_mean=True, show_hog=False, figsize=(15, 10)):
+        """Plot unique images.
+
+        Parameters
+        ----------
+        cmap : str, (default: None)
+            Colorscheme for the images.
+            'gray', 'binary',  None (uses rgb colorscheme)
+        img_mean : bool, (default: False)
+            Plot the image mean.
+        show_hog : bool, (default: False)
+            Plot the hog features.
+        figsize : tuple, (default: (15, 10).
+            Size of the figure (height, width).
+
+        Returns
+        -------
+        None.
+
+        """
         if hasattr(self, 'results_unique'):
             # Set logger to warning-error only
             verbose = logger.getEffectiveLevel()
@@ -2267,7 +2298,7 @@ def wget(url, writepath):
 
 
 # %% Get image HASH function
-def hash_method(hashmethod, params_hash):
+def get_params_hash(hashmethod, params_hash):
     """Get image hash function.
 
     Parameters
