@@ -163,7 +163,7 @@ class Clustimage():
 
     """
 
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128, 128), dim_face=(64, 64), dirpath=None, store_to_disk=True, ext=['png', 'tiff', 'jpg'], params_pca={'n_components': 0.95}, params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)}, params_hash={'threshold': 0, 'exact_hash': True}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128, 128), dim_face=(64, 64), dirpath=None, store_to_disk=True, ext=['png', 'tiff', 'jpg'], params_pca={'n_components': 0.95}, params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)}, params_hash={'threshold': 0, 'exact_hash': True, 'hash_size': 8}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean()
@@ -1106,7 +1106,7 @@ class Clustimage():
         # Return
         return Xfeat
 
-    def compute_hash(self, img):
+    def compute_hash(self, img, hash_size=None):
         """Compute hash.
 
         Parameters
@@ -1121,8 +1121,9 @@ class Clustimage():
 
         """
         imghash=[]
+        if hash_size is None: hash_size=self.params_hash['hash_size']
         try:
-            imghash = self.params_hash['hashfunc'](Image.fromarray(img))
+            imghash = self.params_hash['hashfunc'](Image.fromarray(img), hash_size=hash_size)
             # imghash = self.params_hash['hashfunc'](Image.open(img))
         except:
             pass
@@ -1824,7 +1825,7 @@ class Clustimage():
                         fignum=0
                         for i, img in enumerate(imgs):
                             hog_image_rescaled = exposure.rescale_intensity(hog_images[i, :].reshape(self.params['dim']), in_range=(0, 10))
-                            ax[fignum].imshow(img, cmap=cmap)
+                            ax[fignum].imshow(img[..., ::-1], cmap=cmap)
                             ax[fignum].axis('off')
                             ax[fignum +1].imshow(hog_image_rescaled, cmap=cmap)
                             ax[fignum +1].axis('off')
@@ -1862,10 +1863,12 @@ class Clustimage():
             # Make the actual plots
             for i, ax in enumerate(axs.ravel()):
                 if i<len(imgs):
-                    if len(imgs[i].shape)==1:
-                        ax.imshow(imgs[i].reshape(dim), cmap=cmap)
+                    img = imgs[i]
+                    if len(img.shape)==1: img = img.reshape(dim)
+                    if len(img.shape)==3:
+                        ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
                     else:
-                        ax.imshow(imgs[i], cmap=cmap)
+                        ax.imshow(img, cmap=cmap)
                     if labels is not None: ax.set_title(labels[i])
                 ax.axis("off")
             _ = fig.suptitle(title, fontsize=16)
@@ -1876,6 +1879,13 @@ class Clustimage():
         return nrows, ncols
 
     def clean_files(self):
+        """Clean files.
+
+        Returns
+        -------
+        None.
+
+        """
         # Cleaning
         from pathlib import Path
         if hasattr(self, 'results_faces'):
@@ -2336,7 +2346,7 @@ def get_params_hash(hashmethod, params_hash):
         hashfunc=None
         hashmethod=None
 
-    hash_defaults={'threshold': 0, 'exact_hash': True}
+    hash_defaults={'threshold': 0, 'exact_hash': True, 'hash_size': 8}
     # Set the hash parameters
     params_hash = {**hash_defaults, **params_hash}
     # self.params_hash = params_hash
