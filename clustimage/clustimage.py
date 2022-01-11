@@ -2214,6 +2214,7 @@ def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
     >>> pathnames = cl.listdir('c://temp//flower_images')
 
     """
+    if isinstance(ext, str): ext = [ext]
     if not isinstance('dirpath', str): raise Exception(print('Error: "dirpath" should be of type string.'))
     if not os.path.isdir(dirpath): raise Exception(print('Error: The directory can not be found: %s.' %dirpath))
 
