@@ -5,8 +5,7 @@ from clustimage.clustimage import (
     wget,
     unzip,
     listdir,
-    set_logger,
-    )
+    set_logger)
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
