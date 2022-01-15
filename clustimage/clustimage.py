@@ -806,6 +806,7 @@ class Clustimage():
         # No need to import and process data when using hash function but we do not to check the image size and readability.
         logger.info("Reading and checking images.")
         if (self.params['method'] is not None) and ('hash' in self.params['method']):
+            # logger.warning("In case of method=%s, flatten is set to False." %(self.params['method']))
             flatten=False
 
         # Read and preprocess data
@@ -961,6 +962,8 @@ class Clustimage():
             Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list)
             logger.info('[%s] images are extracted.', len(Xraw))
 
+        logger.info("Reading and checking images.")
+
         # Return if no images are extracted.
         if len(Xraw)==0:
             return {'img': Xraw, 'pathnames': None, 'filenames': None}
@@ -1000,6 +1003,8 @@ class Clustimage():
             # Store to disk
             if self.params['store_to_disk']:
                 pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'])
+                pathnames = np.array(pathnames)
+                filenames = np.array(filenames)
 
             # Make dict
             if self.find_func:
@@ -1922,7 +1927,7 @@ class Clustimage():
         if dim is None: dim = self.params['dim']
         return _get_dim(Xraw, dim=dim)
 
-    def import_example(self, data='flowers', url=None):
+    def import_example(self, data='flowers', url=None, curpath=None):
         """Import example dataset from github source.
 
         Description
@@ -1932,7 +1937,11 @@ class Clustimage():
         Parameters
         ----------
         data : str
-            'flowers', 'faces', 'scenes'
+            * 'flowers'
+            * 'faces'
+            * 'mnist'
+            * '101objects'
+            * 'scenes'
 
         Returns
         -------
@@ -1940,7 +1949,7 @@ class Clustimage():
             list of str containing filepath to images.
 
         """
-        return import_example(data=data, url=url)
+        return import_example(data=data, url=url, curpath=curpath)
 
 
 # %% Store images to disk
@@ -2138,7 +2147,7 @@ def disable_tqdm():
 
 
 # %% Import example dataset from github.
-def import_example(data='flowers', url=None):
+def import_example(data='flowers', url=None, curpath=None):
     """Import example dataset from github source.
 
     Description
@@ -2148,7 +2157,11 @@ def import_example(data='flowers', url=None):
     Parameters
     ----------
     data : str
-        Name of datasets: 'flowers', 'faces', 'mnist'
+        * 'flowers'
+        * 'faces'
+        * 'mnist'
+        * '101objects'
+        * 'scenes'
     url : str
         url link to to dataset.
 
@@ -2169,19 +2182,24 @@ def import_example(data='flowers', url=None):
             return X['data']
         elif data=='scenes':
             url='https://erdogant.github.io/datasets/scenes.zip'
+        elif data=='101objects':
+            url='https://erdogant.github.io/datasets/101_ObjectCategories.zip'
         elif data=='mnist':
             from sklearn.datasets import load_digits
             digits = load_digits(n_class=10)
             # y = digits.target
             return digits.data
     else:
-        logger.warning('Lets try your dataset from url: %s.', url)
+        logger.warning('Lets download the dataset from url: [%s]', url)
 
     if url is None:
         logger.warning('Nothing to download.')
         return None
 
-    curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+    if curpath is None:
+        curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+    logger.info('Store examples at [%s]..', curpath)
+
     filename = basename(urlparse(url).path)
     path_to_data = os.path.join(curpath, filename)
     if not os.path.isdir(curpath):
@@ -2273,7 +2291,7 @@ def unzip(path_to_zip):
             zip_ref.close()
             getpath = path_to_zip.replace('.zip', '')
             if not os.path.isdir(getpath):
-                logger.error('Extraction failed.')
+                logger.error('Directory does not exists: [%s]' %(getpath))
                 getpath = None
     else:
         logger.warning('Input is not a zip file: [%s]', path_to_zip)
@@ -2283,7 +2301,7 @@ def unzip(path_to_zip):
 
 # %% Download files from github source
 def wget(url, writepath):
-    """ Retrieve file from url.
+    """Retrieve file from url.
 
     Parameters
     ----------
