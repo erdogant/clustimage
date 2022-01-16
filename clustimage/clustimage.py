@@ -1940,7 +1940,6 @@ class Clustimage():
             * 'flowers'
             * 'faces'
             * 'mnist'
-            * '101objects'
             * 'scenes'
 
         Returns
@@ -2160,7 +2159,6 @@ def import_example(data='flowers', url=None, curpath=None):
         * 'flowers'
         * 'faces'
         * 'mnist'
-        * '101objects'
         * 'scenes'
     url : str
         url link to to dataset.
@@ -2182,8 +2180,6 @@ def import_example(data='flowers', url=None, curpath=None):
             return X['data']
         elif data=='scenes':
             url='https://erdogant.github.io/datasets/scenes.zip'
-        elif data=='101objects':
-            url='https://erdogant.github.io/datasets/101_ObjectCategories.zip'
         elif data=='mnist':
             from sklearn.datasets import load_digits
             digits = load_digits(n_class=10)
