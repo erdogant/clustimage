@@ -9,7 +9,7 @@ from clustimage.clustimage import (
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.3.14'
+__version__ = '1.3.15'
 
 # module level doc-string
 __doc__ = """
