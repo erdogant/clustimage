@@ -6,12 +6,12 @@
 [![Github Forks](https://img.shields.io/github/forks/erdogant/clustimage.svg)](https://github.com/erdogant/clustimage/network)
 [![GitHub Open Issues](https://img.shields.io/github/issues/erdogant/clustimage.svg)](https://github.com/erdogant/clustimage/issues)
 [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Sphinx](https://img.shields.io/badge/Sphinx-Docs-blue)](https://erdogant.github.io/clustimage/)
 [![Downloads](https://pepy.tech/badge/clustimage/month)](https://pepy.tech/project/clustimage/month)
 [![Downloads](https://pepy.tech/badge/clustimage)](https://pepy.tech/project/clustimage)
 [![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)
 [![DOI](https://zenodo.org/badge/423822054.svg)](https://zenodo.org/badge/latestdoi/423822054)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/erdogant/clustimage/blob/master/notebooks/clustimage.ipynb)
+[![Sphinx](https://img.shields.io/badge/Sphinx-Docs-blue)](https://erdogant.github.io/clustimage/)
 [![Medium](https://img.shields.io/badge/Medium-Blog-blue)](https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128)
 
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
