@@ -11,21 +11,21 @@ class TestCLUSTIMAGE(unittest.TestCase):
         assert cl.results=={'img': None, 'feat': None, 'xycoord': None, 'pathnames': None, 'labels': None}
         # Import flowers example
         X = cl.import_example(data='flowers')
-        
+
         # Check numpy array imports
         assert cl.import_data(np.array(X))
         assert cl.import_data(X[0])
         assert cl.import_data([X[0]])
-        
+
         # Check output
-        cl = Clustimage(dim=(128,128), grayscale=False)
+        cl = Clustimage(dim=(128, 128), grayscale=False)
         _ =  cl.import_data(X)
         assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames']))
-        assert cl.results['img'].shape==(210, 49152)
+        assert cl.results['img'].shape==(214, 49152)
         # Check grayscale parameter with imports
         cl = Clustimage(dim=(128,128), grayscale=True)
         _ = cl.import_data(X)
-        assert cl.results['img'].shape==(210, 16384)
+        assert cl.results['img'].shape==(214, 16384)
 
         # Import mnist example
         X = cl.import_example(data='mnist')
@@ -42,7 +42,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_example(data='flowers')
         X = cl.import_data(X)
         _ = cl.extract_feat(X)
-        assert cl.results['feat'].shape==(X['img'].shape[0], 154)
+        assert cl.results['feat'].shape==(X['img'].shape[0], 153)
 
         # Init with settings such as PCA
         cl = Clustimage(method='hog', verbose=50)
@@ -52,7 +52,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         results = cl.fit_transform(pathnames)
         # Read the unseen image. Note that the find functionality also performs exactly the same preprocessing steps as for the clustering.
         results_find = cl.find(pathnames[0:2], k=0, alpha=0.05)
-        
+
 
     def test_embedding(self):
         cl = Clustimage(method='pca')
@@ -138,7 +138,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         Xdigits=Xdigits[0:50,:]
         Xfaces = cl.import_example(data='faces')
         Xfaces=Xfaces[0:50,:]
-        
+
         # Parameters combinations to check
         param_grid = {
         	'method':['ahash', 'pca', 'hog', None],
