@@ -163,7 +163,7 @@ class Clustimage():
 
     """
 
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128, 128), dim_face=(64, 64), dirpath=None, store_to_disk=True, ext=['png', 'tiff', 'jpg'], params_pca={'n_components': 0.95}, params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)}, params_hash={'threshold': 0, 'exact_hash': True, 'hash_size': 8}, verbose=20):
+    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128, 128), dim_face=(64, 64), dirpath=None, store_to_disk=True, ext=['png', 'tiff', 'jpg'], params_pca={'n_components': 0.95}, params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)}, params_hash={'threshold': 0, 'hash_size': 8}, verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean()
@@ -332,7 +332,7 @@ class Clustimage():
         # Extract features using method
         _ = self.extract_feat(self.results)
         # Embedding using tSNE
-        _ = self.embedding(self.results['feat'])
+        _ = self.embedding(self.results['feat'], metric=metric)
         # Cluster
         self.cluster(cluster=cluster, evaluate=evaluate, cluster_space=cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
         # Return
@@ -429,50 +429,52 @@ class Clustimage():
 
         if len(self.results['feat'])==0:
             return None
+        # if (self.params['method'] is not None) and ('hash' in self.params['method']) and (metric!='hamming'):
+            # logger.warning('In case of method=[%s], metric="hamming" with linkage="complete" is recommended.' %(self.params['method']))
 
         # If exact hash matches are required.
-        if (self.params['method'] is not None) and ('hash' in self.params['method']) and self.params_hash['exact_hash']:
-            logger.info('Updating cluster-labels based on the [%s] with threshold=%g change.' %(self.params['method'], self.params_hash['threshold']))
-            labels = np.zeros(self.results['feat'].shape[0]) *np.nan
+        # if (self.params['method'] is not None) and ('hash' in self.params['method']) and self.params_hash['exact_hash']:
+        #     logger.info('Updating cluster-labels based on the [%s] with threshold=%g change.' %(self.params['method'], self.params_hash['threshold']))
+        #     labels = np.zeros(self.results['feat'].shape[0]) *np.nan
 
-            # Exact hash matches that appear to be significantly similar based on the hashes.
-            if not self.params_hash['exact_hash']:
-                # method='parametric'
-                model = distfit(method='quantile', bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], alpha=self.params_hash['threshold'])
-                # Fit theoretical distribution
-                _ = model.fit_transform(self.results['feat'])
-                # model.plot()
-            cl_label=0
-            for i in range(0, self.results['feat'].shape[0]):
-                # Retrieve all hashes that are similar with minimum value
-                Iloc = self.results['feat'][i, :]<=self.params_hash['threshold']
-                # Retrieve hashes based on probabilities
-                if not self.params_hash['exact_hash']:
-                    Iloc_p = model.predict(self.results['feat'][i, :], verbose=0)['y_proba']<=self.params_hash['threshold']
-                    Iloc = np.logical_or(Iloc, Iloc_p)
-                # If nan value is found, label it with new cluster label
-                if np.all(np.isnan(labels[Iloc])):
-                    labels[Iloc]=cl_label
-                    cl_label=cl_label +1
-                else:
-                    tmplabels=labels[Iloc]
-                    uilabels = np.unique(tmplabels[~np.isnan(tmplabels)])
-                    labels[np.isin(labels, uilabels)]=uilabels[0]
-                    labels[Iloc] = uilabels[0]
-        else:
+        #     # Exact hash matches that appear to be significantly similar based on the hashes.
+        #     if not self.params_hash['exact_hash']:
+        #         # method='parametric'
+        #         model = distfit(method='quantile', bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], alpha=self.params_hash['threshold'])
+        #         # Fit theoretical distribution
+        #         _ = model.fit_transform(self.results['feat'])
+        #         # model.plot()
+        #     cl_label=0
+        #     for i in range(0, self.results['feat'].shape[0]):
+        #         # Retrieve all hashes that are similar with minimum value
+        #         Iloc = self.results['feat'][i, :]<=self.params_hash['threshold']
+        #         # Retrieve hashes based on probabilities
+        #         if not self.params_hash['exact_hash']:
+        #             Iloc_p = model.predict(self.results['feat'][i, :], verbose=0)['y_proba']<=self.params_hash['threshold']
+        #             Iloc = np.logical_or(Iloc, Iloc_p)
+        #         # If nan value is found, label it with new cluster label
+        #         if np.all(np.isnan(labels[Iloc])):
+        #             labels[Iloc]=cl_label
+        #             cl_label=cl_label +1
+        #         else:
+        #             tmplabels=labels[Iloc]
+        #             uilabels = np.unique(tmplabels[~np.isnan(tmplabels)])
+        #             labels[np.isin(labels, uilabels)]=uilabels[0]
+        #             labels[Iloc] = uilabels[0]
+        # else:
             # Init
-            ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
-            # Fit
-            if cluster_space=='low':
-                feat = self.results['xycoord']
-                logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
-            else:
-                feat = self.results['feat']
-                logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
-            # Fit model
-            _ = ce.fit(feat)
-            labels = ce.results['labx']
-            logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
+        ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
+        # Fit
+        if cluster_space=='low':
+            feat = self.results['xycoord']
+            logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
+        else:
+            feat = self.results['feat']
+            logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
+        # Fit model
+        _ = ce.fit(feat)
+        labels = ce.results['labx']
+        logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
 
         # Store results and params
         self.results['labels'] = labels
@@ -1029,7 +1031,7 @@ class Clustimage():
         # Store results
         self.results = {'img': None, 'feat': None, 'xycoord': None, 'pathnames': None, 'labels': None}
 
-    def embedding(self, X):
+    def embedding(self, X, metric="euclidean"):
         """Compute the embedding for the extracted features.
 
         Parameters
@@ -1048,10 +1050,10 @@ class Clustimage():
         # Embedding using tSNE
         if self.params['embedding']=='tsne':
             logger.info('Computing embedding using %s..', self.params['embedding'])
-            if (self.params['method'] is not None) and ('hash' in self.params['method']):
-                xycoord = TSNE(n_components=2, init='random', metric='precomputed').fit_transform(X)
-            else:
-                xycoord = TSNE(n_components=2, init='random').fit_transform(X)
+            # if (self.params['method'] is not None) and ('hash' in self.params['method']):
+                # xycoord = TSNE(n_components=2, init='random', metric='precomputed').fit_transform(X)
+            # else:
+            xycoord = TSNE(n_components=2, init='random', metric=metric).fit_transform(X)
         else:
             xycoord = X[:, 0:2]
         # Return
@@ -1090,14 +1092,18 @@ class Clustimage():
         elif (self.params['method'] is not None) and ('hash' in self.params['method']):
             # Compute hash
             # hashs = list(map(self.compute_hash, tqdm(Xraw['pathnames'], disable=disable_tqdm())))
-            hashs = list(map(self.compute_hash, tqdm(Xraw['img'], disable=disable_tqdm())))
+            Xfeat = list(map(self.compute_hash, tqdm(Xraw['img'], disable=disable_tqdm())))
+            Xfeat = np.array(Xfeat)
+
             # Removing hashes from images that could not be read
             # idx = np.where(np.array(list(map(len, hashs)))>1)[0]
             # Xraw['pathnames'] = np.array(Xraw['pathnames'])[idx]
             # hashs=np.array(hashs)[idx]
+
             # Build adjacency matrix with hash differences
-            logger.info('Build adjacency matrix with %s differences.' %(self.params['method']))
-            Xfeat = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
+            # logger.info('Build adjacency matrix [%gx%g] with %s differences.' %(len(hashs), len(hashs), self.params['method']))
+            # Xfeat = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
+            # hex(int(''.join(hashs[0].hash.ravel().astype(int).astype(str)), 2))
             # plt.hist(diff[np.triu_indices(diff.shape[0], k=1)], bins=50)
         else:
             # Read images and preprocessing and flattening of images
@@ -1107,7 +1113,7 @@ class Clustimage():
         if not self.find_func:
             self.results['feat'] = Xfeat
         # Message
-        logger.info("Extracted features using [%s]: %s" %(self.params['method'], str(Xfeat.shape)))
+        logger.info("Extracted features using [%s]: samples=%g, features=%g" %(self.params['method'], Xfeat.shape[0], Xfeat.shape[1]))
         # Return
         return Xfeat
 
@@ -1128,9 +1134,9 @@ class Clustimage():
         imghash=[]
         if hash_size is None: hash_size=self.params_hash['hash_size']
         try:
-            imghash = self.params_hash['hashfunc'](Image.fromarray(img), hash_size=hash_size)
-            # imghash = self.params_hash['hashfunc'](Image.open(img))
+            imghash = self.params_hash['hashfunc'](Image.fromarray(img), hash_size=hash_size).hash.ravel()
         except:
+            logger.error('Could not compute hash.')
             pass
 
         return imghash
@@ -2360,7 +2366,7 @@ def get_params_hash(hashmethod, params_hash):
         hashfunc=None
         hashmethod=None
 
-    hash_defaults={'threshold': 0, 'exact_hash': True, 'hash_size': 8}
+    hash_defaults={'threshold': 0, 'hash_size': 8}
     # Set the hash parameters
     params_hash = {**hash_defaults, **params_hash}
     # self.params_hash = params_hash

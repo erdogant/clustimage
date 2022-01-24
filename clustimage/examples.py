@@ -1,7 +1,29 @@
 # %%
-import clustimage
-print(dir(clustimage))
-print(clustimage.__version__)
+# import clustimage
+# print(dir(clustimage))
+# print(clustimage.__version__)
+
+# %% HASHES
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Cluster on image-hash
+cl = Clustimage(method='phash', params_hash={'threshold': 0, 'hash_size': 32})
+
+# Example data
+X = cl.import_example(data='mnist')
+# Preprocessing, feature extraction and cluster evaluation
+results = cl.fit_transform(X, min_clust=4, max_clust=15, metric='euclidean', linkage='ward')
+
+# Scatter
+cl.scatter(zoom=3, img_mean=False, text=False)
+cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False)
+cl.scatter(zoom=3, img_mean=False, text=True, plt_all=True, figsize=(35, 25))
+
+# cl.clusteval.plot()
+# cl.plot_unique(img_mean=False)
+# cl.plot(min_clust=5)
+
 
 # %%
 from clustimage import Clustimage
@@ -164,31 +186,6 @@ cl.pca.scatter(legend=False, label=False)
 cl.save(overwrite=True)
 cl.load()
 
-# %% HASHES
-import matplotlib.pyplot as plt
-from clustimage import Clustimage
-
-# Cluster on hash matrix
-cl = Clustimage(method='ahash', params_hash={'exact_hash':False})
-# Find exact hashes
-cl = Clustimage(method='ahash', params_hash={'threshold':0, 'exact_hash':True})
-# Find very close hashes
-cl = Clustimage(method='ahash', params_hash={'threshold':0.001, 'exact_hash':True})
-
-# Example data
-X = cl.import_example(data='mnist')
-# X = 'D://magweg//101_ObjectCategories//'
-# Preprocessing, feature extraction and cluster evaluation
-results = cl.fit_transform(X, min_clust=4, max_clust=15)
-# results = cl.cluster(min_clust=4, max_clust=15)
-
-# Scatter
-cl.scatter(zoom=3, img_mean=False, text=False)
-cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False)
-
-# cl.clusteval.plot()
-# cl.plot_unique(img_mean=False)
-cl.plot(min_clust=5)
 
 
 # %% FLOWERS
