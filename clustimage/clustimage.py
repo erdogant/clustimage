@@ -59,7 +59,7 @@ class Clustimage():
     The following 4 steps are taken:
 
     Step 1. Pre-processing:
-        Images are imported with specific extention (['png','tiff','jpg']), 
+        Images are imported with specific extention (['png','tiff','jpg']),
         Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
         Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
     Step 2. Feature-extraction:
