@@ -16,7 +16,7 @@
 
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
-* [**Detection of Duplicate Images Using Image Hash Functions**](https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128)
+* [**Read the blog: A step-by-step guide for clustering images**](https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128)
 
 The aim of ``clustimage`` is to detect natural groups or clusters of images.
 
