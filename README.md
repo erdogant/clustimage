@@ -22,11 +22,10 @@ The aim of ``clustimage`` is to detect natural groups or clusters of images.
 **Star this repo if you like it! ⭐️**
 #
 
-## Blog/Documentation/Notebooks
+## Blog/Documentation
 
 * <a href="https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128"> <img src="https://img.shields.io/badge/Medium-Blog-blue" alt="Open Blog"/> </a> Blog: A step-by-step guide for clustering images 
 * <a href="https://erdogant.github.io/clustimage/"> <img src="https://img.shields.io/badge/Sphinx-Docs-Green" alt="Open documentation pages"/> </a> Documentation pages 
-* <a href="https://colab.research.google.com/github/erdogant/XXX/blob/master/notebooks/clustimage.ipynb"> <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open example In Colab"/> </a> Notebook example 
 
 ## Summary
 Image recognition is a computer vision task for identifying and verifying objects/persons on a photograph.
