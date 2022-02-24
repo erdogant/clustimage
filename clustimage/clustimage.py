@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from sklearn.manifold import TSNE
+from umap import UMAP
 import os
 import logging
 from urllib.parse import urlparse
@@ -89,8 +90,10 @@ class Clustimage():
             * 'crop-resistant': Crop-resistant hash
 
     embedding : str, (default: 'tsne')
-        Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
-            * 'tsne' or  None
+        Perform embedding on the extracted features. The xycoordinates are used for plotting purposes. For UMAP; all default settings are used, and with densmap=True.
+            * 'tsne'
+            * 'umap'
+            * None
     grayscale : Bool, (default: False)
         Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
     dim : tuple, (default: (128,128))
@@ -163,7 +166,19 @@ class Clustimage():
 
     """
 
-    def __init__(self, method='pca', embedding='tsne', grayscale=False, dim=(128, 128), dim_face=(64, 64), dirpath=None, store_to_disk=True, ext=['png', 'tiff', 'jpg'], params_pca={'n_components': 0.95}, params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)}, params_hash={'threshold': 0, 'hash_size': 8}, verbose=20):
+    def __init__(self,
+                 method='pca',
+                 embedding='tsne',
+                 grayscale=False,
+                 dim=(128, 128),
+                 dim_face=(64, 64),
+                 dirpath=None,
+                 store_to_disk=True,
+                 ext=['png', 'tiff', 'jpg'],
+                 params_pca={'n_components': 0.95},
+                 params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
+                 params_hash={'threshold': 0, 'hash_size': 8},
+                 verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean()
@@ -1032,7 +1047,7 @@ class Clustimage():
         self.results = {'img': None, 'feat': None, 'xycoord': None, 'pathnames': None, 'labels': None}
 
     def embedding(self, X, metric="euclidean"):
-        """Compute the embedding for the extracted features.
+        """Compute embedding for the extracted features.
 
         Parameters
         ----------
@@ -1047,13 +1062,15 @@ class Clustimage():
         if X.shape[0]<=2:
             return [0, 0]
 
+        logger.info('Compute embedding using [%s]', self.params['embedding'])
         # Embedding using tSNE
         if self.params['embedding']=='tsne':
-            logger.info('Computing embedding using %s..', self.params['embedding'])
             # if (self.params['method'] is not None) and ('hash' in self.params['method']):
                 # xycoord = TSNE(n_components=2, init='random', metric='precomputed').fit_transform(X)
             # else:
             xycoord = TSNE(n_components=2, init='random', metric=metric).fit_transform(X)
+        elif self.params['embedding']=='umap':
+            xycoord = UMAP(densmap=True).fit_transform(X)
         else:
             xycoord = X[:, 0:2]
         # Return

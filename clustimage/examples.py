@@ -3,38 +3,17 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
-# %% HASHES
-import matplotlib.pyplot as plt
-from clustimage import Clustimage
-
-# Cluster on image-hash
-cl = Clustimage(method='phash', params_hash={'threshold': 0, 'hash_size': 32})
-
-# Example data
-X = cl.import_example(data='mnist')
-# Preprocessing, feature extraction and cluster evaluation
-results = cl.fit_transform(X, min_clust=4, max_clust=15, metric='euclidean', linkage='ward')
-
-# Scatter
-cl.scatter(zoom=3, img_mean=False, text=False)
-cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False)
-cl.scatter(zoom=3, img_mean=False, text=True, plt_all=True, figsize=(35, 25))
-
-# cl.clusteval.plot()
-# cl.plot_unique(img_mean=False)
-# cl.plot(min_clust=5)
-
 
 # %%
 from clustimage import Clustimage
 
 # Initialize
-cl = Clustimage(method='pca')
+cl = Clustimage(method='pca', embedding='umap')
 
 # Import data
-Xraw = cl.import_example(data='flowers')
+# Xraw = cl.import_example(data='flowers')
 Xraw = cl.import_example(data='mnist')
-Xraw = cl.import_example(data='faces')
+# Xraw = cl.import_example(data='faces')
 
 # Check whether in is dir, list of files or array-like
 X = cl.import_data(Xraw)
@@ -57,6 +36,7 @@ results = cl.results
 # Plots
 cl.clusteval.plot()
 cl.scatter()
+cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False, plt_all=True)
 cl.plot_unique()
 cl.plot()
 cl.dendrogram()
@@ -64,6 +44,29 @@ cl.dendrogram()
 # Find
 results_find = cl.find(Xraw[0], k=0, alpha=0.05)
 cl.plot_find()
+
+
+# %% HASHES
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Cluster on image-hash
+cl = Clustimage(method='phash', params_hash={'threshold': 0, 'hash_size': 32})
+
+# Example data
+X = cl.import_example(data='mnist')
+# Preprocessing, feature extraction and cluster evaluation
+results = cl.fit_transform(X, min_clust=4, max_clust=15, metric='euclidean', linkage='ward')
+
+# Scatter
+cl.scatter(zoom=3, img_mean=False, text=False)
+cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False)
+cl.scatter(zoom=3, img_mean=False, text=True, plt_all=True, figsize=(35, 25))
+
+# cl.clusteval.plot()
+# cl.plot_unique(img_mean=False)
+# cl.plot(min_clust=5)
+
 
 # %% Run clustimage
 from clustimage import Clustimage

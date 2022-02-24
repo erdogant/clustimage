@@ -13,7 +13,7 @@ else:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
-     install_requires=['pypickle', 'pca', 'distfit', 'clusteval', 'colourmap', 'numpy', 'pandas', 'tqdm', 'sklearn', 'matplotlib', 'scikit-image', 'scipy', 'opencv-python', 'imagehash', 'scatterd', 'requests'],
+     install_requires=['pypickle', 'pca', 'distfit', 'clusteval', 'colourmap', 'numpy', 'pandas', 'tqdm', 'sklearn', 'matplotlib', 'scikit-image', 'scipy', 'opencv-python', 'imagehash', 'scatterd', 'requests', 'umap-learn'],
      python_requires='>=3',
      name='clustimage',
      version=new_version,

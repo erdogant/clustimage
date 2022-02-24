@@ -142,7 +142,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Parameters combinations to check
         param_grid = {
         	'method':['ahash', 'pca', 'hog', None],
-        	'embedding':['tsne', None],
+        	'embedding':['tsne', 'umap', None],
         	'cluster_space' : ['high', 'low'],
         	'grayscale' : [True, False],
             'dim' : [(8,8), (128,128), (256,256)],

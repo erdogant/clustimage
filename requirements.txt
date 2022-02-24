@@ -17,3 +17,4 @@ pypickle
 imagehash
 scatterd
 requests
+umap-learn
