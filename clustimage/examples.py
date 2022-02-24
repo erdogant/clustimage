@@ -15,13 +15,13 @@ cl = Clustimage(method='pca', embedding='umap')
 Xraw = cl.import_example(data='mnist')
 # Xraw = cl.import_example(data='faces')
 
-# Check whether in is dir, list of files or array-like
+# Import data in a standardized manner
 X = cl.import_data(Xraw)
 
 # Extract features using method
 Xfeat = cl.extract_feat(X)
 
-# Embedding using tSNE
+# Embedding
 xycoord = cl.embedding(Xfeat)
 
 # Cluster
