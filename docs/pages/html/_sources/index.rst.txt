@@ -11,6 +11,9 @@ Many computer vision tasks rely on (deep) neural networks, and aim to predict "w
     * 3. Many plots for deeper exploration.
     * 4. Finds higly similar images for a given input image.
 
+.. tip::
+	`For usage and more details, read the <edium Blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
+
 
 Content
 =======

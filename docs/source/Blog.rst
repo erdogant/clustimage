@@ -6,7 +6,7 @@ Blog
 '''''''''''''''''''''
 
 .. note::
-	`Medium Blog: Coming soon (Wishfull thinking) <https://towardsdatascience.com/creating-beautiful-stand-alone-interactive-d3-charts-with-python-804117cb95a7>`_
+	`For usage and more details, read the <edium Blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
 
 Github
 '''''''''''''''''''''
