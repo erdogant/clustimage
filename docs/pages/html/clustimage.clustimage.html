@@ -7,6 +7,7 @@
   <title>API References &mdash; clustimage clustimage documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -36,6 +37,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
               <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Abstract.html">Abstract</a></li>
@@ -78,12 +80,17 @@
 <li class="toctree-l1"><a class="reference internal" href="Examples.html">Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#caltech101-dataset">Caltech101 dataset</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Code Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Blog.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Blog.html#github">Github</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Blog.html#sponsor-this-project">Sponsor this project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a></li>
 </ul>
 
+    <a href= "genindex.html">Index</a>
+  
         </div>
       </div>
     </nav>
@@ -113,7 +120,7 @@
 <p>Python package clustimage is for unsupervised clustering of images.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">Clustimage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tsne'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_face</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(64,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_to_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'n_components':</span> <span class="pre">0.95}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'cells_per_block':</span> <span class="pre">(1,</span> <span class="pre">1),</span> <span class="pre">'orientations':</span> <span class="pre">8,</span> <span class="pre">'pixels_per_cell':</span> <span class="pre">(8,</span> <span class="pre">8)}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'exact_hash':</span> <span class="pre">True,</span> <span class="pre">'threshold':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">Clustimage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tsne'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_face</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(64,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_to_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'n_components':</span> <span class="pre">0.95}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'cells_per_block':</span> <span class="pre">(1,</span> <span class="pre">1),</span> <span class="pre">'orientations':</span> <span class="pre">8,</span> <span class="pre">'pixels_per_cell':</span> <span class="pre">(8,</span> <span class="pre">8)}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'hash_size':</span> <span class="pre">8,</span> <span class="pre">'threshold':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage" title="Permalink to this definition"></a></dt>
 <dd><p>Clustering of images.</p>
 <p>Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
 Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
@@ -155,8 +162,10 @@ Final step in pre-processing is resizing all images in the same dimension such a
 </dl>
 </p></li>
 <li><p><strong>embedding</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'tsne'</em><em>)</em>) – <dl class="simple">
-<dt>Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.</dt><dd><ul>
-<li><p>’tsne’ or  None</p></li>
+<dt>Perform embedding on the extracted features. The xycoordinates are used for plotting purposes. For UMAP; all default settings are used, and with densmap=True.</dt><dd><ul>
+<li><p>’tsne’</p></li>
+<li><p>’umap’</p></li>
+<li><p>None</p></li>
 </ul>
 </dd>
 </dl>
@@ -241,12 +250,18 @@ feat : array-like.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.clean_files">
 <span class="sig-name descname"><span class="pre">clean_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.clean_files" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Clean files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.cluster">
 <span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'agglomerative'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'silhouette'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linkage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ward'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.cluster" title="Permalink to this definition"></a></dt>
-<dd><p>Detection of the optimal number of clusters given the input set of features.</p>
+<dd><p>Detect the optimal number of clusters given the input set of features.</p>
 <p>This function is build on clusteval, which is a python package that provides various evalution methods for unsupervised cluster validation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -278,7 +293,7 @@ feat : array-like.</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em></em>) – <dl class="simple">
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em>.</em>) – <dl class="simple">
 <dt>Distance measures. All metrics from sklearn can be used such as:</dt><dd><ul>
 <li><p>’euclidean’</p></li>
 <li><p>’hamming’</p></li>
@@ -341,7 +356,7 @@ feat : array-like.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If you want to cluster on the low-dimensional space</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If you want to cluster on the low-dimensional space.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">min_clust</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_clust</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">cluster_space</span><span class="o">=</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="n">cluster</span><span class="o">=</span><span class="s1">&#39;dbscan&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -351,8 +366,20 @@ feat : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.compute_hash">
-<span class="sig-name descname"><span class="pre">compute_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.compute_hash" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">compute_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hash_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.compute_hash" title="Permalink to this definition"></a></dt>
+<dd><p>Compute hash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>img</strong> (<em>numpy-array</em>) – Image.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>imghash</strong> – Hash.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy-array</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.dendrogram">
@@ -362,7 +389,7 @@ feat : array-like.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>max_d</strong> (<em>Float</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Height of the dendrogram to make a horizontal cut-off line.</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em></em>) – Size of the figure (height,width).</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height,width).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -371,19 +398,16 @@ feat : array-like.</p>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>list</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.embedding">
-<span class="sig-name descname"><span class="pre">embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.embedding" title="Permalink to this definition"></a></dt>
-<dd><p>Compute the embedding for the extracted features.</p>
+<span class="sig-name descname"><span class="pre">embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.embedding" title="Permalink to this definition"></a></dt>
+<dd><p>Compute embedding for the extracted features.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>array-like</em>) – NxM array for which N are the samples and M the features.</p>
@@ -554,7 +578,7 @@ Note that the metric can be changed in this function but this may lead to confus
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pathnames</strong> (<em>list of str.</em>) – Full path to images that are used in the model.</p></li>
-<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: the input of fit_transform</em><em>(</em><em>)</em><em>)</em><em></em>) – <dl class="simple">
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: the input of fit_transform</em><em>(</em><em>)</em><em>)</em><em>.</em>) – <dl class="simple">
 <dt>Distance measures. All metrics from sklearn can be used such as:</dt><dd><ul>
 <li><p>’euclidean’</p></li>
 <li><p>’hamming’</p></li>
@@ -625,7 +649,7 @@ Based on the clustering results, the unique images are also gathered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>[</em><em>str of list</em><em>] or </em><em>[</em><em>np.array</em><em>]</em><em></em>) – <dl class="simple">
+<li><p><strong>X</strong> (<em>[</em><em>str of list</em><em>] or </em><em>[</em><em>np.array</em><em>]</em><em>.</em>) – <dl class="simple">
 <dt>The input can be:</dt><dd><ul>
 <li><p>”c://temp//” : Path to directory with images</p></li>
 <li><p>[‘c://temp//image1.png’, ‘c://image2.png’, …] : List of exact pathnames.</p></li>
@@ -653,7 +677,7 @@ Based on the clustering results, the unique images are also gathered.</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em></em>) – <dl class="simple">
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em>.</em>) – <dl class="simple">
 <dt>Distance measures. All metrics from sklearn can be used such as:</dt><dd><ul>
 <li><p>’euclidean’</p></li>
 <li><p>’hamming’</p></li>
@@ -772,11 +796,8 @@ feat : array-like.</p>
 <li><p><strong>dim</strong> (<em>tuple</em><em> (</em><em>int</em><em>, </em><em>int</em><em>)</em>) – Dimension of the image.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -790,7 +811,7 @@ This requires that each of the input needs to be processed in its own manner but
 The following steps are used for the import:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li><p>Images are imported with specific extention ([‘png’,’tiff’,’jpg’]),</p></li>
+<li><p>Images are imported with specific extention ([‘png’,’tiff’,’jpg’]).</p></li>
 <li><p>Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.</p></li>
 <li><p>Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.</p></li>
 <li><p>Images are saved to disk in case a array-like input is given.</p></li>
@@ -837,12 +858,18 @@ img : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.import_example">
-<span class="sig-name descname"><span class="pre">import_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flowers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.import_example" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">import_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flowers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.import_example" title="Permalink to this definition"></a></dt>
 <dd><p>Import example dataset from github source.</p>
 <p>Import one of the few datasets from github source or specify your own download url link.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – ‘flowers’, ‘faces’, ‘scenes’</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – <ul class="simple">
+<li><p>‘flowers’</p></li>
+<li><p>’faces’</p></li>
+<li><p>’mnist’</p></li>
+<li><p>’scenes’</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of str containing filepath to images.</p>
@@ -933,11 +960,8 @@ img : array-like.</p>
 <li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>optional</em>) – Show message. A higher number gives more information. The default is 3.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Object.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -954,14 +978,11 @@ img : array-like.</p>
 <li><p><strong>images.</strong> (<em>Colorscheme for the</em>) – ‘gray’, ‘binary’,  None (uses rgb colorscheme)</p></li>
 <li><p><strong>show_hog</strong> (<em>bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Plot the hog features next to the input image.</p></li>
 <li><p><strong>min_clust</strong> (<em>int</em><em>, </em><em>(</em><em>default: 1</em><em>)</em>) – Plots are created for clusters with &gt; min_clust samples</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em></em>) – Size of the figure (height,width).</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height,width).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1001,14 +1022,11 @@ img : array-like.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Colorscheme for the images.
 ‘gray’, ‘binary’,  None (uses rgb colorscheme)</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em></em>) – Size of the figure (height,width).</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height,width).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1016,7 +1034,22 @@ img : array-like.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.plot_unique">
 <span class="sig-name descname"><span class="pre">plot_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot_unique" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot unique images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Colorscheme for the images.
+‘gray’, ‘binary’,  None (uses rgb colorscheme)</p></li>
+<li><p><strong>img_mean</strong> (<em>bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Plot the image mean.</p></li>
+<li><p><strong>show_hog</strong> (<em>bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Plot the hog features.</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height, width).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.preprocessing">
@@ -1077,14 +1110,11 @@ True: Plot all images on top of the scatter.</p></li>
 <li><p><strong>zoom</strong> (<em>bool</em><em>, </em><em>(</em><em>default: 0.3</em><em>)</em>) – Plot the image in the scatterplot.
 None : Do not plot the image.</p></li>
 <li><p><strong>text</strong> (<em>bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Plot the cluster labels.</p></li>
-<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em></em>) – Size of the figure (height,width).</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height,width).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1096,7 +1126,7 @@ None : Do not plot the image.</p></li>
 <p>The unique images are detected by first computing the center of the cluster, and then taking the image closest to the center.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em></em>) – <dl class="simple">
+<dd class="field-odd"><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em>.</em>) – <dl class="simple">
 <dt>Distance measures. All metrics from sklearn can be used such as:</dt><dd><ul class="simple">
 <li><p>’euclidean’</p></li>
 <li><p>’hamming’</p></li>
@@ -1167,8 +1197,8 @@ None : Do not plot the image.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="clustimage.clustimage.hash_method">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">hash_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hashmethod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.hash_method" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="clustimage.clustimage.get_params_hash">
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">get_params_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hashmethod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.get_params_hash" title="Permalink to this definition"></a></dt>
 <dd><p>Get image hash function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1197,13 +1227,19 @@ None : Do not plot the image.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.import_example">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">import_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flowers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.import_example" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">import_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'flowers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.import_example" title="Permalink to this definition"></a></dt>
 <dd><p>Import example dataset from github source.</p>
 <p>Import one of the few datasets from github source or specify your own download url link.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str</em>) – Name of datasets: ‘flowers’, ‘faces’, ‘mnist’</p></li>
+<li><p><strong>data</strong> (<em>str</em>) – <ul>
+<li><p>‘flowers’</p></li>
+<li><p>’faces’</p></li>
+<li><p>’mnist’</p></li>
+<li><p>’scenes’</p></li>
+</ul>
+</p></li>
 <li><p><strong>url</strong> (<em>str</em>) – url link to to dataset.</p></li>
 </ul>
 </dd>
@@ -1243,7 +1279,7 @@ None : Do not plot the image.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.listdir">
 <span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">listdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'jpg']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.listdir" title="Permalink to this definition"></a></dt>
-<dd><p>Recursively collect images from path.</p>
+<dd><p>Collect recursive images from path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1317,11 +1353,8 @@ None : Do not plot the image.</p></li>
 <li><p><strong>writepath</strong> (<em>str.</em>) – Directory to write the file.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1331,7 +1364,11 @@ None : Do not plot the image.</p></li>
 </div>
 </dd></dl>
 
-</section>
+<hr>
+<center>
+        <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
+</center>
+<hr></section>
 
 
            </div>

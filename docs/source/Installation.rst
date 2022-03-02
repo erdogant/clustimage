@@ -76,3 +76,12 @@ A quick example how to learn a model on a given dataset.
     results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
     cl.plot_find()
     cl.scatter()
+
+
+.. raw:: html
+
+	<hr>
+	<center>
+		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
+	</center>
+	<hr>
