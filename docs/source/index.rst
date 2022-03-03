@@ -99,7 +99,7 @@ Source code and issue tracker
 Please report bugs, issues and feature extensions there.
 
 
-Citing *clustimage*
+Citing clustimage
 --------------------------------
 
 The bibtex can be found in the right side menu at the `github page <https://github.com/erdogant/clustimage/>`_.
