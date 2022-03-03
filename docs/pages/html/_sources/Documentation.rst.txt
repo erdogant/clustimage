@@ -15,6 +15,14 @@ Github
 	`Source code of clustimage can be found at Github <https://github.com/erdogant/clustimage/>`_
 
 
+Colab Notebook
+''''''''''''''''''''''''''''''''''''''''''
+.. note::
+	Experiment with clustering images using the `Colab notebook`_.
+
+.. _Colab notebook: https://colab.research.google.com/github/erdogant/clustimage/blob/master/notebooks/clustimage.ipynb
+
+
 Sponsor this project
 '''''''''''''''''''''
 
