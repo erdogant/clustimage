@@ -15,25 +15,6 @@
 <!---[![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)-->
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
-
-The aim of ``clustimage`` is to detect natural groups or clusters of images.
-
-# 
-**Star this repo if you like it! ⭐️**
-#
-
-## Blog/Documentation
-
-* <a href="https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128"> <img src="https://img.shields.io/badge/Medium-Blog-blue" alt="Open Blog"/> </a> Blog: A step-by-step guide for clustering images 
-* <a href="https://erdogant.github.io/clustimage/"> <img src="https://img.shields.io/badge/Sphinx-Docs-Green" alt="Open documentation pages"/> </a> Documentation pages 
-
-## Summary
-Image recognition is a computer vision task for identifying and verifying objects/persons on a photograph.
-We can seperate the image recognition task into the two broad tasks, namely the supervised and unsupervised task.
-In case of the supervised task, we have to classify an image into a fixed number of learned categories. Most packages rely on (deep) neural networks, and try solve the problem of predicting "whats on the image".
-In case of the unsupervised task, we do not depend on the fact that training data is required but we can interpret the input data and find natural groups or clusters.
-However, it can be quit a breath to carefully group similar images in an unsupervised manner, or simply identify the unique images.
-
 The aim of ``clustimage`` is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clusters across the feature space.
 The optimal number of clusters can be determined using well known methods suchs as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
 With ``clustimage`` we aim to determine the most robust clustering by efficiently searching across the parameter and evaluation the clusters.
@@ -45,8 +26,7 @@ A schematic overview is as following:
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/schematic_overview.png" width="1000" />
 </p>
 
-
-``clustimage`` overcomess the following challenges: 
+``clustimage`` overcomes the following challenges: 
 
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.
@@ -62,249 +42,178 @@ A schematic overview is as following:
     * It is build on core statistics, such as PCA, HOG and many more, and therefore it does not has a dependency block.
     * It works out of the box.
 
-### Installation
-* Install clustimage from PyPI (recommended). clustimage is compatible with Python 3.6+ and runs on Linux, MacOS X and Windows. 
-* A new environment can be created as following:
 
+# 
+**⭐️ Star this repo if you like it ⭐️**
+#
+
+### Blogs
+
+* Read the [blog](https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128) to get a structured overview how to cluster images.
+
+# 
+
+### [Documentation pages](https://erdogant.github.io/clustimage/)
+
+On the [documentation pages](https://erdogant.github.io/clustimage/) you can find detailed information about the working of the ``clustimage`` with many examples. 
+
+# 
+
+
+### Installation
+
+##### It is advisable to create a new environment (e.g. with Conda). 
 ```bash
 conda create -n env_clustimage python=3.8
 conda activate env_clustimage
 ```
 
-* Install from pypi
+##### Install bnlearn from PyPI
 ```bash
-pip install -U clustimage
+pip install clustimage            # new install
+pip install -U clustimage         # update to latest version
+```
+
+##### Directly install from github source
+```bash
+pip install git+https://github.com/erdogant/clustimage
 ```  
 
-#### Import the clustimage package
-```python
-from clustimage import Clustimage
-```
-
-### Example 1: Digit images.
-In this example we will be using a flattened grayscale image array loaded from sklearn.
-The array in NxM, where N are the samples and M the flattened raw rgb/gray image.
+##### Import clustimage package
 
 ```python
-# Load library
-import matplotlib.pyplot as plt
-from clustimage import Clustimage
-# init
-cl = Clustimage()
-# Load example digit data
-X = cl.import_example(data='mnist')
-
-print(X)
-# Each row is an image that can be plotted after reshaping:
-plt.imshow(X[0,:].reshape(8,8), cmap='binary')
-# array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],
-#        [ 0.,  0.,  0., ..., 10.,  0.,  0.],
-#        [ 0.,  0.,  0., ..., 16.,  9.,  0.],
-#        ...,
-#        [ 0.,  0.,  0., ...,  9.,  0.,  0.],
-#        [ 0.,  0.,  0., ...,  4.,  0.,  0.],
-#        [ 0.,  0.,  6., ...,  6.,  0.,  0.]])
-# 
-# Preprocessing and feature extraction
-results = cl.fit_transform(X)
-
-# Lets examine the results.
-print(results.keys())
-# ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']
-# 
-# feat      : Extracted features
-# xycoord   : Coordinates of samples in the embedded space.
-# filenames : Name of the files
-# pathnames : Absolute location of the files
-# labels    : Cluster labels in the same order as the input
-
-# Get the unique images
-unique_samples = cl.unique()
-# 
-print(unique_samples.keys())
-# ['labels', 'idx', 'xycoord_center', 'pathnames']
-# 
-# Collect the unique images from the input
-X[unique_samples['idx'],:]
-
+from clustimage import clustimage
 ```
-##### Plot the unique images.
 
-```python
-cl.plot_unique()
-```
-<p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_unique.png" width="300" />
-</p>
+<hr>
 
+### Examples Mnist dataset:
 
-##### Scatter samples based on the embedded space.
+##### [Example: Clustering mnist dataset](https://erdogant.github.io/clustimage/pages/html/Examples.html#)
 
-```python
-# The scatterplot that is coloured on the clusterlabels. The clusterlabels should match the unique labels.
-# Cluster 1 contains digit 4
-# Cluster 5 contains digit 2
-# etc
-# 
-# No images in scatterplot
-cl.scatter(zoom=None)
+In this example we will be using a flattened grayscale image array loaded from sklearn. The unique detected clusters are the following:
 
-# Include images scatterplot
-cl.scatter(zoom=4)
-cl.scatter(zoom=8, plt_all=True, figsize=(150,100))
-
-```
-<p align="center">
+<p align="left">
+  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#scatter-plot">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig21_tsne.png" width="400" />
+  </a>
 </p>
 
-<p align="center">
+**Click on the underneath scatterplot to zoom-in and see ALL the images in the scatterplot**
+
+<p align="left">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/scatter_mnist_all.png" width="400" />
 </p>
 
 
-#### Plot the clustered images
+#
 
-```python
-# Plot all images per cluster
-cl.plot(cmap='binary')
+##### [Example: Plot the explained variance](https://erdogant.github.io/clustimage/pages/html/Examples.html#cluster-evaluation)
 
-# Plot the images in a specific cluster
-cl.plot(cmap='binary', labels=[1,5])
-```
-<p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster1.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_cluster5.png" width="400" />
-</p>
-
-
-#### Dendrogram
-```python
-# The dendrogram is based on the high-dimensional feature space.
-cl.dendrogram()
-
-```
-<p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_dendrogram.png" width="400" />
-</p>
-
-
-#### Make various other plots
-```python
-# Plot the explained variance
-cl.pca.plot()
-# Make scatter plot of PC1 vs PC2
-cl.pca.scatter(legend=False, label=False)
-# Plot the evaluation of the number of clusters
-cl.clusteval.plot()
-# Make silhouette plot
-cl.clusteval.scatter(cl.results['xycoord'])
-```
-<p align="center">
+<p align="left">
+  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#cluster-evaluation">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_explained_var.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_clusters.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig1.png" width="600" />
+  </a>
+</p>
+
+#
+
+##### [Example: Plot the unique images](https://erdogant.github.io/clustimage/pages/html/Examples.html#detect-unique-images)
+
+
+<p align="left">
+  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#detect-unique-images">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_unique.png" width="300" />
+  </a>
 </p>
 
 
-### Example 2: Flower images.
-In this example I will be using flower images for which the path locations are somewhere on disk.
+#
 
-```python
-# Load library
-from clustimage import Clustimage
-# init
-cl = Clustimage(method='pca')
-# load example with flowers
-pathnames = cl.import_example(data='flowers')
-# The pathnames are stored in a list
-print(pathnames[0:2])
-# ['C:\\temp\\flower_images\\0001.png', 'C:\\temp\\flower_images\\0002.png']
 
-# Preprocessing, feature extraction and clustering. Lets set a minimum of 1-
-results = cl.fit_transform(pathnames)
+##### [Example: Plot the images per cluster](https://erdogant.github.io/clustimage/pages/html/Examples.html#plot-images-detected-in-a-cluster)
 
-# Lets first evaluate the number of detected clusters.
-# This looks pretty good because there is a high distinction between the peak for 5 clusters and the number of clusters that subsequently follow.
-cl.clusteval.plot()
-cl.clusteval.scatter(cl.results['xycoord'])
+<p align="left">
+  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#plot-images-detected-in-a-cluster">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="400" />
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig21_tsne.png" width="400" />
+  </a>
+</p>
 
-```
-<p align="center">
+
+#
+
+##### [Example: Plot the dendrogram](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
+
+<p align="left">
+  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram">
+  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_dendrogram.png" width="400" />
+  </a>
+</p>
+
+
+
+<hr> 
+
+### Examples Flower dataset:
+
+##### [Example: cluster the flower dataset](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
+
+<p align="left">
+  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_sil_vs_nrclusters.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_silhouette.png" width="400" />
+  </a>
 </p>
 
 
-#### Scatter
+##### [Example: Make scatterplot with clusterlabels](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
 
-```python
-cl.scatter(dotsize=50, zoom=None)
-cl.scatter(dotsize=50, zoom=0.5)
-cl.scatter(dotsize=50, zoom=0.5, img_mean=False)
-cl.scatter(dotsize=50, zoom=0.5, img_mean=False)
-cl.scatter(zoom=1.2, plt_all=True, figsize=(150,100))
-
-```
-<p align="center">
+<p align="left">
+  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter.png" width="300" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs_mean.png" width="300" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_scatter_imgs.png" width="300" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_scatter_all.png" width="300" />
+  </a>
 </p>
 
-#### Plot the clustered images
 
-```python
-# Plot unique images
-cl.plot_unique()
-cl.plot_unique(img_mean=False)
+##### [Example: Plot the unique images per cluster](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
 
-# Plot all images per cluster
-cl.plot()
-
-# Plot the images in a specific cluster
-cl.plot(labels=3)
-```
-
-<p align="center">
+<p align="left">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_unique.png" width="400" />
+</p>
+
+<p align="left">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_unique_mean.png" width="400" />
+</p>
+
+
+##### [Example: Plot the images in a particular cluster](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
+
+<p align="left">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_cluster3.png" width="400" />
 </p>
 
 
-```python
-# Plot dendrogram
-cl.dendrogram()
-# Plot clustered images
-cl.plot()
-
-```
-<p align="center">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot1.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_plot2.png" width="400" />
-</p>
 
 
-#### Make prediction for unseen input image.
-```python
-# Find images that are significanly similar as the unseen input image. 
-results_find = cl.find(path_to_imgs[0:2], alpha=0.05)
-cl.plot_find()
+##### [Example: Make prediction for unseen input image](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
 
-# Map the unseen images in existing feature-space.
-cl.scatter()
-```
-<p align="center">
+<p align="left">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_1.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_2.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_scatter.png" width="400" />
 </p>
 
 
-### Example 3: Cluster the faces on images.
+<hr> 
+
+### Example clustering of faces on images.
 
 ```python
 from clustimage import Clustimage
