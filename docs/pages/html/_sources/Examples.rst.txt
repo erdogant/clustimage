@@ -1,6 +1,188 @@
 Mnist dataset
 #####################
 
+In this example we will load the mnist dataset and cluster the images.
+
+Load dataset
+********************************
+
+.. code:: python
+
+	# Load library
+	import matplotlib.pyplot as plt
+	from clustimage import Clustimage
+	# init
+	cl = Clustimage()
+	# Load example digit data
+	X = cl.import_example(data='mnist')
+
+	print(X)
+	# Each row is an image that can be plotted after reshaping:
+	plt.imshow(X[0,:].reshape(8,8), cmap='binary')
+	# array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],
+	#        [ 0.,  0.,  0., ..., 10.,  0.,  0.],
+	#        [ 0.,  0.,  0., ..., 16.,  9.,  0.],
+	#        ...,
+	#        [ 0.,  0.,  0., ...,  9.,  0.,  0.],
+	#        [ 0.,  0.,  0., ...,  4.,  0.,  0.],
+	#        [ 0.,  0.,  6., ...,  6.,  0.,  0.]])
+	# 
+
+
+Cluster the images
+********************************
+
+.. code:: python
+
+	# Preprocessing and feature extraction
+	results = cl.fit_transform(X)
+
+	# Lets examine the results.
+	print(results.keys())
+
+	# ['feat', 'xycoord', 'pathnames', 'filenames', 'labels']
+	# 
+	# feat      : Extracted features
+	# xycoord   : Coordinates of samples in the embedded space.
+	# filenames : Name of the files
+	# pathnames : Absolute location of the files
+	# labels    : Cluster labels in the same order as the input
+
+
+Detect unique images
+********************************
+
+.. code:: python
+
+	# Get the unique images
+	unique_samples = cl.unique()
+	# 
+	print(unique_samples.keys())
+	# ['labels', 'idx', 'xycoord_center', 'pathnames']
+	# 
+	# Collect the unique images from the input
+	X[unique_samples['idx'],:]
+
+
+Cluster evaluation
+********************************
+
+.. code:: python
+
+	# Plot the explained variance
+	cl.pca.plot()
+	# Make scatter plot of PC1 vs PC2
+	cl.pca.scatter(legend=False, label=False)
+	# Plot the evaluation of the number of clusters
+	cl.clusteval.plot()
+
+.. |figM7| image:: ../figs/digits_explained_var.png
+.. |figM8| image:: ../figs/digits_clusters.png
+.. table:: Explained variance and Sillhouette score
+   :align: center
+
+   +----------+----------+
+   | |figM7|  | |figM8|  |
+   +----------+----------+
+
+
+.. code:: python
+
+	# Make silhouette plot
+	cl.clusteval.scatter(cl.results['xycoord'])
+
+
+.. |figM9| image:: ../figs/digits_fig1.png
+.. table:: Sillhouette analysis results in 9 clusters.
+   :align: center
+
+   +----------+
+   | |figM9|  |
+   +----------+
+
+
+
+Scatter plot
+********************************
+
+The scatterplot that is coloured on the clusterlabels. The clusterlabels should match the unique labels.
+Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.
+
+.. code:: python
+
+	# Make scatterplot
+	cl.scatter(zoom=None)
+
+	# Plot the image that is in the center of the cluster
+	cl.scatter(zoom=4)
+
+
+.. |figM1| image:: ../figs/digits_fig2_tsne.png
+.. |figM2| image:: ../figs/digits_fig21_tsne.png
+.. table:: Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.
+   :align: center
+
+   +----------+----------+
+   | |figM1|  | |figM2|  |
+   +----------+----------+
+
+High resolution images where all mnist samples are shown.
+
+.. code:: python
+
+	cl.scatter(zoom=8, plt_all=True, figsize=(150,100))
+
+
+.. |figM3| image:: ../figs/scatter_mnist_all.png
+.. table:: Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.
+   :align: center
+
+   +----------+
+   | |figM3|  |
+   +----------+
+
+
+Plot images detected in a cluster
+************************************************
+
+.. code:: python
+
+	# Plot all images per cluster
+	cl.plot(cmap='binary')
+
+	# Plot the images in a specific cluster
+	cl.plot(cmap='binary', labels=[1,5])
+
+
+.. |figM4| image:: ../figs/digits_cluster1.png
+.. |figM5| image:: ../figs/digits_cluster5.png
+.. table:: Images that are detected in a particular cluster.
+   :align: center
+
+   +----------+----------+
+   | |figM4|  | |figM5|  |
+   +----------+----------+
+
+
+Dendrogram
+************************************************
+
+.. code:: python
+
+	# The dendrogram is based on the high-dimensional feature space.
+	cl.dendrogram()
+
+
+.. |figM6| image:: ../figs/digits_dendrogram.png
+.. table:: Dendrogram of the mnist dataset
+   :align: center
+
+   +----------+
+   | |figM6|  |
+   +----------+
+
+
+
 
 
 Caltech101 dataset
@@ -74,7 +256,7 @@ Silhouette Plot
    +----------+
 
 
-Average Plot per cluster
+Average image per cluster
 ********************************
 
 For each of the detected clusters, we can collect the images and plot the image in the center (left figure), or we can average all images to a single image (right figure).
@@ -96,7 +278,7 @@ For each of the detected clusters, we can collect the images and plot the image 
    +----------+----------+
 
 
-Scatter plot images per cluster
+Scatter plot
 ********************************
 
 A scatter plot demonstrates the samples with its cluster labels (colors), and the average images per cluster.
@@ -121,7 +303,7 @@ A scatter plot demonstrates the samples with its cluster labels (colors), and th
 
 
 
-Demonstration of images detected in a cluster
+Plot images detected in a cluster
 ************************************************
 
 .. |figE6| image:: ../figs/101_cluster40.png

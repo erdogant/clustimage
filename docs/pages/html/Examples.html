@@ -79,14 +79,23 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Mnist dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#caltech101-dataset">Caltech101 dataset</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mnist dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#load-dataset">Load dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cluster-the-images">Cluster the images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detect-unique-images">Detect unique images</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cluster-evaluation">Cluster evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scatter-plot">Scatter plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-images-detected-in-a-cluster">Plot images detected in a cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dendrogram">Dendrogram</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#caltech101-dataset">Caltech101 dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Cluster the images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Cluster evaluation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#silhouette-plot">Silhouette Plot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#average-plot-per-cluster">Average Plot per cluster</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#scatter-plot-images-per-cluster">Scatter plot images per cluster</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#demonstration-of-images-detected-in-a-cluster">Demonstration of images detected in a cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#average-image-per-cluster">Average image per cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Scatter plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">Plot images detected in a cluster</a></li>
 </ul>
 </li>
 </ul>
@@ -128,6 +137,176 @@
              
   <section id="mnist-dataset">
 <h1>Mnist dataset<a class="headerlink" href="#mnist-dataset" title="Permalink to this headline"></a></h1>
+<p>In this example we will load the mnist dataset and cluster the images.</p>
+<section id="load-dataset">
+<h2>Load dataset<a class="headerlink" href="#load-dataset" title="Permalink to this headline"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load library</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="c1"># init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
+<span class="c1"># Load example digit data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Each row is an image that can be plotted after reshaping:</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+<span class="c1"># array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0.,  0., ..., 10.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0.,  0., ..., 16.,  9.,  0.],</span>
+<span class="c1">#        ...,</span>
+<span class="c1">#        [ 0.,  0.,  0., ...,  9.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0.,  0., ...,  4.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0.,  6., ...,  6.,  0.,  0.]])</span>
+<span class="c1">#</span>
+</pre></div>
+</div>
+</section>
+<section id="cluster-the-images">
+<h2>Cluster the images<a class="headerlink" href="#cluster-the-images" title="Permalink to this headline"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preprocessing and feature extraction</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="c1"># Lets examine the results.</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="c1"># [&#39;feat&#39;, &#39;xycoord&#39;, &#39;pathnames&#39;, &#39;filenames&#39;, &#39;labels&#39;]</span>
+<span class="c1">#</span>
+<span class="c1"># feat      : Extracted features</span>
+<span class="c1"># xycoord   : Coordinates of samples in the embedded space.</span>
+<span class="c1"># filenames : Name of the files</span>
+<span class="c1"># pathnames : Absolute location of the files</span>
+<span class="c1"># labels    : Cluster labels in the same order as the input</span>
+</pre></div>
+</div>
+</section>
+<section id="detect-unique-images">
+<h2>Detect unique images<a class="headerlink" href="#detect-unique-images" title="Permalink to this headline"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the unique images</span>
+<span class="n">unique_samples</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+<span class="c1">#</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">unique_samples</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># [&#39;labels&#39;, &#39;idx&#39;, &#39;xycoord_center&#39;, &#39;pathnames&#39;]</span>
+<span class="c1">#</span>
+<span class="c1"># Collect the unique images from the input</span>
+<span class="n">X</span><span class="p">[</span><span class="n">unique_samples</span><span class="p">[</span><span class="s1">&#39;idx&#39;</span><span class="p">],:]</span>
+</pre></div>
+</div>
+</section>
+<section id="cluster-evaluation">
+<h2>Cluster evaluation<a class="headerlink" href="#cluster-evaluation" title="Permalink to this headline"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the explained variance</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="c1"># Make scatter plot of PC1 vs PC2</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1"># Plot the evaluation of the number of clusters</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id5">
+<caption><span class="caption-text">Explained variance and Sillhouette score</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figM7" src="_images/digits_explained_var.png" /></p></td>
+<td><p><img alt="figM8" src="_images/digits_clusters.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make silhouette plot</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id6">
+<caption><span class="caption-text">Sillhouette analysis results in 9 clusters.</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figM9" src="_images/digits_fig1.png" /></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="scatter-plot">
+<h2>Scatter plot<a class="headerlink" href="#scatter-plot" title="Permalink to this headline"></a></h2>
+<p>The scatterplot that is coloured on the clusterlabels. The clusterlabels should match the unique labels.
+Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make scatterplot</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Plot the image that is in the center of the cluster</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id7">
+<caption><span class="caption-text">Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figM1" src="_images/digits_fig2_tsne.png" /></p></td>
+<td><p><img alt="figM2" src="_images/digits_fig21_tsne.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<p>High resolution images where all mnist samples are shown.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">plt_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id8">
+<caption><span class="caption-text">Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.</span><a class="headerlink" href="#id8" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figM3" src="_images/scatter_mnist_all.png" /></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="plot-images-detected-in-a-cluster">
+<h2>Plot images detected in a cluster<a class="headerlink" href="#plot-images-detected-in-a-cluster" title="Permalink to this headline"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot all images per cluster</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot the images in a specific cluster</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id9">
+<caption><span class="caption-text">Images that are detected in a particular cluster.</span><a class="headerlink" href="#id9" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figM4" src="_images/digits_cluster1.png" /></p></td>
+<td><p><img alt="figM5" src="_images/digits_cluster5.png" /></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dendrogram">
+<h2>Dendrogram<a class="headerlink" href="#dendrogram" title="Permalink to this headline"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The dendrogram is based on the high-dimensional feature space.</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id10">
+<caption><span class="caption-text">Dendrogram of the mnist dataset</span><a class="headerlink" href="#id10" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figM6" src="_images/digits_dendrogram.png" /></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 <section id="caltech101-dataset">
 <h1>Caltech101 dataset<a class="headerlink" href="#caltech101-dataset" title="Permalink to this headline"></a></h1>
@@ -135,8 +314,8 @@
 In this example, the <strong>Caltech101</strong> dataset will be clustered!
 The pictures of objects belonging to 101 categories. About 40 to 800 images per category. Most categories have about 50 images. The size of each image is roughly 300 x 200 pixels.
 Download the dataset over here: <a class="reference external" href="http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download">http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download</a></p>
-<section id="cluster-the-images">
-<h2>Cluster the images<a class="headerlink" href="#cluster-the-images" title="Permalink to this headline"></a></h2>
+<section id="id1">
+<h2>Cluster the images<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># init</span>
@@ -151,16 +330,16 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </pre></div>
 </div>
 </section>
-<section id="cluster-evaluation">
-<h2>Cluster evaluation<a class="headerlink" href="#cluster-evaluation" title="Permalink to this headline"></a></h2>
+<section id="id2">
+<h2>Cluster evaluation<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
 <p>With <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> we extracted the features that explained 89% of the variance. The optimal number of clusters of 49 (right figure).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate the number of clusters.</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id1">
-<caption><span class="caption-text">Left: Percentage explained variance. Right: Optimal number of clusters.</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id11">
+<caption><span class="caption-text">Left: Percentage explained variance. Right: Optimal number of clusters.</span><a class="headerlink" href="#id11" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -181,8 +360,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id2">
-<caption><span class="caption-text">Silhouette plot</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id12">
+<caption><span class="caption-text">Silhouette plot</span><a class="headerlink" href="#id12" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 100%" />
 </colgroup>
@@ -192,16 +371,16 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </tbody>
 </table>
 </section>
-<section id="average-plot-per-cluster">
-<h2>Average Plot per cluster<a class="headerlink" href="#average-plot-per-cluster" title="Permalink to this headline"></a></h2>
+<section id="average-image-per-cluster">
+<h2>Average image per cluster<a class="headerlink" href="#average-image-per-cluster" title="Permalink to this headline"></a></h2>
 <p>For each of the detected clusters, we can collect the images and plot the image in the center (left figure), or we can average all images to a single image (right figure).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot unique images.</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_unique</span><span class="p">()</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_unique</span><span class="p">(</span><span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id3">
-<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id13">
+<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id13" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -213,8 +392,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </tbody>
 </table>
 </section>
-<section id="scatter-plot-images-per-cluster">
-<h2>Scatter plot images per cluster<a class="headerlink" href="#scatter-plot-images-per-cluster" title="Permalink to this headline"></a></h2>
+<section id="id3">
+<h2>Scatter plot<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h2>
 <p>A scatter plot demonstrates the samples with its cluster labels (colors), and the average images per cluster.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scatter</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -222,8 +401,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id4">
-<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id14">
+<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -235,10 +414,10 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </tbody>
 </table>
 </section>
-<section id="demonstration-of-images-detected-in-a-cluster">
-<h2>Demonstration of images detected in a cluster<a class="headerlink" href="#demonstration-of-images-detected-in-a-cluster" title="Permalink to this headline"></a></h2>
-<table class="docutils align-center" id="id5">
-<caption><span class="caption-text">Two examples of the clusters that are detected.</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<section id="id4">
+<h2>Plot images detected in a cluster<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h2>
+<table class="docutils align-center" id="id15">
+<caption><span class="caption-text">Two examples of the clusters that are detected.</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
