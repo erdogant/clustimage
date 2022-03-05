@@ -146,7 +146,7 @@ In this example we will be using a flattened grayscale image array loaded from s
 #
 
 
-##### [Example: Plot the images per cluster](https://erdogant.github.io/clustimage/pages/html/Examples.html#plot-images-detected-in-a-cluster)
+##### [Example: Scatterplot](https://erdogant.github.io/clustimage/pages/html/Examples.html#scatter-plot)
 
 <p align="left">
   <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#plot-images-detected-in-a-cluster">
