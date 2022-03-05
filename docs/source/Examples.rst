@@ -404,18 +404,6 @@ Detect unique images
    +----------+----------+
 
 
-.. code:: python
-
-	# Plot the images in a specific cluster
-	cl.plot(labels=3)
-
-.. |figF5| image:: ../figs/flowers_cluster3.png
-.. table:: Plot the images in cluster 3
-   :align: center
-
-   +----------+
-   | |figF5|  |
-   +----------+
 
 
 Scatter plot
@@ -450,18 +438,27 @@ A scatter plot demonstrates the samples with its cluster labels (colors), and th
 Plot images detected in a particular cluster
 ************************************************
 
+.. code:: python
+
+	# Plot the images in a specific cluster
+	cl.plot(labels=3)
+
+
+.. |figF5| image:: ../figs/flowers_cluster3.png
 .. |figF10| image:: ../figs/flowers_plot1.png
 .. |figF11| image:: ../figs/flowers_plot2.png
 .. |figF12| image:: ../figs/flowers_cluster3.png
-.. table:: Images in cluster 3
+.. table:: Images in various clusters
    :align: center
 
+   +----------+
+   | |figF5|  |
    +----------+
    | |figF10| |
    +----------+
    | |figF11| |
    +----------+
-   | |figF12  |
+   | |figF12| |
    +----------+
 
 
@@ -482,7 +479,7 @@ Find images that are significanly similar as the unseen input image.
 .. |figF13| image:: ../figs/flowers_predict_1.png
 .. |figF14| image:: ../figs/flowers_predict_2.png
 .. |figF15| image:: ../figs/flowers_predict_scatter.png
-.. table:: Images in cluster 3
+.. table:: Finding similar images as input image.
    :align: center
 
    +----------+
