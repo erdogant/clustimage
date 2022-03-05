@@ -68,6 +68,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#imresize">imresize</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#output">Output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#generic-functionalities">Generic functionalities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#wget">wget</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#unzip">unzip</a></li>
@@ -99,7 +100,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Mnist dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#caltech101-dataset">Caltech101 dataset</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
@@ -138,8 +139,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <hr class="docutils" id="code-directive" />
-<p>This section describes the core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>.
+  <p>This section describes the core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>.
 Many of the functionalities are written in a generic manner which allows to be used in various applications.</p>
 <section id="core-functionalities">
 <h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this headline"></a></h1>
@@ -489,6 +489,60 @@ Scaling data is an import pre-processing step to make sure all data is ranged be
 <p>The <em>imresize</em> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.imresize" title="clustimage.clustimage.imresize"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.imresize()</span></code></a> resizes the images into 128x128 pixels (default) or to an user-defined size.
 The function depends on the functionality of <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> with the interpolation: <code class="docutils literal notranslate"><span class="pre">interpolation=cv2.INTER_AREA</span></code>.</p>
 </section>
+</section>
+<section id="output">
+<h1>Output<a class="headerlink" href="#output" title="Permalink to this headline"></a></h1>
+<p>The results obtained from the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a> or <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a> is a dictionary containing the following keys:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*  img       : Image vector of the preprocessed images.
+*  feat      : Extracted feature.
+*  xycoord   : X and Y coordinates from the embedding.
+*  pathnames : Absolute path location to the image file.
+*  filenames : File names of the image file.
+*  labels    : Cluster labels.
+</pre></div>
+</div>
+<p>For demonstration purposes I will load the flowers dataset and cluster the images.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
+<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
+<span class="c1"># Import data</span>
+<span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Cluster flowers</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">pathnames</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># All results are stored in a dict:</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># Which is the same as:</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># dict_keys([&#39;img&#39;, &#39;feat&#39;, &#39;xycoord&#39;, &#39;pathnames&#39;, &#39;labels&#39;, &#39;filenames&#39;])</span>
+</pre></div>
+</div>
+<p>Extract images that belong to a certain cluster and make some plots.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extracting images that belong to cluster label=0:</span>
+<span class="n">label</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Iloc</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">label</span>
+<span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;pathnames&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+
+<span class="c1"># Extracting xy-coordinates for the scatterplot for cluster 0:</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">xycoord</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xycoord</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">xycoord</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Cluster </span><span class="si">%.0d</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">label</span><span class="p">)</span>
+
+<span class="c1"># Plot the images for cluster 0:</span>
+<span class="n">imgs</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+<span class="c1"># Make sure you get the right dimension</span>
+<span class="n">dim</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">get_dim</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">][</span><span class="mi">0</span><span class="p">,:])</span>
+<span class="c1"># Plot</span>
+<span class="k">for</span> <span class="n">img</span><span class="p">,</span> <span class="n">pathname</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">pathnames</span><span class="p">):</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">pathname</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="generic-functionalities">
 <h1>Generic functionalities<a class="headerlink" href="#generic-functionalities" title="Permalink to this headline"></a></h1>

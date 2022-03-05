@@ -1,7 +1,3 @@
-.. _code_directive:
-
--------------------------------------
-
 This section describes the core functionalities of ``clustimage``.
 Many of the functionalities are written in a generic manner which allows to be used in various applications.
 
@@ -355,6 +351,67 @@ The *imresize* function :func:`clustimage.clustimage.imresize` resizes the image
 The function depends on the functionality of ``python-opencv`` with the interpolation: ``interpolation=cv2.INTER_AREA``.
 
 
+Output
+''''''''''''''''
+
+The results obtained from the :func:`clustimage.clustimage.Clustimage.fit_transform` or :func:`clustimage.clustimage.Clustimage.cluster` is a dictionary containing the following keys:
+
+.. code-block:: bash
+
+     *  img       : Image vector of the preprocessed images.
+     *  feat      : Extracted feature.
+     *  xycoord   : X and Y coordinates from the embedding.
+     *  pathnames : Absolute path location to the image file.
+     *  filenames : File names of the image file.
+     *  labels    : Cluster labels.
+
+For demonstration purposes I will load the flowers dataset and cluster the images.
+
+.. code:: python
+
+    # Import library
+    from clustimage import Clustimage
+    # Initialize
+    cl = Clustimage(method='pca')
+    # Import data
+    pathnames = cl.import_example(data='flowers')
+    # Cluster flowers
+    results = cl.fit_transform(pathnames)
+
+.. code:: python
+
+    # All results are stored in a dict:
+    print(cl.results.keys())
+    # Which is the same as:
+    print(results.keys())
+    # dict_keys(['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames'])
+
+
+Extract images that belong to a certain cluster and make some plots.
+    
+.. code:: python
+
+    # Extracting images that belong to cluster label=0:
+    label = 0
+    Iloc = cl.results['labels']==label
+    pathnames = cl.results['pathnames'][Iloc]
+    
+    # Extracting xy-coordinates for the scatterplot for cluster 0:
+    import matplotlib.pyplot as plt
+    xycoord = cl.results['xycoord'][Iloc]
+    plt.figure()
+    plt.scatter(xycoord[:,0], xycoord[:,1])
+    plt.title('Cluster %.0d' %label)
+
+    # Plot the images for cluster 0:
+    imgs = cl.results['img'][Iloc]
+    # Make sure you get the right dimension
+    dim = cl.get_dim(cl.results['img'][Iloc][0,:])
+    # Plot
+    for img, pathname in zip(imgs, pathnames):
+      plt.figure()
+      plt.imshow(img.reshape(dim))
+      plt.title(pathname)
 
 
 Generic functionalities
