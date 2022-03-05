@@ -190,8 +190,21 @@
 <span class="c1">#</span>
 <span class="c1"># Collect the unique images from the input</span>
 <span class="n">X</span><span class="p">[</span><span class="n">unique_samples</span><span class="p">[</span><span class="s1">&#39;idx&#39;</span><span class="p">],:]</span>
+
+<span class="c1"># Plot unique images.</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot_unique</span><span class="p">()</span>
 </pre></div>
 </div>
+<table class="docutils align-center" id="id5">
+<caption><span class="caption-text">Plot the unique images per cluster</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figM10" src="_images/digits_unique.png" /></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="cluster-evaluation">
 <h2>Cluster evaluation<a class="headerlink" href="#cluster-evaluation" title="Permalink to this headline"></a></h2>
@@ -203,8 +216,8 @@
 <span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id5">
-<caption><span class="caption-text">Explained variance and Sillhouette score</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id6">
+<caption><span class="caption-text">Explained variance and Sillhouette score</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -219,8 +232,8 @@
 <span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id6">
-<caption><span class="caption-text">Sillhouette analysis results in 9 clusters.</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id7">
+<caption><span class="caption-text">Sillhouette analysis results in 9 clusters.</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 100%" />
 </colgroup>
@@ -241,8 +254,8 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id7">
-<caption><span class="caption-text">Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id8">
+<caption><span class="caption-text">Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.</span><a class="headerlink" href="#id8" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -257,8 +270,8 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">plt_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id8">
-<caption><span class="caption-text">Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.</span><a class="headerlink" href="#id8" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id9">
+<caption><span class="caption-text">Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.</span><a class="headerlink" href="#id9" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 100%" />
 </colgroup>
@@ -277,8 +290,8 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id9">
-<caption><span class="caption-text">Images that are detected in a particular cluster.</span><a class="headerlink" href="#id9" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id10">
+<caption><span class="caption-text">Images that are detected in a particular cluster.</span><a class="headerlink" href="#id10" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -296,8 +309,8 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 <span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id10">
-<caption><span class="caption-text">Dendrogram of the mnist dataset</span><a class="headerlink" href="#id10" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id11">
+<caption><span class="caption-text">Dendrogram of the mnist dataset</span><a class="headerlink" href="#id11" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 100%" />
 </colgroup>
@@ -338,8 +351,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id11">
-<caption><span class="caption-text">Left: Percentage explained variance. Right: Optimal number of clusters.</span><a class="headerlink" href="#id11" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id12">
+<caption><span class="caption-text">Left: Percentage explained variance. Right: Optimal number of clusters.</span><a class="headerlink" href="#id12" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -360,8 +373,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id12">
-<caption><span class="caption-text">Silhouette plot</span><a class="headerlink" href="#id12" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id13">
+<caption><span class="caption-text">Silhouette plot</span><a class="headerlink" href="#id13" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 100%" />
 </colgroup>
@@ -379,8 +392,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_unique</span><span class="p">(</span><span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id13">
-<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id13" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id14">
+<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -401,8 +414,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id14">
-<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id15">
+<caption><span class="caption-text">Left: Unique images gathered from the center of the cluster. Right: Averaged image of the cluster.</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -416,8 +429,8 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </section>
 <section id="id4">
 <h2>Plot images detected in a cluster<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h2>
-<table class="docutils align-center" id="id15">
-<caption><span class="caption-text">Two examples of the clusters that are detected.</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
+<table class="docutils align-center" id="id16">
+<caption><span class="caption-text">Two examples of the clusters that are detected.</span><a class="headerlink" href="#id16" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />

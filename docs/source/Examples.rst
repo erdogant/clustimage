@@ -63,6 +63,17 @@ Detect unique images
 	# Collect the unique images from the input
 	X[unique_samples['idx'],:]
 
+	# Plot unique images. 
+	cl.plot_unique()
+
+.. |figM10| image:: ../figs/digits_unique.png
+.. table:: Plot the unique images per cluster
+   :align: center
+
+   +-----------+
+   | |figM10|  |
+   +-----------+
+
 
 Cluster evaluation
 ********************************
