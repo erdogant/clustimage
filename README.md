@@ -146,18 +146,6 @@ In this example we will be using a flattened grayscale image array loaded from s
 #
 
 
-##### [Example: Scatterplot](https://erdogant.github.io/clustimage/pages/html/Examples.html#scatter-plot)
-
-<p align="left">
-  <a href="https://erdogant.github.io/clustimage/pages/html/Examples.html#plot-images-detected-in-a-cluster">
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig2_tsne.png" width="400" />
-  <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/digits_fig21_tsne.png" width="400" />
-  </a>
-</p>
-
-
-#
-
 ##### [Example: Plot the dendrogram](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
 
 <p align="left">
