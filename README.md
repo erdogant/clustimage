@@ -204,15 +204,16 @@ In this example we will be using a flattened grayscale image array loaded from s
 
 ##### [Example: Make prediction for unseen input image](https://erdogant.github.io/clustimage/pages/html/Examples.html#dendrogram)
 
-<p align="center">
+<p align="left">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_1.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_2.png" width="400" />
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/flowers_predict_scatter.png" width="400" />
 </p>
 
 
+<hr> 
 
-### Example 3: Cluster the faces on images.
+### Example clustering of faces on images.
 
 ```python
 from clustimage import Clustimage
