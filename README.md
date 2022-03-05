@@ -254,8 +254,4 @@ In this example we will be using a flattened grayscale image array loaded from s
   * https://github.com/erdogant/clustimage
   * Please cite in your publications if this is useful for your research (see citation).
   * All kinds of contributions are welcome!
-  * If you wish to buy me a <a href="https://www.buymeacoffee.com/erdogant">Coffee</a> for this work, it is very appreciated :)
-  See [LICENSE](LICENSE) for details.
-
-#### Other interesting stuff
-* https://towardsdatascience.com/how-to-cluster-images-based-on-visual-similarity-cd6e7209fe34
+  * If you wish to buy me a <a href="https://www.buymeacoffee.com/erdogant">Coffee</a> for this work, it is very appreciated!
