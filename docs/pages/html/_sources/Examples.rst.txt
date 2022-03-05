@@ -314,7 +314,7 @@ A scatter plot demonstrates the samples with its cluster labels (colors), and th
 
 
 
-Plot images detected in a cluster
+Plot images detected in a particular cluster
 ************************************************
 
 .. |figE6| image:: ../figs/101_cluster40.png
@@ -327,6 +327,335 @@ Plot images detected in a cluster
    +----------+----------+
 
 
+
+Flower dataset
+#####################
+
+In this example we will load the flower dataset and cluster the images for which the path locations are on disk.
+
+
+Load dataset
+********************************
+
+.. code:: python
+
+	# Load library
+	from clustimage import Clustimage
+
+	# init
+	cl = Clustimage(method='pca')
+	
+	# load example with flowers
+	pathnames = cl.import_example(data='flowers')
+	
+	# The pathnames are stored in a list
+	print(pathnames[0:2])
+	# ['C:\\temp\\flower_images\\0001.png', 'C:\\temp\\flower_images\\0002.png']
+
+
+
+Cluster the images
+********************************
+
+.. code:: python
+
+	# Preprocessing, feature extraction and clustering.
+	results = cl.fit_transform(pathnames)
+
+
+The number of detected clusters looks pretty good because there is a high distinction between the peak for 5 clusters and the number of clusters that subsequently follow.
+
+.. code:: python
+
+	cl.clusteval.plot()
+	cl.clusteval.scatter(cl.results['xycoord'])
+
+.. |figF1| image:: ../figs/flowers_sil_vs_nrclusters.png
+.. |figF2| image:: ../figs/flowers_silhouette.png
+.. table:: Sillhouette score vs. number of clusters
+   :align: center
+
+   +----------+----------+
+   | |figF1|  | |figF2|  |
+   +----------+----------+
+
+
+
+Detect unique images
+********************************
+
+.. code:: python
+
+	# Plot unique images
+	cl.plot_unique()
+	cl.plot_unique(img_mean=False)
+
+	# Plot all images per cluster
+	cl.plot()
+
+
+.. |figF3| image:: ../figs/flowers_unique.png
+.. |figF4| image:: ../figs/flowers_unique_mean.png
+.. table:: Unique images per cluster
+   :align: center
+
+   +----------+----------+
+   | |figF3|  | |figF4|  |
+   +----------+----------+
+
+
+.. code:: python
+
+	# Plot the images in a specific cluster
+	cl.plot(labels=3)
+
+.. |figF5| image:: ../figs/flowers_cluster3.png
+.. table:: Plot the images in cluster 3
+   :align: center
+
+   +----------+
+   | |figF5|  |
+   +----------+
+
+
+Scatter plot
+********************************
+
+A scatter plot demonstrates the samples with its cluster labels (colors), and the average images per cluster.
+
+.. code:: python
+
+	# Scatter
+	cl.scatter(dotsize=50, zoom=None)
+	cl.scatter(dotsize=50, zoom=0.5)
+	cl.scatter(dotsize=50, zoom=0.5, img_mean=False)
+	cl.scatter(dotsize=50, zoom=0.5, img_mean=False)
+	cl.scatter(zoom=1.2, plt_all=True, figsize=(150,100))
+
+
+.. |figF6| image:: ../figs/flowers_scatter.png
+.. |figF7| image:: ../figs/flowers_scatter_imgs_mean.png
+.. |figF8| image:: ../figs/flowers_scatter_imgs.png
+.. |figF9| image:: ../figs/flowers_predict_scatter_all.png
+.. table:: Scatterplots
+   :align: center
+
+   +----------+----------+
+   | |figF6|  | |figF7|  |
+   +----------+----------+
+   | |figF8|  | |figF9|  |
+   +----------+----------+
+
+
+Plot images detected in a particular cluster
+************************************************
+
+.. |figF10| image:: ../figs/flowers_plot1.png
+.. |figF11| image:: ../figs/flowers_plot2.png
+.. |figF12| image:: ../figs/flowers_cluster3.png
+.. table:: Images in cluster 3
+   :align: center
+
+   +----------+
+   | |figF10| |
+   +----------+
+   | |figF11| |
+   +----------+
+   | |figF12  |
+   +----------+
+
+
+
+Predict unseen sample
+************************************************
+
+Find images that are significanly similar as the unseen input image. 
+
+.. code:: python
+
+	results_find = cl.find(path_to_imgs[0:2], alpha=0.05)
+	cl.plot_find()
+
+	# Map the unseen images in existing feature-space.
+	cl.scatter()
+
+.. |figF13| image:: ../figs/flowers_predict_1.png
+.. |figF14| image:: ../figs/flowers_predict_2.png
+.. |figF15| image:: ../figs/flowers_predict_scatter.png
+.. table:: Images in cluster 3
+   :align: center
+
+   +----------+
+   | |figF13| |
+   +----------+
+   | |figF14| |
+   +----------+
+   | |figF15| |
+   +----------+
+
+
+Clustering of faces
+########################################
+
+
+.. code:: python
+
+	from clustimage import Clustimage
+	# Initialize with PCA
+	cl = Clustimage(method='pca', grayscale=True)
+	# Load example with faces
+	X = cl.import_example(data='faces')
+	# Initialize and run
+	results = cl.fit_transform(X)
+
+	# In case you need to extract the faces from the images
+	# face_results = cl.extract_faces(pathnames)
+	# The detected faces are extracted and stored in face_resuls. We can now easily provide the pathnames of the faces that are stored in pathnames_face.
+	# results = cl.fit_transform(face_results['pathnames_face'])
+
+	# Plot the evaluation of the number of clusters. As you can see, the maximum number of cluster evaluated is 24 can perhaps be too small.
+	cl.clusteval.plot()
+	# Lets increase the maximum number and clusters and run solely the clustering. Note that you do not need to fit_transform() anymore. You can only do the clustering now.
+	cl.cluster(max_clust=35)
+	# And plot again. As you can see, it keeps increasing which means that it may not found any local maximum anymore.
+	# When looking at the graph, we see a local maximum at 12 clusters. Lets go for that
+	cl.cluster(min_clust=4, max_clust=20)
+
+	# Lets plot the 12 unique clusters that contain the faces
+	cl.plot_unique()
+
+	# Scatter
+	cl.scatter(zoom=None)
+	cl.scatter(zoom=0.2)
+
+	# Make plot
+	cl.plot(show_hog=True, labels=[1,7])
+
+	# Plot faces
+	cl.plot_faces()
+	# Dendrogram depicts the clustering of the faces
+	cl.dendrogram()
+
+
+
+
+.. |figG1| image:: ../figs/faces_sil_vs_nrclusters.png
+.. |figG2| image:: ../figs/faces_set_max_clust.png
+
+.. |figG3| image:: ../figs/faces_unique.png
+.. |figG4| image:: ../figs/faces_scatter_no_img.png
+
+.. |figG5| image:: ../figs/faces_scatter.png
+.. |figG6| image:: ../figs/faces_cluster0.png
+
+.. |figG7| image:: ../figs/faces_cluster3.png
+.. |figG8| image:: ../figs/faces1.png
+
+.. table:: Scatterplots
+   :align: center
+
+   +----------+----------+
+   | |figG1|  | |figG2|  |
+   +----------+----------+
+   | |figG3|  | |figG4|  |
+   +----------+----------+
+   | |figG5|  | |figG6|  |
+   +----------+----------+
+   | |figG7|  | |figG8|  |
+   +----------+----------+
+
+
+Extract images belonging to clusters
+########################################
+
+
+.. code:: python
+
+
+	# Import library
+	from clustimage import Clustimage
+	# Initialize
+	cl = Clustimage(method='pca')
+	# Import data
+	pathnames = cl.import_example(data='flowers')
+	# Cluster flowers
+	results = cl.fit_transform(pathnames)
+
+	# All results are stored in a dict:
+	print(cl.results.keys())
+	# Which is the same as:
+	print(results.keys())
+
+	dict_keys(['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames'])
+
+	# Extracting images that belong to cluster label=0:
+	Iloc = cl.results['labels']==0
+	cl.results['pathnames'][Iloc]
+
+	# Extracting xy-coordinates for the scatterplot for cluster 0:
+	import matplotlib.pyplot as plt
+	xycoord = cl.results['xycoord'][Iloc]
+	plt.scatter(xycoord[:,0], xycoord[:,1])
+
+	# Plot the images for cluster 0:
+	# Images in cluster 0
+	imgs = np.where(cl.results['img'][Iloc])[0]
+	# Make sure you get the right dimension
+	dim = cl.get_dim(cl.results['img'][Iloc][0,:])
+	# Plot
+	for img in imgs:
+	  plt.figure()
+	  plt.imshow(img.reshape(dim))
+	  plt.title()
+
+
+
+Breaking up the steps
+########################################
+
+Instead of using the all-in-one functionality: fit_transform(), it is also possible to break-up the steps.
+
+
+.. code:: python
+
+	from clustimage import Clustimage
+
+	# Initialize
+	cl = Clustimage(method='pca')
+
+	# Import data
+	Xraw = cl.import_example(data='flowers')
+	Xraw = cl.import_example(data='mnist')
+	Xraw = cl.import_example(data='faces')
+
+	# Check whether in is dir, list of files or array-like
+	X = cl.import_data(Xraw)
+
+	# Extract features using method
+	Xfeat = cl.extract_feat(X)
+
+	# Embedding using tSNE
+	xycoord = cl.embedding(Xfeat)
+
+	# Cluster
+	labels = cl.cluster()
+
+	# Return
+	results = cl.results
+
+	# Or all in one run
+	# results = cl.fit_transform(X)
+
+	# Plots
+	cl.clusteval.plot()
+	cl.scatter()
+	cl.plot_unique()
+	cl.plot()
+	cl.dendrogram()
+
+	# Find
+	results_find = cl.find(Xraw[0], k=0, alpha=0.05)
+	cl.plot_find()
 
 
 .. raw:: html
