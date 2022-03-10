@@ -1,9 +1,8 @@
-.. _code_directive:
-
--------------------------------------
-
 Installation
-''''''''''''
+################
+
+Create environment
+**********************
 
 If desired, install ``clustimage`` from an isolated Python environment using conda:
 
@@ -12,18 +11,33 @@ If desired, install ``clustimage`` from an isolated Python environment using con
     conda create -n env_clustimage python=3.8
     conda activate env_clustimage
 
-Install via ``pip``:
 
-.. code:: bash
+Pypi
+**********************
 
-    # Intstall the library
-    pip install clustimge
+.. code-block:: console
+
+    # Install from Pypi:
+    pip install clustimage
+
+    # Force update to latest version
+    pip install -U clustimage
+
+
+Github source
+************************************
+
+.. code-block:: console
+
+    # Install directly from github
+    pip install git+https://github.com/erdogant/clustimage
 
 
 Uninstalling
-''''''''''''
+################
 
-If you want to remove your ``clustimage`` installation with your environment:
+Remove environment
+**********************
 
 .. code-block:: console
 
@@ -37,8 +51,30 @@ If you want to remove your ``clustimage`` installation with your environment:
    conda env list
 
 
+Remove installation
+**********************
+
+Note that the removal of the environment will also remove the ``clustimage`` installation.
+
+.. code-block:: console
+
+    # Install from Pypi:
+    pip uninstall clustimage
+
+
+
+.. raw:: html
+
+	<hr>
+	<center>
+		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
+	</center>
+	<hr>
+
+
+
 Quickstart
-''''''''''
+**********************
 
 A quick example how to learn a model on a given dataset.
 
@@ -57,7 +93,7 @@ A quick example how to learn a model on a given dataset.
     results = cl.fit_transform(path_to_imgs, min_clust=10)
 
     # Cluster evaluation plot
-    cl.clusteval.plot()
+    cl.clustimage.plot()
     
     # Unique images
     cl.results_unique.keys()

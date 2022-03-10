@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Save and Load &mdash; clustimage clustimage documentation</title>
+  <title>Saving &mdash; clustimage clustimage documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -48,7 +48,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Installation.html#quickstart">Quickstart</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Core functionalities</span></p>
 <ul>
@@ -75,11 +74,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Save and Load</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Save and Load</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#saving">Saving</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#loading">Loading</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#loading">Loading</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
@@ -116,7 +112,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Save and Load</li>
+      <li>Saving</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Save and Load.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -126,14 +122,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <hr class="docutils" id="code-directive" />
-<section id="save-and-load">
-<h1>Save and Load<a class="headerlink" href="#save-and-load" title="Permalink to this headline"></a></h1>
+  <section id="saving">
+<h1>Saving<a class="headerlink" href="#saving" title="Permalink to this headline"></a></h1>
 <p>Saving and loading models can be used to restore previous results.
 In order to accomplish this, we created two functions: function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.save" title="clustimage.clustimage.Clustimage.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.save()</span></code></a>. and function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.load" title="clustimage.clustimage.Clustimage.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.load()</span></code></a>.
 Below we illustrate how to save and load models.</p>
-<section id="saving">
-<h2>Saving<a class="headerlink" href="#saving" title="Permalink to this headline"></a></h2>
 <p>Saving the model with the results:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
@@ -151,7 +144,7 @@ Below we illustrate how to save and load models.</p>
 </div>
 </section>
 <section id="loading">
-<h2>Loading<a class="headerlink" href="#loading" title="Permalink to this headline"></a></h2>
+<h1>Loading<a class="headerlink" href="#loading" title="Permalink to this headline"></a></h1>
 <p>Loading a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.load()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
@@ -164,7 +157,6 @@ Below we illustrate how to save and load models.</p>
         <script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
 </center>
 <hr></section>
-</section>
 
 
            </div>

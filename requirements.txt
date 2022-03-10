@@ -18,3 +18,4 @@ imagehash
 scatterd
 requests
 umap-learn
+pypickle

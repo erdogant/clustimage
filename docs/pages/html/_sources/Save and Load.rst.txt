@@ -1,17 +1,9 @@
-.. _code_directive:
-
--------------------------------------
-
-Save and Load
-''''''''''''''
+Saving
+##########
 
 Saving and loading models can be used to restore previous results.
 In order to accomplish this, we created two functions: function :func:`clustimage.clustimage.Clustimage.save`. and function :func:`clustimage.clustimage.Clustimage.load`.
 Below we illustrate how to save and load models.
-
-
-Saving
-----------------
 
 Saving the model with the results:
 
@@ -32,7 +24,7 @@ Saving the model with the results:
 
 
 Loading
-----------------------
+##########
 
 Loading a learned model can be done using the function :func:`clustimage.load`:
 

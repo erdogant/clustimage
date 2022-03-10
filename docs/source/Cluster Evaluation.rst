@@ -1,9 +1,5 @@
-.. _code_directive:
-
--------------------------------------
-
 Gridsearch
-''''''''''''''''''''''''''''
+##############
 
 For the detection of the optimal number of clusters, the python library ``clusteval`` is utilized to evaluate the **goodness** of clusters.
 The clustering approaches can be set to *agglomerative*, *kmeans*, *dbscan* and *hdbscan*, for which the ``clusteval`` library then searches across the space of clusters and method-parameters to determine the optimal number of clusters given the input dataset.
@@ -26,7 +22,7 @@ Lets load the **digits** dataset and see how the different methods detects the o
 
 
 Silhouette
-'''''''''''
+##############
 
 The silhouette value is a measure of how similar a sample is to its own cluster (cohesion) compared to other clusters (separation).
 The scores ranges between [−1, 1], where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters.
@@ -75,7 +71,7 @@ Note that the cluster evaluation is peformed on the high-dimensional feature spa
 
 
 DBindex
-'''''''''
+##############
 
 The Davies–Bouldin index (DBI), is a metric for evaluating clustering algorithms.
 This is an internal evaluation scheme, which means that the clustering result is evaluated based on the data clustered itself (internal information).
@@ -119,7 +115,7 @@ Note that the cluster evaluation is peformed on the high-dimensional feature spa
 
 
 DBSCAN
-''''''''
+##############
 
 Density-Based Spatial Clustering of Applications with Noise is an clustering approach that finds core samples of high density and expands clusters from them.
 This works especially good when having samples which contains clusters of similar density. This approach is recommended in combination with a low-dimensional space, such as the coordinates from tSNE.
