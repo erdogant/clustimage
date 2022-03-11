@@ -17,7 +17,7 @@ keywords:
   - "unsupervised"
 license: "MIT"
 message: "If you use this software, please cite it using these metadata."
-repository-code: "https://github.com/erdogant/clustimage"
+repository-code: "https://erdogant.github.io/clustimage"
 title: "Python package clustimage is for unsupervised clustering of images."
 version: "1.0.0"
 ...
