@@ -248,13 +248,14 @@ In this example we will be using a flattened grayscale image array loaded from s
 
 <hr>
 
-#### Sponsor
 
-  This project needs some love! ❤️ You can help in various ways.
+### Support
 
-  * Become a Sponsor!
-  * Star this repo at the github page.
-  * Other contributions can be in the form of feature requests, idea discussions, reporting bugs, opening pull requests.
-  * Read more why becoming an sponsor is important on the Sponsor Github Page.
+	This project needs some love! ❤️ You can help in various ways.
 
-  Cheers Mate.
+	* Become a Sponsor!
+	* Star this repo at the github page.
+	* Other contributions can be in the form of feature requests, idea discussions, reporting bugs, opening pull requests.
+	* Read more why becoming an sponsor is important on the Sponsor Github Page.
+	
+	Cheers Mate.
