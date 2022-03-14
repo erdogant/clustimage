@@ -1590,7 +1590,7 @@ class Clustimage():
                 imagebox = offsetbox.AnnotationBbox(offsetbox.OffsetImage(img, cmap=cmap, zoom=zoom), xycoord[i, :])
                 ax.add_artist(imagebox)
 
-    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, plt_all=False, figsize=(15, 10)):
+    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, plt_all=False, density=False, figsize=(15, 10)):
         """Plot the samples using a scatterplot.
 
         Parameters
@@ -1607,6 +1607,8 @@ class Clustimage():
             None : Do not plot the image.
         text : bool, (default: True)
             Plot the cluster labels.
+        density : bool, (default: Fale)
+            Plot the density over the clusters.
         figsize : tuple, (default: (15, 10).
             Size of the figure (height,width).
 
@@ -1644,7 +1646,7 @@ class Clustimage():
 
         # Scatter
         colours=np.vstack(colourmap.fromlist(labels)[0])
-        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], s=dotsize, c=colours, label=text_labels, figsize=figsize, title=title, fontsize=18, fontcolor=[0, 0, 0], xlabel='x-axis', ylabel='y-axis')
+        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], s=dotsize, c=colours, labels=text_labels, figsize=figsize, title=title, fontsize=18, fontcolor=None, xlabel='x-axis', ylabel='y-axis', density=density)
 
         if hasattr(self, 'results_unique'):
             if img_mean:
