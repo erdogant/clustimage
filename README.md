@@ -248,10 +248,13 @@ In this example we will be using a flattened grayscale image array loaded from s
 
 <hr>
 
-### Maintainers
+#### Sponsor
 
-  * Erdogan Taskesen, github: [erdogant](https://github.com/erdogant)
-  * https://github.com/erdogant/clustimage
-  * Please cite in your publications if this is useful for your research (see citation).
-  * All kinds of contributions are welcome!
-  * If you wish to buy me a <a href="https://www.buymeacoffee.com/erdogant">Coffee</a> for this work, it is very appreciated!
+  This project needs some love! ❤️ You can help in various ways.
+
+  * Become a Sponsor!
+  * Star this repo at the github page.
+  * Other contributions can be in the form of feature requests, idea discussions, reporting bugs, opening pull requests.
+  * Read more why becoming an sponsor is important on the Sponsor Github Page.
+
+  Cheers Mate.
