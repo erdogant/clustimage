@@ -794,14 +794,24 @@ class Clustimage():
             flatten=False
 
         # Read and preprocess data
-        img = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten), tqdm(pathnames, disable=disable_tqdm())))
+        imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True), tqdm(pathnames, disable=disable_tqdm())))
+        img, imgOK = zip(*imgs)
+        img = np.array(img)
 
         # Remove the images that could not be read
+        I_corrupt = np.array(imgOK)==False
+        if np.any(I_corrupt)>0:
+            logger.info("[%.0d] Corrupt image(s) removed.", (sum(I_corrupt)))
+            filenames = np.array(filenames)[~I_corrupt]
+            pathnames = np.array(pathnames)[~I_corrupt]
+            img = img[~I_corrupt]
+
+        # Remove the images that are too small
         if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
             logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
 
         idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
-        img = np.array(img)[idx]
+        img = img[idx]
         if flatten: img = np.vstack(img)
 
         # Remove not readable images and return
@@ -1288,7 +1298,7 @@ class Clustimage():
         # Return
         return out
 
-    def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True):
+    def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True, return_succes=False):
         """Read and pre-processing of images.
 
         Description
@@ -1321,7 +1331,7 @@ class Clustimage():
             Imported and processed image.
 
         Examples
-        ---------
+        --------
         >>> # Import libraries
         >>> from clustimage import Clustimage
         >>> import matplotlib.pyplot as plt
@@ -1344,6 +1354,7 @@ class Clustimage():
         """
         logger.debug('[%s]' %(filepath))
         img=[]
+        readOK = False
         try:
             # Read the image
             img = _imread(filepath, colorscale=colorscale)
@@ -1353,10 +1364,15 @@ class Clustimage():
             img = imresize(img, dim=dim)
             # Flatten the image
             if flatten: img = img_flatten(img)
+            # OK
+            readOK = True
         except:
             logger.warning('Could not read: [%s]' %(filepath))
         # Return
-        return img
+        if return_succes:
+            return img, readOK
+        else:
+            return img
 
     def save(self, filepath='clustimage.pkl', overwrite=False):
         """Save model in pickle file.
