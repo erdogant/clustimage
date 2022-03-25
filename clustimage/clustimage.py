@@ -444,40 +444,7 @@ class Clustimage():
 
         if len(self.results['feat'])==0:
             return None
-        # if (self.params['method'] is not None) and ('hash' in self.params['method']) and (metric!='hamming'):
-            # logger.warning('In case of method=[%s], metric="hamming" with linkage="complete" is recommended.' %(self.params['method']))
 
-        # If exact hash matches are required.
-        # if (self.params['method'] is not None) and ('hash' in self.params['method']) and self.params_hash['exact_hash']:
-        #     logger.info('Updating cluster-labels based on the [%s] with threshold=%g change.' %(self.params['method'], self.params_hash['threshold']))
-        #     labels = np.zeros(self.results['feat'].shape[0]) *np.nan
-
-        #     # Exact hash matches that appear to be significantly similar based on the hashes.
-        #     if not self.params_hash['exact_hash']:
-        #         # method='parametric'
-        #         model = distfit(method='quantile', bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], alpha=self.params_hash['threshold'])
-        #         # Fit theoretical distribution
-        #         _ = model.fit_transform(self.results['feat'])
-        #         # model.plot()
-        #     cl_label=0
-        #     for i in range(0, self.results['feat'].shape[0]):
-        #         # Retrieve all hashes that are similar with minimum value
-        #         Iloc = self.results['feat'][i, :]<=self.params_hash['threshold']
-        #         # Retrieve hashes based on probabilities
-        #         if not self.params_hash['exact_hash']:
-        #             Iloc_p = model.predict(self.results['feat'][i, :], verbose=0)['y_proba']<=self.params_hash['threshold']
-        #             Iloc = np.logical_or(Iloc, Iloc_p)
-        #         # If nan value is found, label it with new cluster label
-        #         if np.all(np.isnan(labels[Iloc])):
-        #             labels[Iloc]=cl_label
-        #             cl_label=cl_label +1
-        #         else:
-        #             tmplabels=labels[Iloc]
-        #             uilabels = np.unique(tmplabels[~np.isnan(tmplabels)])
-        #             labels[np.isin(labels, uilabels)]=uilabels[0]
-        #             labels[Iloc] = uilabels[0]
-        # else:
-            # Init
         ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
         # Fit
         if cluster_space=='low':
