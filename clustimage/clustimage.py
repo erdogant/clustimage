@@ -1590,7 +1590,7 @@ class Clustimage():
                 imagebox = offsetbox.AnnotationBbox(offsetbox.OffsetImage(img, cmap=cmap, zoom=zoom), xycoord[i, :])
                 ax.add_artist(imagebox)
 
-    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, plt_all=False, density=False, figsize=(15, 10)):
+    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, plt_all=False, density=False, figsize=(15, 10), args_scatter={}):
         """Plot the samples using a scatterplot.
 
         Parameters
@@ -1611,42 +1611,68 @@ class Clustimage():
             Plot the density over the clusters.
         figsize : tuple, (default: (15, 10).
             Size of the figure (height,width).
+        args_scatter : dict, default: {}.
+            Arguments for the scatter plot. The following are default:
+            {'title': '',
+            'fontsize': 18,
+            'fontcolor': [0, 0, 0],
+            'xlabel': 'x-axis',
+            'ylabel': 'y-axis',
+            'cmap': cmap,
+            'density': False,
+            'gradient': None,
+            }
 
         Returns
         -------
-        None.
+        tuple (fig, ax)
+
+        Examples
+        --------
+        >>> from clustimage import Clustimage
+        >>>
+        >>> cl = Clustimage()
+        >>> X = cl.import_example(data='mnist')
+        >>> # Run the model to find the optimal clusters.
+        >>> results = cl.fit_transform(X)
+        >>> Make scatter plots
+        >>> cl.scatter()
+        >>> # More input arguments for the scatterplot
+        >>> cl.scatter(dotsize=35, args_scatter={'fontsize':24, 'density':'#FFFFFF', 'cmap':'Set2'})
 
         """
         # Check status
+        fig, ax = None, None
         self._check_status()
         if self.results['xycoord'] is None:
             logger.warning('Missing x,y coordinates in results dict. Hint: try to first run: cl.embedding(Xfeat)')
             return None
         # Set default settings
-        cmap = plt.cm.gray if self.params['grayscale'] else None
+        # if args_scatter.get('cmap', None) is None:
+        cmap = plt.cm.gray if self.params['grayscale'] else 'Set1'
         # Get the cluster labels
         labels = self.results.get('labels', None)
         if labels is None: labels=np.zeros_like(self.results['xycoord'][:, 0]).astype(int)
 
-        if text:
-            text_labels=labels
-        else:
-            text_labels=None
-
         # Make scatterplot
-        if self.params.get('cluster_space', None) is None:
-            title = ('tSNE plot.')
-            logger.warning('Run .fit_transform() or .cluster() to colour based on the samples on the cluster labels.')
-        else:
-            title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
+        if args_scatter.get('title', None) is None:
+            if self.params.get('cluster_space', None) is None:
+                title = ('tSNE plot.')
+                logger.warning('Run .fit_transform() or .cluster() to colour based on the samples on the cluster labels.')
+            else:
+                title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
+
+        # Defaults
+        default_scatter = {'title': title, 'fontsize': 18, 'fontcolor': [0, 0, 0], 'xlabel': 'x-axis', 'ylabel': 'y-axis', 'cmap': 'Set1', 'density': False, 'gradient': None, 'figsize': figsize, 'legend': True, 's': dotsize}
+        args_scatter = {**default_scatter, **args_scatter}
 
         # Set logger to warning-error only
         verbose = logger.getEffectiveLevel()
         set_logger(verbose=40)
 
         # Scatter
-        colours=np.vstack(colourmap.fromlist(labels)[0])
-        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], s=dotsize, c=colours, labels=text_labels, figsize=figsize, title=title, fontsize=18, fontcolor=None, xlabel='x-axis', ylabel='y-axis', density=density)
+        # colours=np.vstack(colourmap.fromlist(labels)[0])
+        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], labels=labels, **args_scatter)
 
         if hasattr(self, 'results_unique'):
             if img_mean:
@@ -1684,6 +1710,8 @@ class Clustimage():
 
         # Restore verbose status
         set_logger(verbose=verbose)
+        # Return
+        return fig, ax
 
     def plot_unique(self, cmap=None, img_mean=True, show_hog=False, figsize=(15, 10)):
         """Plot unique images.

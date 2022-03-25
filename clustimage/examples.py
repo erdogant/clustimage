@@ -1,5 +1,5 @@
 # %%
-# import clustimage
+import clustimage
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
@@ -36,7 +36,7 @@ results = cl.results
 # Plots
 cl.clusteval.plot()
 cl.scatter()
-cl.scatter(zoom=None, img_mean=False, dotsize=20, text=False, plt_all=True)
+cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
 cl.plot_unique()
 cl.plot()
 cl.dendrogram()
