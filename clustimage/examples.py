@@ -11,8 +11,8 @@ from clustimage import Clustimage
 cl = Clustimage(method='pca', embedding='umap')
 
 # Import data
-# Xraw = cl.import_example(data='flowers')
-Xraw = cl.import_example(data='mnist')
+Xraw = cl.import_example(data='flowers')
+# Xraw = cl.import_example(data='mnist')
 # Xraw = cl.import_example(data='faces')
 
 # Import data in a standardized manner
