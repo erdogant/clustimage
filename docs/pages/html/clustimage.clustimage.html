@@ -29,6 +29,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
+              <div class="version">
+                1.4.3
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -1104,7 +1107,7 @@ filenames : list of str.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.scatter">
-<span class="sig-name descname"><span class="pre">scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dotsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plt_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.scatter" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dotsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plt_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args_scatter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.scatter" title="Permalink to this definition"></a></dt>
 <dd><p>Plot the samples using a scatterplot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1118,12 +1121,35 @@ None : Do not plot the image.</p></li>
 <li><p><strong>text</strong> (<em>bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Plot the cluster labels.</p></li>
 <li><p><strong>density</strong> (<em>bool</em><em>, </em><em>(</em><em>default: Fale</em><em>)</em>) – Plot the density over the clusters.</p></li>
 <li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height,width).</p></li>
+<li><p><strong>args_scatter</strong> (<em>dict</em><em>, </em><em>default: {}.</em>) – Arguments for the scatter plot. The following are default:
+{‘title’: ‘’,
+‘fontsize’: 18,
+‘fontcolor’: [0, 0, 0],
+‘xlabel’: ‘x-axis’,
+‘ylabel’: ‘y-axis’,
+‘cmap’: cmap,
+‘density’: False,
+‘gradient’: None,
+}</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
+<dd class="field-even"><p>tuple (fig, ax)</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Run the model to find the optimal clusters.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Make</span> <span class="n">scatter</span> <span class="n">plots</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># More input arguments for the scatterplot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span> <span class="n">args_scatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span><span class="p">:</span><span class="mi">24</span><span class="p">,</span> <span class="s1">&#39;density&#39;</span><span class="p">:</span><span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span> <span class="s1">&#39;cmap&#39;</span><span class="p">:</span><span class="s1">&#39;Set2&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">

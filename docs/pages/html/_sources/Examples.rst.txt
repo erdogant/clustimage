@@ -127,14 +127,20 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.
 	# Plot the image that is in the center of the cluster
 	cl.scatter(zoom=4)
 
+	# Lets change some more arguments to make a pretty scatterplot
+	cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
+
 
 .. |figM1| image:: ../figs/digits_fig2_tsne.png
 .. |figM2| image:: ../figs/digits_fig21_tsne.png
+.. |figM12| image:: ../figs/digits_fig22_tsne.png
 .. table:: Left: Scatter plot with cluster labels of all samples. Right: scatter plot with unique image in center.
    :align: center
 
    +----------+----------+
    | |figM1|  | |figM2|  |
+   +----------+----------+
+   |       |figM12|      |
    +----------+----------+
 
 High resolution images where all mnist samples are shown.

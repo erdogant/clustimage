@@ -30,6 +30,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
+              <div class="version">
+                1.4.3
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -264,6 +267,9 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 
 <span class="c1"># Plot the image that is in the center of the cluster</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Lets change some more arguments to make a pretty scatterplot</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dotsize</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">args_scatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fontsize&#39;</span><span class="p">:</span><span class="mi">24</span><span class="p">,</span> <span class="s1">&#39;gradient&#39;</span><span class="p">:</span><span class="s1">&#39;#FFFFFF&#39;</span><span class="p">,</span> <span class="s1">&#39;cmap&#39;</span><span class="p">:</span><span class="s1">&#39;Set2&#39;</span><span class="p">,</span> <span class="s1">&#39;legend&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">})</span>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id12">
@@ -275,6 +281,8 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figM1" src="_images/digits_fig2_tsne.png" /></p></td>
 <td><p><img alt="figM2" src="_images/digits_fig21_tsne.png" /></p></td>
+</tr>
+<tr class="row-even"><td colspan="2"><p><img alt="figM12" src="_images/digits_fig22_tsne.png" /></p></td>
 </tr>
 </tbody>
 </table>
