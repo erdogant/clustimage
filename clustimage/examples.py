@@ -4,6 +4,38 @@ import clustimage
 # print(clustimage.__version__)
 
 
+# %% Import list of images from url adresses
+from clustimage import Clustimage
+
+# Initialize
+cl = Clustimage(method='pca', embedding='umap')
+
+# Importing the files files from disk, cleaning and pre-processing
+url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png']
+
+# Import into model
+X = cl.import_data(url_to_images)
+
+# Extract features using method
+Xfeat = cl.extract_feat(X)
+
+# Embedding
+xycoord = cl.embedding(Xfeat)
+
+# Cluster
+labels = cl.cluster()
+
+# Return
+results = cl.results
+
+# Make plots
+cl.plot()
+cl.dendrogram()
+
 # %%
 from clustimage import Clustimage
 
@@ -35,7 +67,6 @@ results = cl.results
 
 # Plots
 cl.clusteval.plot()
-cl.scatter()
 cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
 cl.plot_unique()
 cl.plot()

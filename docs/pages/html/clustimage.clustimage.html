@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
               <div class="version">
-                1.4.3
+                1.4.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -86,6 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#flower-dataset">Flower dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#clustering-of-faces">Clustering of faces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#extract-images-belonging-to-clusters">Extract images belonging to clusters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#import-images-from-url-location">Import images from url location</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Examples.html#breaking-up-the-steps">Breaking up the steps</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
@@ -891,7 +892,7 @@ img : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.imread">
-<span class="sig-name descname"><span class="pre">imread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.imread" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">imread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_succes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.imread" title="Permalink to this definition"></a></dt>
 <dd><p>Read and pre-processing of images.</p>
 <dl class="simple">
 <dt>The pre-processing has 4 steps and are exectued in this order.</dt><dd><ul class="simple">
@@ -1371,6 +1372,51 @@ None : Do not plot the image.</p></li>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dirpath</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">unzip</span><span class="p">(</span><span class="s1">&#39;c://temp//flower_images.zip&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="clustimage.clustimage.url2disk">
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">url2disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.url2disk" title="Permalink to this definition"></a></dt>
+<dd><p>Write url locations to disk.</p>
+<p>Import images from url locations and store to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urls</strong> (<em>list</em>) – list of url locations with image path.</p></li>
+<li><p><strong>save_dir</strong> (<em>str</em>) – location to disk.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>urls</strong> – list to url locations that are now stored on disk.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of str.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Undouble</span><span class="p">()</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Importing the files files from disk, cleaning and pre-processing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">url_to_images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_orange.png&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png&#39;</span><span class="p">]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Import into model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">url_to_images</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compute image-hash</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">compute_hash</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;phash&#39;</span><span class="p">,</span> <span class="n">hash_size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Find images with image-hash &lt;= threshold</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Plot the images</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
