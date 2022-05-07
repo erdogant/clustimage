@@ -346,7 +346,7 @@ class Clustimage():
         _ = self.import_data(X, black_list=black_list)
         # Extract features using method
         _ = self.extract_feat(self.results)
-        # Embedding using tSNE
+        # Embedding
         _ = self.embedding(self.results['feat'], metric=metric)
         # Cluster
         self.cluster(cluster=cluster, evaluate=evaluate, cluster_space=cluster_space, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust)
@@ -1045,8 +1045,8 @@ class Clustimage():
         if X.shape[0]<=2:
             return [0, 0]
 
-        logger.info('Compute embedding using [%s]', self.params['embedding'])
-        # Embedding using tSNE
+        logger.info('Compute [%s] embedding', self.params['embedding'])
+        # Embedding
         if self.params['embedding']=='tsne':
             # if (self.params['method'] is not None) and ('hash' in self.params['method']):
                 # xycoord = TSNE(n_components=2, init='random', metric='precomputed').fit_transform(X)
@@ -1656,7 +1656,7 @@ class Clustimage():
                 title = (self.params['embedding'] + ' plot.')
                 logger.warning('Run .fit_transform() or .cluster() to colour based on the samples on the cluster labels.')
             else:
-                title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
+                title = (self.params['embedding'] + ' plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
 
         # Defaults
         default_scatter = {'title': title, 'fontsize': 18, 'fontcolor': [0, 0, 0], 'xlabel': 'x-axis', 'ylabel': 'y-axis', 'cmap': 'Set1', 'density': False, 'gradient': None, 'figsize': figsize, 'legend': True, 's': dotsize}
