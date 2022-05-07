@@ -34,9 +34,9 @@ import tempfile
 import uuid
 import shutil
 import random
-
 import imagehash
 from PIL import Image
+from io import BytesIO
 
 # Configure the logger
 logger = logging.getLogger('')
@@ -777,13 +777,17 @@ class Clustimage():
             filenames : list of str.
 
         """
+        # Make list of str
+        if isinstance(pathnames, str): pathnames=[pathnames]
+
         # Filter images on min-number of pixels in image
         min_nr_pixels = 8
+
         # Check file existence on disk
-        if isinstance(pathnames, str): pathnames=[pathnames]
         pathnames = list(np.array(pathnames)[list(map(os.path.isfile, pathnames))])
         filenames = list(map(basename, pathnames))
         idx = range(0, len(pathnames))
+
         # Output dict
         out = {'img': None, 'pathnames': pathnames, 'filenames': filenames}
 
@@ -970,6 +974,8 @@ class Clustimage():
         if isinstance(Xraw, list) or isinstance(Xraw[0], str):
             # Make sure that list in lists are flattend
             Xraw = np.hstack(Xraw)
+            # Check whether url and store all url images to tempdir on disk.
+            Xraw = url2disk(Xraw, self.params['tempdir'])
             # Do not store in the object if the find functionality is used
             X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten)
 
@@ -2404,6 +2410,53 @@ def get_params_hash(hashmethod, params_hash):
     params_hash['method'] = hashmethod
     # Return the hashfunction
     return params_hash
+
+
+# %%
+def url2disk(urls, save_dir):
+    """Write url locations to disk.
+
+    Parameters
+    ----------
+    urls : list
+        list of url locations with image path.
+    save_dir : str
+        location to disk.
+
+    Returns
+    -------
+    urls : list of str.
+        list to url locations that are now stored on disk.
+
+    """
+    idx_url = np.where(list(map(lambda x: x[0:4]=='http', urls)))[0]
+    if len(idx_url)>0:
+        logger.info('[%.0d] urls are detected and stored on disk: [%s]' %(len(idx_url), save_dir))
+
+    if os.path.isdir(save_dir):
+        for idx in idx_url:
+            try:
+                # Make connection to file
+                response = requests.get(urls[idx])
+                img = Image.open(BytesIO(response.content))
+                # Get url
+                url = urlparse(urls[idx])
+                # Extract filename from url
+                url_filename = os.path.basename(url.path)
+                path_to_file = os.path.join(save_dir, url_filename)
+                if os.path.isfile(path_to_file):
+                    logger.info('[%s] already exists and is overwritten.' %(url_filename))
+                # save a image using extension
+                img.save(path_to_file)
+                # Store new location
+                urls[idx] = path_to_file
+            except FileNotFoundError:
+                logger.warning('error downloading file from [%s]' %(urls[idx]))
+        else:
+            logger.warning('[%s] does not exits.' %(save_dir))
+
+    # Return
+    return urls
 
 
 # %% Main
