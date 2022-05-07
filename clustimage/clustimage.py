@@ -1618,14 +1618,21 @@ class Clustimage():
 
         Examples
         --------
+        >>> # Import library
         >>> from clustimage import Clustimage
         >>>
+        >>> # Initialize with default settings.
         >>> cl = Clustimage()
+        >>>
+        >>> # Import example dataset
         >>> X = cl.import_example(data='mnist')
+        >>>
         >>> # Run the model to find the optimal clusters.
         >>> results = cl.fit_transform(X)
-        >>> Make scatter plots
+        >>>
+        >>> # Make scatter plots
         >>> cl.scatter()
+        >>>
         >>> # More input arguments for the scatterplot
         >>> cl.scatter(dotsize=35, args_scatter={'fontsize':24, 'density':'#FFFFFF', 'cmap':'Set2'})
 
@@ -1646,7 +1653,7 @@ class Clustimage():
         # Make scatterplot
         if args_scatter.get('title', None) is None:
             if self.params.get('cluster_space', None) is None:
-                title = ('tSNE plot.')
+                title = (self.params['embedding'] + ' plot.')
                 logger.warning('Run .fit_transform() or .cluster() to colour based on the samples on the cluster labels.')
             else:
                 title = ('tSNE plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
