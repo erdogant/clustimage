@@ -2416,6 +2416,10 @@ def get_params_hash(hashmethod, params_hash):
 def url2disk(urls, save_dir):
     """Write url locations to disk.
 
+    Description
+    -----------
+    Import images from url locations and store to disk.
+
     Parameters
     ----------
     urls : list
@@ -2427,6 +2431,30 @@ def url2disk(urls, save_dir):
     -------
     urls : list of str.
         list to url locations that are now stored on disk.
+
+    Examples
+    --------
+    >>> # Init with default settings
+    >>> model = Undouble()
+    >>>
+    >>> # Importing the files files from disk, cleaning and pre-processing
+    >>> url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
+    >>>                  'https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png',
+    >>>                  'https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png',
+    >>>                  'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png',
+    >>>                  'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png']
+    >>>
+    >>> # Import into model
+    >>> model.import_data(url_to_images)
+    >>>
+    >>> # Compute image-hash
+    >>> model.compute_hash(method='phash', hash_size=16)
+    >>>
+    >>> # Find images with image-hash <= threshold
+    >>> model.group(threshold=0)
+    >>>
+    >>> # Plot the images
+    >>> model.plot()
 
     """
     idx_url = np.where(list(map(lambda x: x[0:4]=='http', urls)))[0]
