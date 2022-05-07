@@ -2067,8 +2067,6 @@ def store_to_disk(Xraw, dim, tempdir):
     return pathnames, filenames
 
 # %% Unique without sort
-
-
 def unique_no_sort(x):
     """Unique without sort."""
     x = x[x!=None]
@@ -2393,7 +2391,8 @@ def get_params_hash(hashmethod, params_hash):
     elif hashmethod == 'whash-haar':
         hashfunc = imagehash.whash
     elif hashmethod == 'whash-db4':
-        def hashfunc(img): return imagehash.whash(img, mode='db4')
+        def hashfunc(img):
+            return imagehash.whash(img, mode='db4')
     elif hashmethod == 'colorhash':
         hashfunc = imagehash.colorhash
     elif hashmethod == 'crop-resistant':
