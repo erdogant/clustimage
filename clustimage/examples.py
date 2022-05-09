@@ -8,14 +8,15 @@ import clustimage
 from clustimage import Clustimage
 
 # Initialize
-cl = Clustimage(method='pca', embedding='umap')
+cl = Clustimage(method='pca', embedding='umap', dim=None)
 
 # Importing the files files from disk, cleaning and pre-processing
 url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
                  'https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png',
                  'https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png',
                  'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png',
-                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png']
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png',
+                 'https://erdogant.github.io/datasets/images/LARGE_elevation.jpg']
 
 # Import into model
 X = cl.import_data(url_to_images)
@@ -35,6 +36,7 @@ results = cl.results
 # Make plots
 cl.plot()
 cl.dendrogram()
+cl.scatter()
 
 # %%
 from clustimage import Clustimage

@@ -189,6 +189,8 @@ class Clustimage():
         if (np.any(np.isin(method, ['hog', 'pca-hog']))) and ~grayscale:
             logger.warning('Parameter grayscale is set to True coz you are using method="%s"' %(method))
             grayscale=True
+        if (dim is None) or ((dim[0]>1024) or (dim[1]>1024)):
+            logger.warning('Setting dim > (1024, 1024) is most often not needed and can cause memory and other issues.')
 
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
