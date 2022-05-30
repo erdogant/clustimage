@@ -12,6 +12,7 @@ from distfit import distfit
 from clusteval import clusteval
 from scatterd import scatterd
 import pypickle as pypickle
+from ismember import ismember
 import colourmap
 import pandas as pd
 import numpy as np
@@ -1848,6 +1849,7 @@ class Clustimage():
         self._check_status()
         cmap = _set_cmap(cmap, self.params['grayscale'])
 
+
         # Plot the clustered images
         if (self.results.get('labels', None) is not None) and (self.results.get('pathnames', None) is not None):
             # Set logger to error only
@@ -1866,35 +1868,38 @@ class Clustimage():
                 if len(idx)>min_clust:
                     # Collect the images
                     getfiles = np.array(self.results['pathnames'])[idx]
-                    # Get the images that cluster together
-                    imgs = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
-                    # Make subplots
-                    if ncols is None:
-                        ncol=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
-                    else:
-                        ncol=ncols
-                    self._make_subplots(imgs, ncol, cmap, figsize, ("Images in cluster %s" %(str(label))))
+                    getfiles = getfiles[np.array(list(map(lambda x: os.path.isfile(x), getfiles)))]
 
-                    # Make hog plots
-                    if show_hog and (self.params['method']=='hog'):
-                        hog_images = self.results['feat'][idx, :]
-                        fig, axs = plt.subplots(len(imgs), 2, figsize=(15, 10), sharex=True, sharey=True)
-                        ax = axs.ravel()
-                        fignum=0
-                        for i, img in enumerate(imgs):
-                            hog_image_rescaled = exposure.rescale_intensity(hog_images[i, :].reshape(self.params['dim']), in_range=(0, 10))
-                            ax[fignum].imshow(img[..., ::-1], cmap=cmap)
-                            ax[fignum].axis('off')
-                            ax[fignum +1].imshow(hog_image_rescaled, cmap=cmap)
-                            ax[fignum +1].axis('off')
-                            fignum=fignum +2
+                    if len(getfiles)>0:
+                        # Get the images that cluster together
+                        imgs = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
+                        # Make subplots
+                        if ncols is None:
+                            ncol=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
+                        else:
+                            ncol=ncols
+                        self._make_subplots(imgs, ncol, cmap, figsize, ("Images in cluster %s" %(str(label))))
 
-                        _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
-                        plt.tight_layout()
-                        plt.show()
+                        # Make hog plots
+                        if show_hog and (self.params['method']=='hog'):
+                            hog_images = self.results['feat'][idx, :]
+                            fig, axs = plt.subplots(len(imgs), 2, figsize=(15, 10), sharex=True, sharey=True)
+                            ax = axs.ravel()
+                            fignum=0
+                            for i, img in enumerate(imgs):
+                                hog_image_rescaled = exposure.rescale_intensity(hog_images[i, :].reshape(self.params['dim']), in_range=(0, 10))
+                                ax[fignum].imshow(img[..., ::-1], cmap=cmap)
+                                ax[fignum].axis('off')
+                                ax[fignum +1].imshow(hog_image_rescaled, cmap=cmap)
+                                ax[fignum +1].axis('off')
+                                fignum=fignum +2
+    
+                            _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
+                            plt.tight_layout()
+                            plt.show()
 
-                    # Restore verbose status
-                    set_logger(verbose=verbose)
+                        # Restore verbose status
+                        set_logger(verbose=verbose)
                 else:
                     # logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
                     pass
@@ -1963,9 +1968,19 @@ class Clustimage():
         # Cleaning temp directory
         if clean_tempdir and os.path.isdir(self.params['tempdir']):
             logger.info('Removing temp directory %s', self.params['tempdir'])
-            shutil.rmtree(self.params['tempdir'])
-            self.results['filenames'] = None
-            self.results['pathnames'] = None
+
+            files_in_tempdir = os.listdir(self.params['tempdir'])
+            _, idx = ismember(files_in_tempdir, self.results['filenames'])
+            logger.info('Removing images in temp directory %s', self.params['tempdir'])
+            for i in idx:
+                logger.debug('remove: %s', self.results['pathnames'][i])
+                os.remove(self.results['pathnames'][i])
+                self.results['filenames'][i]=None
+                self.results['pathnames'][i]=None
+
+            # shutil.rmtree(self.params['tempdir'])
+            # self.results['filenames'] = None
+            # self.results['pathnames'] = None
 
     def get_dim(self, Xraw, dim=None):
         """Determine dimension for image vector.
@@ -2476,27 +2491,28 @@ def url2disk(urls, save_dir):
     if len(idx_url)>0:
         logger.info('[%.0d] urls are detected and stored on disk: [%s]' %(len(idx_url), save_dir))
 
-    if os.path.isdir(save_dir):
-        for idx in idx_url:
-            try:
-                # Make connection to file
-                response = requests.get(urls[idx])
-                img = Image.open(BytesIO(response.content))
-                # Get url
-                url = urlparse(urls[idx])
-                # Extract filename from url
-                url_filename = os.path.basename(url.path)
-                path_to_file = os.path.join(save_dir, url_filename)
-                if os.path.isfile(path_to_file):
-                    logger.info('[%s] already exists and is overwritten.' %(url_filename))
-                # save a image using extension
-                img.save(path_to_file)
-                # Store new location
-                urls[idx] = path_to_file
-            except FileNotFoundError:
-                logger.warning('error downloading file from [%s]' %(urls[idx]))
-        else:
-            logger.warning('[%s] does not exits.' %(save_dir))
+    if not os.path.isdir(save_dir):
+        logger.info('Create dir: [%s]' %(save_dir))
+        os.mkdir(save_dir)
+
+    for idx in idx_url:
+        try:
+            # Make connection to file
+            response = requests.get(urls[idx])
+            img = Image.open(BytesIO(response.content))
+            # Get url
+            url = urlparse(urls[idx])
+            # Extract filename from url
+            url_filename = os.path.basename(url.path)
+            path_to_file = os.path.join(save_dir, url_filename)
+            if os.path.isfile(path_to_file):
+                logger.info('[%s] already exists and is overwritten.' %(url_filename))
+            # save a image using extension
+            img.save(path_to_file)
+            # Store new location
+            urls[idx] = path_to_file
+        except FileNotFoundError:
+            logger.warning('error downloading file from [%s]' %(urls[idx]))
 
     # Return
     return urls
