@@ -98,8 +98,8 @@ class Clustimage():
         Colorscaling the image to gray. This can be usefull when clustering e.g., faces.
     dim : tuple, (default: (128,128))
         Rescale images. This is required because the feature-space need to be the same across samples.
-    dirpath : str, (default: None)
-        Directory to write images.
+    dirpath : str, (default: 'clustimage')
+        Directory to write images. The default is the system tempdirectory.
     ext : list, (default: ['png','tiff','jpg'])
         Images with the file extentions are used.
     params_pca : dict, default: {'n_components':50, 'detect_outliers':None}
@@ -172,7 +172,7 @@ class Clustimage():
                  grayscale=False,
                  dim=(128, 128),
                  dim_face=(64, 64),
-                 dirpath=None,
+                 dirpath='clustimage',
                  store_to_disk=True,
                  ext=['png', 'tiff', 'jpg'],
                  params_pca={'n_components': 0.95},
@@ -184,8 +184,7 @@ class Clustimage():
         self.clean()
 
         if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
-        if dirpath is None: dirpath = tempfile.mkdtemp()
-        if not os.path.isdir(dirpath): raise Exception(logger.error('[%s] does not exists.', dirpath))
+        # Check method types
         if (np.any(np.isin(method, ['hog', 'pca-hog']))) and ~grayscale:
             logger.warning('Parameter grayscale is set to True coz you are using method="%s"' %(method))
             grayscale=True
@@ -205,8 +204,8 @@ class Clustimage():
         self.params['dim'] = dim
         self.params['dim_face'] = dim_face
 
-        self.params['dirpath'] = dirpath
-        self.params['tempdir'] = tempfile.mkdtemp()
+        self.params['dirpath'] = _set_tempdir(dirpath)
+        self.params['tempdir'] = _set_tempdir(None)
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
 
@@ -2494,6 +2493,27 @@ def url2disk(urls, save_dir):
     # Return
     return urls
 
+
+# %%
+def _set_tempdir(dirpath):
+    # Set tempdirectory based on input string or path.
+    try:
+        # Check directory path
+        if dirpath is None:
+            dirpath = os.path.join(tempfile.tempdir, 'clustimage')
+        elif os.path.isdir(dirpath):
+            pass
+        elif isinstance(dirpath, str):
+            dirpath = os.path.join(tempfile.tempdir, dirpath)
+
+        # Check existence dir and start clean by removing the directory.
+        if not os.path.exists(dirpath):
+            # Create directory
+            os.mkdir(dirpath)
+    except:
+        raise Exception(logger.error('[%s] does not exists or can not be created.', dirpath))
+
+    return dirpath
 
 # %% Main
 # if __name__ == "__main__":
