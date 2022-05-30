@@ -172,7 +172,7 @@ class Clustimage():
                  grayscale=False,
                  dim=(128, 128),
                  dim_face=(64, 64),
-                 dirpath='clustimage',
+                 dirpath=None,
                  store_to_disk=True,
                  ext=['png', 'tiff', 'jpg'],
                  params_pca={'n_components': 0.95},
@@ -181,7 +181,7 @@ class Clustimage():
                  verbose=20):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
-        self.clean()
+        self.clean_init()
 
         if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         # Check method types
@@ -342,7 +342,7 @@ class Clustimage():
 
         """
         # Cleaning
-        self.clean()
+        self.clean_init()
         # Check whether in is dir, list of files or array-like
         _ = self.import_data(X, black_list=black_list)
         # Extract features using method
@@ -817,7 +817,10 @@ class Clustimage():
 
         idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
         img = img[idx]
-        if flatten: img = np.vstack(img)
+        try:
+            if flatten: img = np.vstack(img)
+        except:
+            logger.error("Images have different sizes, set the 'dim' parameter during initialization to scale all images to the same size. Hint: cl = Clustimage(dim=(128, 128))")
 
         # Remove not readable images and return
         out['filenames'] = np.array(filenames)[idx]
@@ -1017,7 +1020,7 @@ class Clustimage():
         # Return
         return self.results
 
-    def clean(self):
+    def clean_init(self):
         """Clean or removing previous results and models to ensure correct working."""
         if hasattr(self, 'results'):
             logger.info('Cleaning previous fitted model results')
@@ -1896,7 +1899,7 @@ class Clustimage():
                     # logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
                     pass
         else:
-            logger.warning('Plotting is not possible. Path locations are unknown. Hint: try to set "store_to_disk=True" during initialization.')
+            logger.warning('Plotting is not possible. Path locations can not be found (maybe deleted with the clean_files functions). Hint: try to set "store_to_disk=True" during initialization.')
 
     def _get_rows_cols(self, n, ncols=None):
         # Setup rows and columns
@@ -1933,7 +1936,7 @@ class Clustimage():
         # Return the rows and columns
         return nrows, ncols
 
-    def clean_files(self):
+    def clean_files(self, clean_tempdir=False):
         """Clean files.
 
         Returns
@@ -1956,8 +1959,13 @@ class Clustimage():
                 shutil.rmtree(dirpath)
                 self.results['pathnames'] = None
                 self.results['filenames'] = None
-        else:
-            logger.info('Nothing to clean.')
+
+        # Cleaning temp directory
+        if clean_tempdir and os.path.isdir(self.params['tempdir']):
+            logger.info('Removing temp directory %s', self.params['tempdir'])
+            shutil.rmtree(self.params['tempdir'])
+            self.results['filenames'] = None
+            self.results['pathnames'] = None
 
     def get_dim(self, Xraw, dim=None):
         """Determine dimension for image vector.
@@ -2509,6 +2517,7 @@ def _set_tempdir(dirpath):
         # Check existence dir and start clean by removing the directory.
         if not os.path.exists(dirpath):
             # Create directory
+            logger.info('Creating directory: [%s]' %(dirpath))
             os.mkdir(dirpath)
     except:
         raise Exception(logger.error('[%s] does not exists or can not be created.', dirpath))

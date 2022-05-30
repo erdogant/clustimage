@@ -8,7 +8,7 @@ import clustimage
 from clustimage import Clustimage
 
 # Initialize
-cl = Clustimage(method='pca', embedding='umap', dim=None)
+cl = Clustimage(method='pca', embedding='umap', dim=(128,128))
 
 # Importing the files files from disk, cleaning and pre-processing
 url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
@@ -37,6 +37,9 @@ results = cl.results
 cl.plot()
 cl.dendrogram()
 cl.scatter()
+
+cl.clean_files(clean_tempdir=True)
+cl.plot()
 
 # %%
 from clustimage import Clustimage
