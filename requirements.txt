@@ -19,3 +19,4 @@ scatterd
 requests
 umap-learn
 pypickle
+ismember
