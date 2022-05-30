@@ -1966,7 +1966,7 @@ class Clustimage():
                 self.results['filenames'] = None
 
         # Cleaning temp directory
-        if clean_tempdir and os.path.isdir(self.params['tempdir']):
+        if os.path.isdir(self.params['tempdir']):
             logger.info('Removing temp directory %s', self.params['tempdir'])
 
             files_in_tempdir = os.listdir(self.params['tempdir'])
@@ -1978,9 +1978,11 @@ class Clustimage():
                 self.results['filenames'][i]=None
                 self.results['pathnames'][i]=None
 
-            # shutil.rmtree(self.params['tempdir'])
-            # self.results['filenames'] = None
-            # self.results['pathnames'] = None
+            if clean_tempdir:
+                logger.info('Removing the entire temp directory %s', self.params['tempdir'])
+                shutil.rmtree(self.params['tempdir'])
+                self.results['filenames'] = None
+                self.results['pathnames'] = None
 
     def get_dim(self, Xraw, dim=None):
         """Determine dimension for image vector.

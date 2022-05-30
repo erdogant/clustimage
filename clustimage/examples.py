@@ -8,7 +8,7 @@ import clustimage
 from clustimage import Clustimage
 
 # Initialize
-cl = Clustimage(method='pca', embedding='umap', dim=(128,128), verbose=10)
+cl = Clustimage(method='pca', embedding='umap', dim=(128,128), verbose=20)
 
 # Importing the files files from disk, cleaning and pre-processing
 url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
