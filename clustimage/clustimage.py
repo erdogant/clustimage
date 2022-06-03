@@ -222,7 +222,7 @@ class Clustimage():
         self.params_hog = params_hog
         # Set the logger
         set_logger(verbose=verbose)
-        # This value is set to True when the find functionality is used to make sure specified subroutines are used.
+        # This value is set to True when the find functionality (cl.find) is used to make sure specified subroutines are used.
         self.find_func = False
 
     def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high', black_list=None):
@@ -786,7 +786,9 @@ class Clustimage():
         min_nr_pixels = 8
 
         # Check file existence on disk
-        pathnames = list(np.array(pathnames)[list(map(os.path.isfile, pathnames))])
+        pathnames = np.array(pathnames)
+        pathnames = pathnames[pathnames!=None]
+        pathnames = list(pathnames[list(map(os.path.isfile, pathnames))])
         filenames = list(map(basename, pathnames))
         idx = range(0, len(pathnames))
 
@@ -804,8 +806,8 @@ class Clustimage():
         img, imgOK = zip(*imgs)
         img = np.array(img)
 
-        # Remove the images that could not be read
-        I_corrupt = np.array(imgOK)==False
+        # Remove the images that could not be read (and thus are False)
+        I_corrupt = ~np.array(imgOK)
         if np.any(I_corrupt)>0:
             logger.info("[%.0d] Corrupt image(s) removed.", (sum(I_corrupt)))
             filenames = np.array(filenames)[~I_corrupt]
@@ -982,7 +984,11 @@ class Clustimage():
             # Check whether url and store all url images to tempdir on disk.
             Xraw = url2disk(Xraw, self.params['tempdir'])
             # Do not store in the object if the find functionality is used
-            X = self.preprocessing(Xraw, grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten)
+            X = self.preprocessing(Xraw['pathnames'], grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten)
+            # Add the url location
+            IA, IB = ismember(X['pathnames'], Xraw['pathnames'].astype(str))
+            X['url'] = np.repeat(None, len(X['pathnames']))
+            X['url'][IA] = Xraw['url'][IB]
 
             if self.find_func:
                 return X
@@ -1032,7 +1038,7 @@ class Clustimage():
             if hasattr(self, 'clusteval'): del self.clusteval
             if hasattr(self, 'pca'): del self.pca
         # Store results
-        self.results = {'img': None, 'feat': None, 'xycoord': None, 'pathnames': None, 'labels': None}
+        self.results = {'img': None, 'feat': None, 'xycoord': None, 'pathnames': None, 'labels': None, 'url': None}
 
     def embedding(self, X, metric="euclidean"):
         """Compute embedding for the extracted features.
@@ -1053,9 +1059,6 @@ class Clustimage():
         logger.info('Compute [%s] embedding', self.params['embedding'])
         # Embedding
         if self.params['embedding']=='tsne':
-            # if (self.params['method'] is not None) and ('hash' in self.params['method']):
-                # xycoord = TSNE(n_components=2, init='random', metric='precomputed').fit_transform(X)
-            # else:
             xycoord = TSNE(n_components=2, init='random', metric=metric).fit_transform(X)
         elif self.params['embedding']=='umap':
             xycoord = UMAP(densmap=True).fit_transform(X)
@@ -2489,6 +2492,8 @@ def url2disk(urls, save_dir):
     >>> model.plot()
 
     """
+    # Set filepath to the output of urls in case no url are used. Then the normal filepath is returned.
+    filepath = urls
     idx_url = np.where(list(map(lambda x: x[0:4]=='http', urls)))[0]
     if len(idx_url)>0:
         logger.info('[%.0d] urls are detected and stored on disk: [%s]' %(len(idx_url), save_dir))
@@ -2508,16 +2513,19 @@ def url2disk(urls, save_dir):
             url_filename = os.path.basename(url.path)
             path_to_file = os.path.join(save_dir, url_filename)
             if os.path.isfile(path_to_file):
-                logger.info('[%s] already exists and is overwritten.' %(url_filename))
+                logger.info('File already exists and is overwritten: [%s]' %(url.path))
             # save a image using extension
             img.save(path_to_file)
             # Store new location
-            urls[idx] = path_to_file
-        except FileNotFoundError:
+            filepath[idx] = path_to_file
+        except:
             logger.warning('error downloading file from [%s]' %(urls[idx]))
 
+    # Make dictionary output
+    out = {'url': urls, 'pathnames': filepath}
+
     # Return
-    return urls
+    return out
 
 
 # %%
