@@ -64,7 +64,7 @@ cl.scatter()
 from clustimage import Clustimage
 
 # Initialize
-cl = Clustimage(method='pca', embedding='umap', dim=(128,128), verbose=20)
+cl = Clustimage(method='pca', embedding='umap', dim=(128, 128), verbose=20)
 
 # Importing the files files from disk, cleaning and pre-processing
 url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
@@ -100,42 +100,42 @@ cl.scatter()
 # %%
 from clustimage import Clustimage
 
-# Initialize
-cl = Clustimage(method='pca', embedding='umap')
+datas = ['flowers', 'mnist', 'faces']
+for data in datas:
+    # Initialize
+    cl = Clustimage(method='pca', embedding='umap')
 
-# Import data
-Xraw = cl.import_example(data='flowers')
-# Xraw = cl.import_example(data='mnist')
-# Xraw = cl.import_example(data='faces')
+    # Import data
+    Xraw = cl.import_example(data=data)
 
-# Import data in a standardized manner
-X = cl.import_data(Xraw)
+    # Import data in a standardized manner
+    X = cl.import_data(Xraw)
 
-# Extract features using method
-Xfeat = cl.extract_feat(X)
+    # Extract features using method
+    Xfeat = cl.extract_feat(X)
 
-# Embedding
-xycoord = cl.embedding(Xfeat)
+    # Embedding
+    xycoord = cl.embedding(Xfeat)
 
-# Cluster
-labels = cl.cluster()
+    # Cluster
+    labels = cl.cluster()
 
-# Return
-results = cl.results
+    # Return
+    results = cl.results
 
-# Or all in one run
-# results = cl.fit_transform(X)
+    # Or all in one run
+    # results = cl.fit_transform(X)
 
-# Plots
-cl.clusteval.plot()
-cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
-cl.plot_unique()
-cl.plot()
-cl.dendrogram()
+    # Plots
+    cl.clusteval.plot()
+    cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
+    cl.plot_unique()
+    cl.plot()
+    cl.dendrogram()
 
-# Find
-results_find = cl.find(Xraw[0], k=0, alpha=0.05)
-cl.plot_find()
+    # Find
+    results_find = cl.find(Xraw[0], k=0, alpha=0.05)
+    cl.plot_find()
 
 
 # %% HASHES
@@ -166,7 +166,7 @@ from clustimage import Clustimage
 cl = Clustimage(method='pca',
                 embedding='tsne',
                 grayscale=False,
-                dim=(128,128),
+                dim=(128, 128),
                 params_pca={'n_components':0.95},
                 store_to_disk=True,
                 verbose=50)
