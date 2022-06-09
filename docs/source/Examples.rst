@@ -611,6 +611,60 @@ Extract images belonging to clusters
 	  plt.imshow(img.reshape(dim))
 	  plt.title()
 
+Set image filenames using pandas dataframes
+####################################################
+
+In case a datamatrix is provided as an input to the model, the default setting is that random filenames are generated and stored in the tempdirectory. However, with a pandas dataframe as input you can provide the desired filenames by changing the index names!
+
+.. code:: python
+
+	from clustimage import Clustimage
+	import pandas as pd
+	import numpy as np
+
+	# Initialize
+	cl = Clustimage()
+
+	# Import data
+	Xraw = cl.import_example(data='mnist')
+	
+	# The Xraw datamatrix is numpy array for which the rows are the different images.
+	print(Xraw)
+	# array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],
+	#        [ 0.,  0.,  0., ..., 10.,  0.,  0.],
+	#        [ 0.,  0.,  0., ..., 16.,  9.,  0.],
+	#        ...,
+	#        [ 0.,  0.,  1., ...,  6.,  0.,  0.],
+	#        [ 0.,  0.,  2., ..., 12.,  0.,  0.],
+	#        [ 0.,  0., 10., ..., 12.,  1.,  0.]])
+	
+	# Create some filenames
+	filenames = list(map(lambda x: str(x) + '.png', np.arange(0, Xraw.shape[0])))
+	# Store in a pandas dataframe
+	Xraw = pd.DataFrame(Xraw, index=filenames)
+
+	print(Xraw)
+	#            0    1     2     3     4     5   ...   58    59    60    61   62   63
+	# 0.png     0.0  0.0   5.0  13.0   9.0   1.0  ...  6.0  13.0  10.0   0.0  0.0  0.0
+	# 1.png     0.0  0.0   0.0  12.0  13.0   5.0  ...  0.0  11.0  16.0  10.0  0.0  0.0
+	# 2.png     0.0  0.0   0.0   4.0  15.0  12.0  ...  0.0   3.0  11.0  16.0  9.0  0.0
+	# 3.png     0.0  0.0   7.0  15.0  13.0   1.0  ...  7.0  13.0  13.0   9.0  0.0  0.0
+	# 4.png     0.0  0.0   0.0   1.0  11.0   0.0  ...  0.0   2.0  16.0   4.0  0.0  0.0
+	#       ...  ...   ...   ...   ...   ...  ...  ...   ...   ...   ...  ...  ...
+	# 1792.png  0.0  0.0   4.0  10.0  13.0   6.0  ...  2.0  14.0  15.0   9.0  0.0  0.0
+	# 1793.png  0.0  0.0   6.0  16.0  13.0  11.0  ...  6.0  16.0  14.0   6.0  0.0  0.0
+	# 1794.png  0.0  0.0   1.0  11.0  15.0   1.0  ...  2.0   9.0  13.0   6.0  0.0  0.0
+	# 1795.png  0.0  0.0   2.0  10.0   7.0   0.0  ...  5.0  12.0  16.0  12.0  0.0  0.0
+	# 1796.png  0.0  0.0  10.0  14.0   8.0   1.0  ...  8.0  12.0  14.0  12.0  1.0  0.0
+
+	# Fit and transform the data
+	results = cl.fit_transform(Xraw)
+	
+	# The index filenames are now used to store the images on disk.
+	print(results['filenames'])
+	# array(['0.png', '1.png', '2.png', ..., '1794.png', '1795.png', '1796.png'],
+
+
 
 Import images from url location
 ##################################

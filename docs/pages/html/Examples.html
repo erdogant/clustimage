@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
               <div class="version">
-                1.4.4
+                1.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -112,6 +112,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#clustering-of-faces">Clustering of faces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#extract-images-belonging-to-clusters">Extract images belonging to clusters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#set-image-filenames-using-pandas-dataframes">Set image filenames using pandas dataframes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#import-images-from-url-location">Import images from url location</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#breaking-up-the-steps">Breaking up the steps</a></li>
 </ul>
@@ -705,6 +706,57 @@ Download the dataset over here: <a class="reference external" href="http://www.v
   <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
   <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dim</span><span class="p">))</span>
   <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="set-image-filenames-using-pandas-dataframes">
+<h1>Set image filenames using pandas dataframes<a class="headerlink" href="#set-image-filenames-using-pandas-dataframes" title="Permalink to this headline"></a></h1>
+<p>In case a datamatrix is provided as an input to the model, the default setting is that random filenames are generated and stored in the tempdirectory. However, with a pandas dataframe as input you can provide the desired filenames by changing the index names!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
+
+<span class="c1"># Import data</span>
+<span class="n">Xraw</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">)</span>
+
+<span class="c1"># The Xraw datamatrix is numpy array for which the rows are the different images.</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Xraw</span><span class="p">)</span>
+<span class="c1"># array([[ 0.,  0.,  5., ...,  0.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0.,  0., ..., 10.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0.,  0., ..., 16.,  9.,  0.],</span>
+<span class="c1">#        ...,</span>
+<span class="c1">#        [ 0.,  0.,  1., ...,  6.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0.,  2., ..., 12.,  0.,  0.],</span>
+<span class="c1">#        [ 0.,  0., 10., ..., 12.,  1.,  0.]])</span>
+
+<span class="c1"># Create some filenames</span>
+<span class="n">filenames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Xraw</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+<span class="c1"># Store in a pandas dataframe</span>
+<span class="n">Xraw</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">Xraw</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">filenames</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">Xraw</span><span class="p">)</span>
+<span class="c1">#            0    1     2     3     4     5   ...   58    59    60    61   62   63</span>
+<span class="c1"># 0.png     0.0  0.0   5.0  13.0   9.0   1.0  ...  6.0  13.0  10.0   0.0  0.0  0.0</span>
+<span class="c1"># 1.png     0.0  0.0   0.0  12.0  13.0   5.0  ...  0.0  11.0  16.0  10.0  0.0  0.0</span>
+<span class="c1"># 2.png     0.0  0.0   0.0   4.0  15.0  12.0  ...  0.0   3.0  11.0  16.0  9.0  0.0</span>
+<span class="c1"># 3.png     0.0  0.0   7.0  15.0  13.0   1.0  ...  7.0  13.0  13.0   9.0  0.0  0.0</span>
+<span class="c1"># 4.png     0.0  0.0   0.0   1.0  11.0   0.0  ...  0.0   2.0  16.0   4.0  0.0  0.0</span>
+<span class="c1">#       ...  ...   ...   ...   ...   ...  ...  ...   ...   ...   ...  ...  ...</span>
+<span class="c1"># 1792.png  0.0  0.0   4.0  10.0  13.0   6.0  ...  2.0  14.0  15.0   9.0  0.0  0.0</span>
+<span class="c1"># 1793.png  0.0  0.0   6.0  16.0  13.0  11.0  ...  6.0  16.0  14.0   6.0  0.0  0.0</span>
+<span class="c1"># 1794.png  0.0  0.0   1.0  11.0  15.0   1.0  ...  2.0   9.0  13.0   6.0  0.0  0.0</span>
+<span class="c1"># 1795.png  0.0  0.0   2.0  10.0   7.0   0.0  ...  5.0  12.0  16.0  12.0  0.0  0.0</span>
+<span class="c1"># 1796.png  0.0  0.0  10.0  14.0   8.0   1.0  ...  8.0  12.0  14.0  12.0  1.0  0.0</span>
+
+<span class="c1"># Fit and transform the data</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">Xraw</span><span class="p">)</span>
+
+<span class="c1"># The index filenames are now used to store the images on disk.</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;filenames&#39;</span><span class="p">])</span>
+<span class="c1"># array([&#39;0.png&#39;, &#39;1.png&#39;, &#39;2.png&#39;, ..., &#39;1794.png&#39;, &#39;1795.png&#39;, &#39;1796.png&#39;],</span>
 </pre></div>
 </div>
 </section>
