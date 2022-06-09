@@ -986,9 +986,10 @@ class Clustimage():
             # Do not store in the object if the find functionality is used
             X = self.preprocessing(Xraw['pathnames'], grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten)
             # Add the url location
-            IA, IB = ismember(X['pathnames'], Xraw['pathnames'].astype(str))
-            X['url'] = np.repeat(None, len(X['pathnames']))
-            X['url'][IA] = Xraw['url'][IB]
+            if Xraw['url'] is not None:
+                IA, IB = ismember(X['pathnames'], Xraw['pathnames'].astype(str))
+                X['url'] = np.repeat(None, len(X['pathnames']))
+                X['url'][IA] = Xraw['url'][IB]
 
             if self.find_func:
                 return X
@@ -2497,6 +2498,8 @@ def url2disk(urls, save_dir):
     idx_url = np.where(list(map(lambda x: x[0:4]=='http', urls)))[0]
     if len(idx_url)>0:
         logger.info('[%.0d] urls are detected and stored on disk: [%s]' %(len(idx_url), save_dir))
+    else:
+        urls = None
 
     if not os.path.isdir(save_dir):
         logger.info('Create dir: [%s]' %(save_dir))
