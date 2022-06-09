@@ -4,62 +4,6 @@ import clustimage
 # print(clustimage.__version__)
 
 
-# %%
-from clustimage import Clustimage
-
-# Initialize
-cl = Clustimage(method='pca', embedding='tsne')
-
-# Import data
-Xraw = cl.import_example(data='flowers')
-# Xraw = cl.import_example(data='mnist')
-# Xraw = cl.import_example(data='faces')
-
-# Import data in a standardized manner
-X = cl.import_data(Xraw)
-
-# Extract features using method
-Xfeat = cl.extract_feat(X)
-
-# Embedding
-xycoord = cl.embedding(Xfeat)
-
-# Cluster
-labels = cl.cluster()
-
-# Or all in one run
-# results = cl.fit_transform(X)
-
-# Plots
-cl.clusteval.plot()
-cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
-# cl.plot_unique()
-# cl.plot()
-# cl.dendrogram()
-
-# Find
-# results_find = cl.find(Xraw[0], k=0, alpha=0.05)
-# cl.plot_find()
-
-
-# %% Match flowers with with internet images
-url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
-                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png',
-                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png',
-                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png',
-                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png',
-                 'https://erdogant.github.io/datasets/images/LARGE_elevation.jpg']
-
-# # Import into model
-# imgs = cl.import_data(url_to_images)
-
-results_find = cl.find(url_to_images, k=0, alpha=0.05)
-cl.plot_find()
-
-# Scatter with new unseen images
-cl.scatter()
-
-
 # %% Import list of images from url adresses
 from clustimage import Clustimage
 
@@ -94,8 +38,69 @@ cl.plot()
 cl.dendrogram()
 cl.scatter()
 
+results['url']
+cl.results['url']
 # cl.clean_files(clean_tempdir=True)
 # cl.plot()
+
+# %%
+from clustimage import Clustimage
+
+# Initialize
+cl = Clustimage(method='pca', embedding='tsne')
+
+# Import data
+Xraw = cl.import_example(data='flowers')
+# Xraw = cl.import_example(data='mnist')
+# Xraw = cl.import_example(data='faces')
+
+# Import data in a standardized manner
+X = cl.import_data(Xraw)
+
+# Extract features using method
+Xfeat = cl.extract_feat(X)
+
+# Embedding
+xycoord = cl.embedding(Xfeat)
+
+# Cluster
+labels = cl.cluster()
+
+# Or all in one run
+# results = cl.fit_transform(X)
+
+# Plots
+cl.clusteval.plot()
+cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
+cl.scatter(zoom=0.5, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
+# cl.plot_unique()
+# cl.plot()
+# cl.dendrogram()
+
+# Find
+# results_find = cl.find(Xraw[0], k=0, alpha=0.05)
+# cl.plot_find()
+
+
+# %% Match flowers with with internet images
+url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png',
+                 'https://erdogant.github.io/datasets/images/LARGE_elevation.jpg']
+
+# # Import into model
+# imgs = cl.import_data(url_to_images)
+
+results_find = cl.find(url_to_images, k=0, alpha=0.05)
+cl.plot_find()
+
+# Scatter with new unseen images
+cl.scatter()
+
+
+
 
 # %%
 from clustimage import Clustimage
