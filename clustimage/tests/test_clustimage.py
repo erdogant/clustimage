@@ -79,7 +79,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         results = cl.fit_transform(X)
         assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'filenames', 'labels', 'url']))
         assert len(cl.cluster())==len(X)
-    
+
         # Parameters combinations to check
         param_grid = {
         	'cluster_space':['high','low'],
