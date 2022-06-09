@@ -3,6 +3,40 @@ import clustimage
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %%
+from clustimage import Clustimage
+import pandas as pd
+import numpy as np
+
+datas = ['faces', 'flowers', 'mnist']
+for data in datas:
+    # Initialize
+    cl = Clustimage(method='pca', embedding='umap')
+
+    # Import data
+    Xraw = cl.import_example(data=data)
+
+    if data=='mnist':
+        filenames = list(map(lambda x: str(x) + '.png', np.arange(0, Xraw.shape[0])))
+        Xraw = pd.DataFrame(Xraw, index=filenames)
+
+    # Import data in a standardized manner
+    # X = cl.import_data(Xraw)
+
+    # Or all in one run
+    results = cl.fit_transform(Xraw)
+
+    # Plots
+    # cl.clusteval.plot()
+    # cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
+    # cl.plot_unique()
+    # cl.plot()
+    # cl.dendrogram()
+
+    # Find
+    # results_find = cl.find(Xraw[0], k=0, alpha=0.05)
+    # cl.plot_find()
+
 
 # %% Import list of images from url adresses
 from clustimage import Clustimage
@@ -102,45 +136,6 @@ cl.scatter()
 
 
 
-# %%
-from clustimage import Clustimage
-
-datas = ['flowers', 'mnist', 'faces']
-for data in datas:
-    # Initialize
-    cl = Clustimage(method='pca', embedding='umap')
-
-    # Import data
-    Xraw = cl.import_example(data=data)
-
-    # Import data in a standardized manner
-    X = cl.import_data(Xraw)
-
-    # Extract features using method
-    Xfeat = cl.extract_feat(X)
-
-    # Embedding
-    xycoord = cl.embedding(Xfeat)
-
-    # Cluster
-    labels = cl.cluster()
-
-    # Return
-    results = cl.results
-
-    # Or all in one run
-    # results = cl.fit_transform(X)
-
-    # Plots
-    cl.clusteval.plot()
-    cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
-    cl.plot_unique()
-    cl.plot()
-    cl.dendrogram()
-
-    # Find
-    results_find = cl.find(Xraw[0], k=0, alpha=0.05)
-    cl.plot_find()
 
 
 # %% HASHES
