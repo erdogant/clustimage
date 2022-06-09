@@ -977,6 +977,13 @@ class Clustimage():
         if isinstance(Xraw, str) and os.path.isfile(Xraw):
             Xraw = [Xraw]
 
+        filenames, pathnames = None, None
+        # Check pandas dataframe
+        if isinstance(Xraw, pd.DataFrame):
+            filenames = Xraw.index.values
+            if len(np.unique(filenames))!=Xraw.shape[0]: raise Exception(logger.error("Filenames must be unique."))
+            Xraw = Xraw.values
+
         # 2. Read images
         if isinstance(Xraw, list) or isinstance(Xraw[0], str):
             # Make sure that list in lists are flattend
@@ -1005,8 +1012,6 @@ class Clustimage():
             # Make 2D
             if len(Xraw.shape)==1:
                 Xraw = Xraw.reshape(-1, 1).T
-            # Check dimensions
-            pathnames, filenames = None, None
             # Check dim
             self.params['dim'] = self.get_dim(Xraw)
             # Scale the image
@@ -1014,7 +1019,7 @@ class Clustimage():
             Xraw = np.vstack(list(map(lambda x: imscale(x), Xraw)))
             # Store to disk
             if self.params['store_to_disk']:
-                pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'])
+                pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'], files=filenames)
                 pathnames = np.array(pathnames)
                 filenames = np.array(filenames)
 
@@ -2086,15 +2091,20 @@ def _get_dim(Xraw, dim, grayscale=None):
 # %% Store images to disk
 
 
-def store_to_disk(Xraw, dim, tempdir):
+def store_to_disk(Xraw, dim, tempdir, files=None):
     """Store to disk."""
     # Determine the dimension based on the length of the vector.
     dim = _get_dim(Xraw, dim)
     # Store images to disk
-    pathnames, filenames = [], []
+    filenames, pathnames = [], []
+
     logger.info('Writing images to tempdir [%s]', tempdir)
     for i in tqdm(np.arange(0, Xraw.shape[0]), disable=disable_tqdm()):
-        filename = str(uuid.uuid4()) +'.png'
+        if files is not None:
+            filename = files[i]
+        else:
+            filename = str(uuid.uuid4()) +'.png'
+
         pathname = os.path.join(tempdir, filename)
         # Write to disk
         img = imscale(Xraw[i, :].reshape(dim))
