@@ -2493,7 +2493,7 @@ def url2disk(urls, save_dir):
 
     """
     # Set filepath to the output of urls in case no url are used. Then the normal filepath is returned.
-    filepath = urls
+    filepath = urls.copy()
     idx_url = np.where(list(map(lambda x: x[0:4]=='http', urls)))[0]
     if len(idx_url)>0:
         logger.info('[%.0d] urls are detected and stored on disk: [%s]' %(len(idx_url), save_dir))
