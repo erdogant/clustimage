@@ -1203,7 +1203,7 @@ class Clustimage():
             logger.warning('The metric [%s] results in NaN! Please change metric for appropriate results!', metric)
 
         # Fit distribution to emperical data and compute probability of the distances of interest
-        if (alpha is not None) and ((not hasattr(self, 'distfit')) or (self.params['metric_find'] != metric)):
+        if (alpha is not None) and ((not hasattr(self, 'distfit')) or (self.distfit is None) or (self.params['metric_find'] != metric)):
             # Compute distance across all samples
             Ytot = distance.cdist(self.results['feat'], self.results['feat'], metric=metric)
             # Take a subset of samples to prevent high computation times.
@@ -1423,6 +1423,7 @@ class Clustimage():
         storedata = {}
         storedata['results'] = self.results
         storedata['params'] = self.params
+        if hasattr(self, 'pca'): self.params_pca['model'] = self.pca
         storedata['params_pca'] = self.params_pca
         storedata['params_hog'] = self.params_hog
         storedata['params_hash'] = self.params_hash
@@ -1430,7 +1431,7 @@ class Clustimage():
         if hasattr(self, 'results_unique'): storedata['results_unique'] = self.results_unique
         if hasattr(self, 'distfit'): storedata['distfit'] = self.distfit
         if hasattr(self, 'clusteval'): storedata['clusteval'] = self.clusteval
-        # if hasattr(self,'pca'): storedata['pca'] = self.pca
+
         # Save
         status = pypickle.save(filepath, storedata, overwrite=overwrite, verbose=3)
         logger.info('Saving..')
@@ -1465,13 +1466,13 @@ class Clustimage():
             self.results = storedata['results']
             self.params = storedata['params']
             self.params_pca = storedata['params_pca']
+            self.pca = storedata['params_pca'].get('model', None)
             self.params_hog = storedata['params_hog']
             self.params_hash = storedata['params_hash']
             self.results_faces = storedata.get('results_faces', None)
             self.results_unique = storedata.get('results_unique', None)
             self.distfit = storedata.get('distfit', None)
             self.clusteval = storedata.get('clusteval', None)
-            self.pca = storedata.get('pca', None)
             self.find_func = False
 
             logger.info('Load succesful!')
