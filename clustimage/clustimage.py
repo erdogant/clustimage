@@ -207,6 +207,7 @@ class Clustimage():
 
         self.params['dirpath'] = _set_tempdir(dirpath)
         self.params['tempdir'] = _set_tempdir(None)
+        self.params['filepath'] = os.path.join(_set_tempdir(None), 'clustimage.pkl')
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
 
@@ -1412,10 +1413,12 @@ class Clustimage():
             Status whether the file is saved.
 
         """
-        if (filepath is None) or (filepath==''):
-            filepath = 'clustimage.pkl'
-        if filepath[-4:] != '.pkl':
+        if (filepath is None) or (filepath=='') or (filepath=='clustimage.pkl'):
+            filepath = self.params['filepath']
+        if filepath[-4:]!='.pkl':
             filepath = filepath + '.pkl'
+        self.params['filepath'] = filepath
+
         # Store data
         storedata = {}
         storedata['results'] = self.results
@@ -1449,8 +1452,8 @@ class Clustimage():
         Object.
 
         """
-        if (filepath is None) or (filepath==''):
-            filepath = 'clustimage.pkl'
+        if (filepath is None) or (filepath=='') or (filepath=='clustimage.pkl'):
+            filepath = self.params['filepath']
         if filepath[-4:]!='.pkl':
             filepath = filepath + '.pkl'
 
