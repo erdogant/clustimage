@@ -44,6 +44,7 @@ print(Xraw)
 results = cl.fit_transform(Xraw)
 
 print(results['filenames'])
+# array(['0.png', '1.png', '2.png', ..., '1794.png', '1795.png', '1796.png'],
 
     # Plots
     # cl.clusteval.plot()
