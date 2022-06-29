@@ -8,7 +8,7 @@ import clustimage
 from clustimage import Clustimage
 
 # Init
-cl = Clustimage(method='pca-hog')
+cl = Clustimage(method='pca')
 # load example with flowers
 pathnames = cl.import_example(data='flowers')
 
