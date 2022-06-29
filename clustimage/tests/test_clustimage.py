@@ -94,7 +94,19 @@ class TestCLUSTIMAGE(unittest.TestCase):
         for combination in combinations:
             labx = cl.cluster(cluster_space=combination[0], cluster=combination[1], evaluate=combination[2], metric='euclidean', linkage='ward', min_clust=combination[3], max_clust=combination[4])
             assert len(labx)==len(X)
-    
+
+    def save_and_load(self):
+        methods = ['pca', 'hog', 'pca-hog']
+        for method in methods:
+            cl = Clustimage(method=method)
+            # Init
+            pathnames = cl.import_example(data='mnist')
+            # Cluster flowers
+            cl.fit_transform(pathnames)
+            cl.save(overwrite=True)
+            cl.load()
+            assert cl.find(pathnames[0:5], k=10, alpha=0.05)
+
     def test_find(self):
         cl = Clustimage(method='pca', grayscale=False)
         # load example with flowers
