@@ -3,6 +3,31 @@ import clustimage
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+
+# %% SAVE AND LOAD
+from clustimage import Clustimage
+
+# Init
+cl = Clustimage(method='pca-hog')
+# load example with flowers
+pathnames = cl.import_example(data='flowers')
+
+# Cluster flowers
+cl.fit_transform(pathnames)
+
+cl.save(overwrite=True)
+cl.load()
+
+results_find = cl.find(pathnames[0:5], k=10, alpha=0.05)
+cl.plot_find()
+
+
+cl.save(overwrite=True)
+cl.load()
+
+results_find = cl.find(pathnames[0:5], k=10, alpha=0.05)
+cl.plot_find()
+
 # %%
 from clustimage import Clustimage
 import pandas as pd
@@ -263,6 +288,7 @@ cl.scatter()
 
 
 
+
 # %% FACES
 from clustimage import Clustimage
 # Init
@@ -298,8 +324,8 @@ cl.clusteval.scatter(cl.results['xycoord'])
 cl.pca.plot()
 cl.pca.scatter(legend=False, label=False)
 
-cl.save(overwrite=True)
-cl.load()
+cl.save(filepath='clustimage.pkl', overwrite=True)
+cl.load(filepath='clustimage.pkl')
 
 
 
