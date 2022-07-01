@@ -7,6 +7,24 @@ import clustimage
 # %% SAVE AND LOAD
 from clustimage import Clustimage
 
+cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(128,128),params_pca={'n_components':0.5})
+
+
+# load example with flowers
+pathnames = cl.import_example(data='flowers')
+
+# Cluster flowers
+cl.fit_transform(pathnames)
+
+# Make plot
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['xycoord'])
+
+
+
+# %% SAVE AND LOAD
+from clustimage import Clustimage
+
 # Init
 cl = Clustimage(method='pca')
 # load example with flowers
@@ -15,7 +33,7 @@ pathnames = cl.import_example(data='flowers')
 # Cluster flowers
 cl.fit_transform(pathnames)
 
-cl.save(overwrite=True)
+cl.save(filepath=None, overwrite=True)
 cl.load()
 
 results_find = cl.find(pathnames[0:5], k=10, alpha=0.05)
