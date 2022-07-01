@@ -3,23 +3,48 @@ import clustimage
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
-
-# %% SAVE AND LOAD
+# %% 
 from clustimage import Clustimage
+import matplotlib.pyplot as plt
+import pandas as pd
 
-cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(128,128),params_pca={'n_components':0.5})
+# Init with default settings
+cl = Clustimage(method='pca')
 
+# load example with digits
+X = cl.import_example(data='mnist')
 
-# load example with flowers
-pathnames = cl.import_example(data='flowers')
+# Cluster digits
+results = cl.fit_transform(X)
 
-# Cluster flowers
-cl.fit_transform(pathnames)
+# Lets search for the following image:
+plt.figure(); plt.imshow(X[0,:].reshape(cl.params['dim']), cmap='binary')
 
-# Make plot
-cl.clusteval.plot()
-cl.clusteval.scatter(cl.results['xycoord'])
+# Find images
+results_find = cl.find(X[0:3,:], k=None, alpha=0.05)
 
+# Show whatever is found. This looks pretty good.
+cl.plot_find()
+cl.scatter(zoom=3)
+
+# Extract the first input image name
+filename = [*results_find.keys()][1]
+
+# Plot the probabilities
+plt.figure(figsize=(8,6))
+plt.plot(results_find[filename]['y_proba'],'.')
+plt.grid(True)
+plt.xlabel('samples')
+plt.ylabel('Pvalue')
+
+# Extract the cluster labels for the input image
+results_find[filename]['labels']
+
+# The majority (=171) of labels is for class [0]
+print(pd.value_counts(results_find[filename]['labels']))
+# 0    171
+# 7      8
+# Name: labels, dtype: int64
 
 
 # %% SAVE AND LOAD
@@ -45,6 +70,26 @@ cl.load()
 
 results_find = cl.find(pathnames[0:5], k=10, alpha=0.05)
 cl.plot_find()
+
+
+# %% SAVE AND LOAD
+from clustimage import Clustimage
+
+cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(128,128),params_pca={'n_components':0.5})
+
+
+# load example with flowers
+pathnames = cl.import_example(data='flowers')
+
+# Cluster flowers
+cl.fit_transform(pathnames)
+
+# Make plot
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['xycoord'])
+
+
+
 
 # %%
 from clustimage import Clustimage
