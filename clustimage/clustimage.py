@@ -2551,21 +2551,25 @@ def _set_tempdir(dirpath):
     try:
         # Check directory path
         if dirpath is None:
-            dirpath = os.path.join(tempfile.tempdir, 'clustimage')
+            dirpath = os.path.join(tempfile.gettempdir(), 'clustimage')
         elif os.path.isdir(dirpath):
             pass
         elif isinstance(dirpath, str):
-            dirpath = os.path.join(tempfile.tempdir, dirpath)
+            dirpath = os.path.join(tempfile.gettempdir(), dirpath)
 
         # Check existence dir and start clean by removing the directory.
-        if not os.path.exists(dirpath):
+        if not os.path.isdir(dirpath):
             # Create directory
             logger.info('Creating directory: [%s]' %(dirpath))
             os.mkdir(dirpath)
     except:
         raise Exception(logger.error('[%s] does not exists or can not be created.', dirpath))
 
+    dirpath = os.path.abspath(dirpath)
+    logger.info("filepath is set to [%s]" %(dirpath))
+
     return dirpath
+
 
 # %% Main
 # if __name__ == "__main__":
