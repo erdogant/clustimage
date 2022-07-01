@@ -1312,7 +1312,7 @@ class Clustimage():
             idx = unique_no_sort(np.append(idx_dist, idx_k))
             # Store in dict
             logger.info('[%d] similar images found for [%s]' %(len(idx), filename))
-            store_key = {**store_key, 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'y_filenames': np.array(self.results['filenames'])[idx].tolist(), 'y_pathnames': np.array(self.results['pathnames'])[idx].tolist(), 'x_pathnames': X['pathnames'][i]}
+            store_key = {**store_key, 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'labels': np.array(self.results['labels'])[idx].tolist(), 'y_filenames': np.array(self.results['filenames'])[idx].tolist(), 'y_pathnames': np.array(self.results['pathnames'])[idx].tolist(), 'x_pathnames': X['pathnames'][i]}
             if todf: store_key = pd.DataFrame(store_key)
             out[filename] = store_key
 
