@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
               <div class="version">
-                1.5.2
+                1.5.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -306,6 +306,8 @@ If case both <em>k</em> and <em>alpha</em> are specified, the union of detected 
 Note that the metric can be changed in this function but this may lead to confusions as the results will not intuitively match with the scatter plots as these are determined using metric in the fit_transform() function.</p>
 <p>Example to find similar images using 1D vector as input image.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="c1"># Init with default settings</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
@@ -326,13 +328,24 @@ Note that the metric can be changed in this function but this may lead to confus
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_find</span><span class="p">()</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">zoom</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-<span class="c1"># Plot the probabilities</span>
+<span class="c1"># Extract the first input image name</span>
 <span class="n">filename</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">results_find</span><span class="o">.</span><span class="n">keys</span><span class="p">()][</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Plot the probabilities</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">results_find</span><span class="p">[</span><span class="n">filename</span><span class="p">][</span><span class="s1">&#39;y_proba&#39;</span><span class="p">],</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;samples&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Pvalue&#39;</span><span class="p">)</span>
+
+<span class="c1"># Extract the cluster labels for the input image</span>
+<span class="n">results_find</span><span class="p">[</span><span class="n">filename</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span>
+
+<span class="c1"># The majority of labels is for class 0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">results_find</span><span class="p">[</span><span class="n">filename</span><span class="p">][</span><span class="s1">&#39;labels&#39;</span><span class="p">]))</span>
+<span class="c1"># 0    171</span>
+<span class="c1"># 7      8</span>
+<span class="c1"># Name: labels, dtype: int64</span>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id1">

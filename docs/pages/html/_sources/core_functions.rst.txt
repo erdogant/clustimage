@@ -162,34 +162,47 @@ Example to find similar images using 1D vector as input image.
 
 .. code:: python
 
-        from clustimage import Clustimage
+	from clustimage import Clustimage
+	import matplotlib.pyplot as plt
+	import pandas as pd
 
-        # Init with default settings
-        cl = Clustimage(method='pca')
+	# Init with default settings
+	cl = Clustimage(method='pca')
 
-        # load example with digits
-        X = cl.import_example(data='mnist')
+	# load example with digits
+	X = cl.import_example(data='mnist')
 
-        # Cluster digits
-        results = cl.fit_transform(X)
-        
-        # Lets search for the following image:
-        plt.figure(); plt.imshow(X[0,:].reshape(cl.params['dim']), cmap='binary')
+	# Cluster digits
+	results = cl.fit_transform(X)
 
-        # Find images
-        results_find = cl.find(X[0:3,:], k=None, alpha=0.05)
+	# Lets search for the following image:
+	plt.figure(); plt.imshow(X[0,:].reshape(cl.params['dim']), cmap='binary')
 
-        # Show whatever is found. This looks pretty good.
-        cl.plot_find()
-        cl.scatter(zoom=3)
+	# Find images
+	results_find = cl.find(X[0:3,:], k=None, alpha=0.05)
 
-        # Plot the probabilities
-        filename = [*results_find.keys()][1]
-        plt.figure(figsize=(8,6))
-        plt.plot(results_find[filename]['y_proba'],'.')
-        plt.grid(True)
-        plt.xlabel('samples')
-        plt.ylabel('Pvalue')
+	# Show whatever is found. This looks pretty good.
+	cl.plot_find()
+	cl.scatter(zoom=3)
+
+	# Extract the first input image name
+	filename = [*results_find.keys()][1]
+
+	# Plot the probabilities
+	plt.figure(figsize=(8,6))
+	plt.plot(results_find[filename]['y_proba'],'.')
+	plt.grid(True)
+	plt.xlabel('samples')
+	plt.ylabel('Pvalue')
+
+	# Extract the cluster labels for the input image
+	results_find[filename]['labels']
+
+	# The majority of labels is for class 0
+	print(pd.value_counts(results_find[filename]['labels']))
+	# 0    171
+	# 7      8
+	# Name: labels, dtype: int64
 
 
 
