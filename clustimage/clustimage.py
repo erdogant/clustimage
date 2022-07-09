@@ -194,6 +194,10 @@ class Clustimage():
         if method=='crop-resistant-hash':
             logger.info('Hash size is set to 8 for crop-resistant and can not be changed.')
             params_hash['hash_size'] = 8
+        if method=='whash-haar':
+            if (np.ceil(np.log2(params_hash['hash_size'])) != np.floor(np.log2(params_hash['hash_size']))):
+                logger.error('hash_size should be power of 2 (8, 16, 32, 64, ..., etc)')
+                return None
 
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
