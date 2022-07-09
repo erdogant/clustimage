@@ -89,8 +89,7 @@ class Clustimage():
             * 'whash-haar': Haar wavelet hash
             * 'whash-db4': Daubechies wavelet hash
             * 'colorhash': HSV color hash
-            * 'crop-resistant': Crop-resistant hash
-
+            * 'crop-resistant-hash': Crop-resistant hash
     embedding : str, (default: 'tsne')
         Perform embedding on the extracted features. The xycoordinates are used for plotting purposes. For UMAP; all default settings are used, and with densmap=True.
             * 'tsne'
@@ -192,6 +191,9 @@ class Clustimage():
             grayscale=True
         if (dim is None) or ((dim[0]>1024) or (dim[1]>1024)):
             logger.warning('Setting dim > (1024, 1024) is most often not needed and can cause memory and other issues.')
+        if method=='crop-resistant-hash':
+            logger.info('Hash size is set to 8 for crop-resistant and can not be changed.')
+            params_hash['hash_size'] = 8
 
         # Find path of xml file containing haarcascade file and load in the cascade classifier
         # self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
@@ -1150,9 +1152,13 @@ class Clustimage():
         imghash=[]
         if hash_size is None: hash_size=self.params_hash['hash_size']
         try:
-            imghash = self.params_hash['hashfunc'](Image.fromarray(img), hash_size=hash_size).hash.ravel()
+            if self.params['method']=='crop-resistant-hash':
+                imghash = self.params_hash['hashfunc'](Image.fromarray(img)).segment_hashes[1].hash.ravel()
+                self.params_hash['hash_size']=np.sqrt(len(imghash))
+            else:
+                imghash = self.params_hash['hashfunc'](Image.fromarray(img), hash_size=hash_size).hash.ravel()
         except:
-            logger.error('Could not compute hash.')
+            logger.error('Could not compute hash for a particular image.')
             pass
 
         return imghash
@@ -2443,7 +2449,7 @@ def get_params_hash(hashmethod, params_hash):
         'whash-haar': Haar wavelet hash
         'whash-db4': Daubechies wavelet hash
         'colorhash': HSV color hash
-        'crop-resistant': Crop-resistant hash
+        'crop-resistant-hash': Crop-resistant hash
 
     Returns
     -------
@@ -2463,7 +2469,7 @@ def get_params_hash(hashmethod, params_hash):
             return imagehash.whash(img, mode='db4')
     elif hashmethod == 'colorhash':
         hashfunc = imagehash.colorhash
-    elif hashmethod == 'crop-resistant':
+    elif hashmethod == 'crop-resistant-hash':
         hashfunc = imagehash.crop_resistant_hash
     else:
         hashfunc=None
