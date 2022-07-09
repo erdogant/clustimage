@@ -1676,6 +1676,10 @@ class Clustimage():
             else:
                 title = (self.params['embedding'] + ' plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
 
+        # Add colors
+        colours = colourmap.fromlist(labels, cmap=cmap)
+        args_scatter['c'] = colours[0]
+
         # Defaults
         default_scatter = {'title': title, 'fontsize': 18, 'fontcolor': [0, 0, 0], 'xlabel': 'x-axis', 'ylabel': 'y-axis', 'cmap': 'Set1', 'density': False, 'gradient': None, 'figsize': figsize, 'legend': True, 's': dotsize}
         args_scatter = {**default_scatter, **args_scatter}
@@ -1685,7 +1689,6 @@ class Clustimage():
         set_logger(verbose=40)
 
         # Scatter
-        # colours=np.vstack(colourmap.fromlist(labels)[0])
         fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], labels=labels, **args_scatter)
 
         if hasattr(self, 'results_unique'):
@@ -1701,23 +1704,33 @@ class Clustimage():
         # Scatter the predicted cases
         if (self.results.get('predict', None) is not None):
             if self.params['method']=='pca':
+                logger.info('Plotting predicted results..')
+
                 # Scatter all points
-                fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize)
+                fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize, s=dotsize)
+
                 # Create unique colors
-                colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
+                # colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
                 for key in self.results['predict'].keys():
                     if self.results['predict'].get(key).get('y_idx', None) is not None:
+                        # Color based on the closest cluster label
                         x = self.results['predict']['feat'].iloc[:, 0].loc[key]
                         if len(self.results['predict']['feat'])>=2:
                             y = self.results['predict']['feat'].iloc[:, 1].loc[key]
                         else:
                             y=0
-                        idx = self.results['predict'][key]['y_idx']
+
+                        # Color based on the most often seen cluster label
+                        uiy, ycounts = np.unique(self.results['predict'][key]['labels'], return_counts=True)
+                        y_predict = uiy[np.argmax(ycounts)]
+
                         # Scatter
-                        ax.scatter(x, y, color=colours[key], edgecolors=[0, 0, 0])
-                        ax.text(x, y, key, color=colours[key])
-                        if self.results['feat'].shape[1]>=2:
-                            ax.scatter(self.results['feat'][idx][:, 0], self.results['feat'][idx][:, 1], edgecolors=[0, 0, 0])
+                        color = colours[1].get(y_predict, [0, 0, 0])
+                        ax.scatter(x, y, color=color, edgecolors=[0, 0, 0], marker='*', s=dotsize * 10)
+                        if text: ax.text(x, y, key, color=color)
+                        # if self.results['feat'].shape[1]>=2:
+                            # idx = self.results['predict'][key]['y_idx']
+                            # ax.scatter(self.results['feat'][idx][:, 0], self.results['feat'][idx][:, 1], edgecolors=[0, 0, 0])
 
             else:
                 logger.info('Mapping predicted results is only possible when uing method="pca".')
