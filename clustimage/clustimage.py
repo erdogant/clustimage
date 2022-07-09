@@ -1701,6 +1701,8 @@ class Clustimage():
 
         if plt_all:
             self._add_img_to_scatter(ax, cmap=cmap, zoom=zoom, pathnames=self.results['pathnames'], xycoord=self.results['xycoord'])
+        plt.show()
+        plt.draw()
 
         # Scatter the predicted cases
         if (self.results.get('predict', None) is not None):
@@ -1732,7 +1734,8 @@ class Clustimage():
                         # if self.results['feat'].shape[1]>=2:
                             # idx = self.results['predict'][key]['y_idx']
                             # ax.scatter(self.results['feat'][idx][:, 0], self.results['feat'][idx][:, 1], edgecolors=[0, 0, 0])
-
+                plt.show()
+                plt.draw()
             else:
                 logger.info('Mapping predicted results is only possible when uing method="pca".')
 
