@@ -53,9 +53,9 @@ Content
 
 .. toctree::
   :maxdepth: 1
-  :caption: Predict
+  :caption: Find/Predict
 
-  Cluster Predict
+  Find
 
 
 .. toctree::

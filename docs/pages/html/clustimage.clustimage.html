@@ -70,6 +70,12 @@
 <li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbindex">DBindex</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Cluster%20Evaluation.html#dbscan">DBSCAN</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Find/Predict</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Find.html">k-nearest neighbour</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Find.html#probability-density-fitting">Probability density fitting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Find.html#more-examples">More examples</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Performance</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Performance.html">Performance</a></li>
@@ -135,22 +141,37 @@
 <dd><p>Clustering of images.</p>
 <p>Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
 Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
-Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.
-The following 4 steps are taken:</p>
-<dl class="simple">
-<dt>Step 1. Pre-processing:</dt><dd><p>Images are imported with specific extention ([‘png’,’tiff’,’jpg’]),
+Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.</p>
+<p>The following 4 steps are taken:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Step 1. Pre-processing.</dt><dd><p>Images are imported with specific extention ([‘png’,’tiff’,’jpg’]),
 Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
 Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.</p>
 </dd>
-<dt>Step 2. Feature-extraction:</dt><dd><p>Features are extracted from the images using Principal component analysis (PCA), Histogram of Oriented Gradients (HOG) or the raw values are used.</p>
-</dd>
-<dt>Step 3. Embedding:</dt><dd><p>The feature-space non-lineair transformed using t-SNE and the coordinates are stored. The embedding is only used for visualization purposes.</p>
-</dd>
-<dt>Step 4. Cluster evaluation:</dt><dd><p>The feature-space is used as an input in the cluster-evaluation method. The cluster evaluation method determines the optimal number of clusters and return the cluster labels.</p>
-</dd>
-<dt>Step 5: Done.</dt><dd><p>The results are stored in the object and returned by the model. Various different (scatter) plots can be made to evaluate the results.</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Step 2. Feature-extraction.</dt><dd><p>Features are extracted from the images using Principal component analysis (PCA), Histogram of Oriented Gradients (HOG) or the raw values are used.</p>
 </dd>
 </dl>
+</li>
+<li><dl class="simple">
+<dt>Step 3. Embedding:</dt><dd><p>The feature-space non-lineair transformed using t-SNE and the coordinates are stored. The embedding is only used for visualization purposes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Step 4. Cluster evaluation.</dt><dd><p>The feature-space is used as an input in the cluster-evaluation method. The cluster evaluation method determines the optimal number of clusters and return the cluster labels.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Step 5: Save.</dt><dd><p>The results are stored in the object and returned by the model. Various different (scatter) plots can be made to evaluate the results.</p>
+</dd>
+</dl>
+</li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

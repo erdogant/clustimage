@@ -264,12 +264,12 @@ Silhouette Plot
     cl.dendrogram()
 
 
-.. |figE3| image:: ../figs/101_silhouette_plot.png
+.. |figE30| image:: ../figs/101_silhouette_plot.png
 .. table:: Silhouette plot
    :align: center
 
    +----------+
-   | |figE3|  |
+   | |figE30| |
    +----------+
 
 
