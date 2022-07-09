@@ -3,6 +3,83 @@ import clustimage
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %% Iterative learning
+from clustimage import Clustimage
+import numpy as np
+
+# Init with default settings
+cl = Clustimage(method='pca')
+# load example with digits
+X = cl.import_example(data='mnist')
+
+# Make 1st subset
+idx = np.unique(np.random.randint(0,X.shape[0], 25))
+X1 = X[idx, :]
+X = X[np.setdiff1d(range(0, X.shape[0]), idx), :]
+
+# Cluster dataset X
+results = cl.fit_transform(X)
+# Results are also stored in object results
+cl.results.keys()
+# Scatter results
+cl.scatter(zoom=3, dotsize=50, figsize=(25, 15), legend=False, text=False)
+
+# Find images for 1st subset of images
+X1_results = cl.find(X1, alpha=0.05)
+# Make scatter
+cl.scatter(zoom=5, dotsize=100, text=False, figsize=(35, 20))
+
+# Print first key
+keys = list(X1_results.keys())[1:]
+print(X1_results.get(keys[0]).columns)
+# ['y_idx', 'distance', 'y_proba', 'labels', 'y_filenames', 'y_pathnames', 'x_pathnames']
+print(X1_results.get(keys[0])[['labels', 'distance','y_proba']])
+
+#     labels    distance   y_proba
+# 0        8  189.373756  0.000035
+# 1        8  305.290164  0.000822
+# 2        8  338.588849  0.001812
+# 3        8  341.933366  0.001956
+# 4        8  351.231864  0.002412
+# ..     ...         ...       ...
+# 57       8  506.617886  0.044141
+# 58       8  507.522983  0.044750
+# 59       8  508.852247  0.045657
+# 60       8  509.517201  0.046116
+# 61       8  511.862011  0.047765
+
+# Get most often seen class label for key
+for key in keys:
+    uiy, ycounts = np.unique(X1_results.get(key)['labels'], return_counts=True)
+    y_predict = uiy[np.argmax(ycounts)]
+    print('class:[%s] - %s' %(y_predict, key))
+
+# class:[9] - b2ea44d9-de55-421b-8bd1-6d13509533f5.png
+# class:[4] - 60dabaf0-7e1a-4c57-bb57-5d464fd2d8fb.png
+# class:[6] - dbc30522-5c83-4563-9c9f-40a86f24a091.png
+# class:[1] - deb11282-a992-4282-8212-ba62ef1e26fc.png
+# class:[3] - 29104a7c-775b-462f-84ba-e824c7c4b9c7.png
+# class:[9] - 45e6f5fd-4423-4743-850e-921914bfb9c9.png
+# class:[9] - 300a866e-5440-444a-b284-d2bfb1b1178b.png
+# class:[8] - 2dd0defc-d72a-4189-abae-bd33a94ee044.png
+# class:[7] - a308d13e-fa3e-4428-8b5e-edb26554d723.png
+# class:[2] - 6dc9c2b5-e1eb-4b6e-891a-db657c663013.png
+# class:[9] - 30477a7a-e7a0-44f2-8bb2-222719ebe12b.png
+# class:[5] - 50261737-f812-4665-b46f-cf8afb3cc88c.png
+# class:[0] - c83ab55a-2983-44a6-9e2e-4964dc13c1b0.png
+# class:[9] - 3eafd007-b6ed-4d17-a9db-3477854525df.png
+# class:[8] - 411c207e-4804-4e30-a1c5-546876e36c51.png
+# class:[4] - 661ac0f2-6f41-493a-bb3a-2c068c632d86.png
+# class:[9] - 9fc65ef1-ff93-4ac6-9cdb-f4605ee9661a.png
+# class:[7] - 6d9e017e-fc6a-424f-8f40-52995db771dc.png
+# class:[4] - dfc5cf51-2157-437f-b1ce-920100b74119.png
+# class:[4] - 507c365d-d35d-4623-985a-e9512c511d11.png
+# class:[0] - 058f3759-2608-490e-ac79-e5fde8d10f7e.png
+# class:[2] - a10dbae8-81f1-4613-8fd9-0bfa4815f1ad.png
+# class:[2] - a889af11-961c-42f6-8b34-3d0f7050c34c.png
+# class:[0] - 2e92d26c-3bf4-4c25-9d7e-4ceaa2e06d69.png
+# class:[4] - b7706e78-c653-4e26-9d7a-bcb512751526.png
+
 # %% 
 from clustimage import Clustimage
 import matplotlib.pyplot as plt
@@ -26,6 +103,7 @@ results_find = cl.find(X[0:3,:], k=None, alpha=0.05)
 # Show whatever is found. This looks pretty good.
 cl.plot_find()
 cl.scatter(zoom=3)
+cl.plot()
 
 # Extract the first input image name
 filename = [*results_find.keys()][1]

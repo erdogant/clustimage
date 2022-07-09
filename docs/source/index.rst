@@ -51,6 +51,12 @@ Content
 
   Cluster Evaluation
 
+.. toctree::
+  :maxdepth: 1
+  :caption: Predict
+
+  Cluster Predict
+
 
 .. toctree::
   :maxdepth: 1
