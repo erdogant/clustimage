@@ -2,11 +2,11 @@ This section describes how to predict new unseen data points with a readily fitt
 
 The ``find`` function :func:`clustimage.clustimage.Clustimage.find` allows to find images that are similar for what is readily being seen by the model. Finding images can be performed in two manners as described below. In both cases, the adjacency matrix is first computed using the distance metric (default Euclidean).
 
-k-nearest neighbour 
+k-nearest neighbour
 '''''''''''''''''''
 The k-nearest neighbour approach searches the k nearest neighbours to that of the input image using the (default) Euclidean distance metric. This approach dus not return a P-value the distances to the closest neighbors. If case both *k* and *alpha* are specified, the union of detected samples is taken.
 
-Example to find similar using an unseen dataset.
+Example to find similar samples for an unseen dataset using k-nearest neighbour approach.
 
 .. code:: python
 
@@ -87,7 +87,7 @@ The probability density fitting method fits a model on the input features to det
 
 For each new (unseen) input image, the probability of similarity is computed across the images, and images with P <= *alpha*(lower bound) are returned. Note that the metric can be changed in this function but this may lead to confusions as the results will not intuitively match with the scatter plots as these are determined using metric in the fit_transform() function.
 
-Example to find similar using an unseen dataset.
+Example to find similar samples for an unseen dataset using probability density fitting.
 
 .. code:: python
 
