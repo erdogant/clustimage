@@ -3,6 +3,37 @@ import clustimage
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %%
+import sys
+import os
+import glob
+import numpy as np
+from clustimage import Clustimage
+import matplotlib.pyplot as plt
+
+cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(128,128),params_pca={'n_components':0.95})
+# in_files = input("""Give the absolute path to a directory with your files: \n""")
+# some_files = glob.glob(in_files)
+
+some_files =  cl.import_example(data='flowers')
+
+results = cl.fit_transform(some_files,
+cluster='agglomerative',
+evaluate='silhouette',
+metric='euclidean',
+linkage='ward',
+min_clust=3,
+max_clust=6,
+cluster_space='high')
+
+cl.clusteval.plot()
+cl.clusteval.scatter(cl.results['xycoord'])
+cl.pca.plot()
+cl.plot_unique(img_mean=False)
+cl.plot(cmap='binary')
+cl.scatter(zoom=1, img_mean=False)
+cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
+
 # %% Iterative learning
 from clustimage import Clustimage
 import numpy as np
