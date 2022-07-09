@@ -58,19 +58,20 @@ class Clustimage():
     Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
     Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
     Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.
+
     The following 4 steps are taken:
 
-    Step 1. Pre-processing:
+    * Step 1. Pre-processing.
         Images are imported with specific extention (['png','tiff','jpg']),
         Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
         Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
-    Step 2. Feature-extraction:
+    * Step 2. Feature-extraction.
         Features are extracted from the images using Principal component analysis (PCA), Histogram of Oriented Gradients (HOG) or the raw values are used.
-    Step 3. Embedding:
+    * Step 3. Embedding:
         The feature-space non-lineair transformed using t-SNE and the coordinates are stored. The embedding is only used for visualization purposes.
-    Step 4. Cluster evaluation:
+    * Step 4. Cluster evaluation.
         The feature-space is used as an input in the cluster-evaluation method. The cluster evaluation method determines the optimal number of clusters and return the cluster labels.
-    Step 5: Done.
+    * Step 5: Save.
         The results are stored in the object and returned by the model. Various different (scatter) plots can be made to evaluate the results.
 
     Parameters
