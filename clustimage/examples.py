@@ -4,6 +4,50 @@ import clustimage
 # print(clustimage.__version__)
 
 # %%
+from clustimage import Clustimage
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Init with default settings
+cl = Clustimage(method='pca')
+
+# load example with digits
+X = cl.import_example(data='mnist')
+
+# Cluster digits
+results = cl.fit_transform(X)
+
+# Lets search for the following image:
+# plt.figure(); plt.imshow(X[0,:].reshape(cl.params['dim']), cmap='binary')
+
+# Find images
+results_find = cl.find(X[0:3,:], k=None, alpha=0.05)
+
+# Show whatever is found. This looks pretty good.
+cl.plot_find()
+cl.scatter(zoom=3)
+cl.plot()
+
+# Extract the first input image name
+filename = [*results_find.keys()][1]
+
+# Plot the probabilities
+plt.figure(figsize=(8,6))
+plt.plot(results_find[filename]['y_proba'],'.')
+plt.grid(True)
+plt.xlabel('samples')
+plt.ylabel('Pvalue')
+
+# Extract the cluster labels for the input image
+results_find[filename]['labels']
+
+# The majority (=171) of labels is for class [0]
+print(pd.value_counts(results_find[filename]['labels']))
+# 0    171
+# 7      8
+# Name: labels, dtype: int64
+
+# %%
 import sys
 import os
 import glob
