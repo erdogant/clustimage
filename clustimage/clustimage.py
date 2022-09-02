@@ -664,6 +664,7 @@ class Clustimage():
 
         """
         out = None
+        # Set the find_func to true to make sure the correct routines are used.
         self.find_func=True
         if (k is None) and (alpha is None):
             raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
@@ -677,8 +678,10 @@ class Clustimage():
         # Collect the samples
         out = self._collect_pca(Xnew, Y, k, alpha, feat, todf=True)
 
-        # Store
+        # Set the find_func to false because it is the end of this find function.
         self.find_func = False
+
+        # Store
         self.results['predict'] = out
         self.params['metric_find'] = metric
         return self.results['predict']
