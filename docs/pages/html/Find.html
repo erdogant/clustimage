@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -31,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
               <div class="version">
-                1.5.5
+                1.5.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -103,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#blog">Blog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clustimage.clustimage.html">API References</a></li>
 </ul>
@@ -136,7 +138,7 @@
   <p>This section describes how to predict new unseen data points with a readily fitted model.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">find</span></code> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.find" title="clustimage.clustimage.Clustimage.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.find()</span></code></a> allows to find images that are similar for what is readily being seen by the model. Finding images can be performed in two manners as described below. In both cases, the adjacency matrix is first computed using the distance metric (default Euclidean).</p>
 <section id="k-nearest-neighbour">
-<h1>k-nearest neighbour<a class="headerlink" href="#k-nearest-neighbour" title="Permalink to this headline"></a></h1>
+<h1>k-nearest neighbour<a class="headerlink" href="#k-nearest-neighbour" title="Permalink to this heading"></a></h1>
 <p>The k-nearest neighbour approach searches the k nearest neighbours to that of the input image using the (default) Euclidean distance metric. This approach dus not return a P-value the distances to the closest neighbors. If case both <em>k</em> and <em>alpha</em> are specified, the union of detected samples is taken.</p>
 <p>Example to find similar samples for an unseen dataset using k-nearest neighbour approach.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
@@ -212,7 +214,7 @@
 </div>
 </section>
 <section id="probability-density-fitting">
-<h1>Probability density fitting<a class="headerlink" href="#probability-density-fitting" title="Permalink to this headline"></a></h1>
+<h1>Probability density fitting<a class="headerlink" href="#probability-density-fitting" title="Permalink to this heading"></a></h1>
 <p>The probability density fitting method fits a model on the input features to determine the loc/scale/arg parameters across various theoretical distribution. In case of PCA, these are the principal components. The tested disributions are <em>[‘norm’, ‘expon’, ‘uniform’, ‘gamma’, ‘t’]</em>. The fitted distribution is the similarity-distribution of samples.</p>
 <p>For each new (unseen) input image, the probability of similarity is computed across the images, and images with P &lt;= <a href="#id1"><span class="problematic" id="id2">*</span></a>alpha*(lower bound) are returned. Note that the metric can be changed in this function but this may lead to confusions as the results will not intuitively match with the scatter plots as these are determined using metric in the fit_transform() function.</p>
 <p>Example to find similar samples for an unseen dataset using probability density fitting.</p>
@@ -295,7 +297,7 @@
 </div>
 </section>
 <section id="more-examples">
-<h1>More examples<a class="headerlink" href="#more-examples" title="Permalink to this headline"></a></h1>
+<h1>More examples<a class="headerlink" href="#more-examples" title="Permalink to this heading"></a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>

@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -31,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
               <div class="version">
-                1.5.5
+                1.5.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -103,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#blog">Blog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clustimage.clustimage.html">API References</a></li>
 </ul>
@@ -134,7 +136,7 @@
            <div itemprop="articleBody">
              
   <section id="gridsearch">
-<h1>Gridsearch<a class="headerlink" href="#gridsearch" title="Permalink to this headline"></a></h1>
+<h1>Gridsearch<a class="headerlink" href="#gridsearch" title="Permalink to this heading"></a></h1>
 <p>For the detection of the optimal number of clusters, the python library <code class="docutils literal notranslate"><span class="pre">clusteval</span></code> is utilized to evaluate the <strong>goodness</strong> of clusters.
 The clustering approaches can be set to <em>agglomerative</em>, <em>kmeans</em>, <em>dbscan</em> and <em>hdbscan</em>, for which the <code class="docutils literal notranslate"><span class="pre">clusteval</span></code> library then searches across the space of clusters and method-parameters to determine the optimal number of clusters given the input dataset.</p>
 <p><strong>Cluster evaluation can be performed based on:</strong></p>
@@ -155,7 +157,7 @@ The clustering approaches can be set to <em>agglomerative</em>, <em>kmeans</em>,
 </div>
 </section>
 <section id="silhouette">
-<h1>Silhouette<a class="headerlink" href="#silhouette" title="Permalink to this headline"></a></h1>
+<h1>Silhouette<a class="headerlink" href="#silhouette" title="Permalink to this heading"></a></h1>
 <p>The silhouette value is a measure of how similar a sample is to its own cluster (cohesion) compared to other clusters (separation).
 The scores ranges between [−1, 1], where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters.
 The silhouette approach is thus a sample-wise approach, which means that for each sample, a silhouette score is computed and if most samples have a high value, then the clustering configuration is appropriate.
@@ -199,7 +201,7 @@ Note that the cluster evaluation is peformed on the high-dimensional feature spa
 </table>
 </section>
 <section id="dbindex">
-<h1>DBindex<a class="headerlink" href="#dbindex" title="Permalink to this headline"></a></h1>
+<h1>DBindex<a class="headerlink" href="#dbindex" title="Permalink to this heading"></a></h1>
 <p>The Davies–Bouldin index (DBI), is a metric for evaluating clustering algorithms.
 This is an internal evaluation scheme, which means that the clustering result is evaluated based on the data clustered itself (internal information).
 The lower the value, the tighter the clusters and the seperation between clusters.</p>
@@ -241,7 +243,7 @@ The lower the value, the tighter the clusters and the seperation between cluster
 Note that the cluster evaluation is peformed on the high-dimensional feature space, in this case the top 50PCs. For illustration purposes, the 2D-space is coloured on the detected cluster-labels.</p>
 </section>
 <section id="dbscan">
-<h1>DBSCAN<a class="headerlink" href="#dbscan" title="Permalink to this headline"></a></h1>
+<h1>DBSCAN<a class="headerlink" href="#dbscan" title="Permalink to this heading"></a></h1>
 <p>Density-Based Spatial Clustering of Applications with Noise is an clustering approach that finds core samples of high density and expands clusters from them.
 This works especially good when having samples which contains clusters of similar density. This approach is recommended in combination with a low-dimensional space, such as the coordinates from tSNE.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Feature extraction and cluster evaluation on the low-dimensional space</span>

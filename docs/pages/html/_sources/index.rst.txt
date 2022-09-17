@@ -15,6 +15,17 @@ Many computer vision tasks rely on (deep) neural networks, and aim to predict "w
 	`For usage and more details, read the Medium blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
 
 
+Star is important
+======================
+If you ❤️ this project, **star** this repo at the `github page <https://github.com/erdogant/clustimage/>`_!
+
+
+Github
+======
+Please report bugs, issues and feature extensions at `github <https://github.com/erdogant/clustimage/>`_.
+
+
+
 Content
 =======
 
@@ -88,38 +99,6 @@ Content
 
 
 
-Quick install
--------------
-
-.. code-block:: console
-
-   pip install clustimage
-
-
-
-
-Source code and issue tracker
-------------------------------
-
-`Github clustimage <https://github.com/erdogant/clustimage/>`_.
-Please report bugs, issues and feature extensions there.
-
-
-Citing clustimage
---------------------------------
-
-The bibtex can be found in the right side menu at the `github page <https://github.com/erdogant/clustimage/>`_.
-
-
-Sponsor this project
-------------------------------
-
-If you like this project, **star** this repo and become a **sponsor**!
-Read more why this is important on my sponsor page!
-
-.. raw:: html
-
-	<iframe src="https://github.com/sponsors/erdogant/button" title="Sponsor erdogant" height="35" width="116" style="border: 0;"></iframe>
 
 
 Indices and tables

@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -31,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
               <div class="version">
-                1.5.5
+                1.5.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -124,6 +125,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#blog">Blog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="clustimage.clustimage.html">API References</a></li>
 </ul>
@@ -157,7 +159,7 @@
   <p>This section describes the core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>.
 Many of the functionalities are written in a generic manner which allows to be used in various applications.</p>
 <section id="core-functionalities">
-<h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this headline"></a></h1>
+<h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this heading"></a></h1>
 <p>The are 5 core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> that allows to preprocess the input images, robustly determines the optimal number of clusters, and then optimize the clusters if desired.</p>
 <blockquote>
 <div><ul class="simple">
@@ -169,7 +171,7 @@ Many of the functionalities are written in a generic manner which allows to be u
 </ul>
 </div></blockquote>
 <section id="fit-and-transform">
-<h2>Fit and transform<a class="headerlink" href="#fit-and-transform" title="Permalink to this headline"></a></h2>
+<h2>Fit and transform<a class="headerlink" href="#fit-and-transform" title="Permalink to this heading"></a></h2>
 <p>The <em>fit_transform</em> function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
 The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 Based on the clustering results, the unique images are also gathered.</p>
@@ -185,7 +187,7 @@ Based on the clustering results, the unique images are also gathered.</p>
 </div></blockquote>
 </section>
 <section id="import-data">
-<h2>import_data<a class="headerlink" href="#import-data" title="Permalink to this headline"></a></h2>
+<h2>import_data<a class="headerlink" href="#import-data" title="Permalink to this heading"></a></h2>
 <p>The input for the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.import_data" title="clustimage.clustimage.Clustimage.import_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.import_data()</span></code></a> can have multiple forms; path to directory, list of strings and and array-like input.
 The following steps are used for which the parameters needs to be set during initialization:</p>
 <blockquote>
@@ -209,7 +211,7 @@ The following steps are used for which the parameters needs to be set during ini
 </div>
 </section>
 <section id="extract-feat">
-<h2>extract_feat<a class="headerlink" href="#extract-feat" title="Permalink to this headline"></a></h2>
+<h2>extract_feat<a class="headerlink" href="#extract-feat" title="Permalink to this heading"></a></h2>
 <p>Extracting of features is performed in the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_feat" title="clustimage.clustimage.Clustimage.extract_feat"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_feat()</span></code></a> function.
 There are different options the extract features from the image as lised below. Note that these settings needs to be set during initialization.</p>
 <blockquote>
@@ -242,7 +244,7 @@ There are different options the extract features from the image as lised below. 
 </div>
 </section>
 <section id="embedding">
-<h2>embedding<a class="headerlink" href="#embedding" title="Permalink to this headline"></a></h2>
+<h2>embedding<a class="headerlink" href="#embedding" title="Permalink to this heading"></a></h2>
 <p>The embedding is performed using tSNE in the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.embedding" title="clustimage.clustimage.Clustimage.embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.embedding()</span></code></a> function.
 The coordinates are used for vizualiation purposes only but if desired. However, when setting the <code class="docutils literal notranslate"><span class="pre">cluster_space</span></code> parameter to ‘low’ in the <code class="docutils literal notranslate"><span class="pre">cluster</span></code> function, the clustering will be performed in the low-dimensional tSNE space.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize</span>
@@ -262,7 +264,7 @@ The coordinates are used for vizualiation purposes only but if desired. However,
 </div>
 </section>
 <section id="cluster">
-<h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this headline"></a></h2>
+<h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this heading"></a></h2>
 <p>The <em>cluster</em> function is build on <a class="reference external" href="https://github.com/erdogant/clusteval">clusteval</a>, which is a python package that provides various evalution methods for unsupervised cluster validation.
 The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 This function can be run after the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
@@ -287,14 +289,14 @@ Besides changing evaluation methods and metrics, it is also possible to cluster 
 <p>More examples can also be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a></p>
 </section>
 <section id="extract-faces">
-<h2>extract_faces<a class="headerlink" href="#extract-faces" title="Permalink to this headline"></a></h2>
+<h2>extract_faces<a class="headerlink" href="#extract-faces" title="Permalink to this heading"></a></h2>
 <p>To cluster faces on images, we first need to detect, and extract the faces from the images.
 The <em>extract_faces</em> function does this task.
 Faces and eyes are detected using <code class="docutils literal notranslate"><span class="pre">haarcascade_frontalface_default.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">haarcascade_eye.xml</span></code> in <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code>.</p>
 <p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_faces" title="clustimage.clustimage.Clustimage.extract_faces"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_faces()</span></code></a></p>
 </section>
 <section id="find">
-<h2>find<a class="headerlink" href="#find" title="Permalink to this headline"></a></h2>
+<h2>find<a class="headerlink" href="#find" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">find</span></code> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.find" title="clustimage.clustimage.Clustimage.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.find()</span></code></a> allows to find images that are similar to that of the input image.
 Finding images can be performed in two manners:</p>
 <blockquote>
@@ -408,7 +410,7 @@ Note that the metric can be changed in this function but this may lead to confus
 <p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.find" title="clustimage.clustimage.Clustimage.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.find()</span></code></a></p>
 </section>
 <section id="unique">
-<h2>unique<a class="headerlink" href="#unique" title="Permalink to this headline"></a></h2>
+<h2>unique<a class="headerlink" href="#unique" title="Permalink to this heading"></a></h2>
 <p>The unique images can be computed using the unique <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.unique" title="clustimage.clustimage.Clustimage.unique"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.unique()</span></code></a> and are detected by first computing the center of the cluster, and then taking the image closest to the center.
 Lets demonstrate this by example and the digits dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
@@ -449,7 +451,7 @@ Lets demonstrate this by example and the digits dataset.</p>
 </section>
 </section>
 <section id="preprocessing">
-<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline"></a></h1>
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this heading"></a></h1>
 <p>The preprocessing step is the function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.imread" title="clustimage.clustimage.Clustimage.imread"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imread()</span></code></a>, and contains 3 functions to handle the import, scaling and resizing of images.
 This function requires the full path to the image for which the first step is reading the images and colour scaling it based on the input parameter <code class="docutils literal notranslate"><span class="pre">grayscale</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">grayscale</span></code> is set to <em>True</em>, the <code class="docutils literal notranslate"><span class="pre">cv2.COLOR_GRAY2RGB</span></code> setting from <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> is used.</p>
@@ -504,7 +506,7 @@ If <code class="docutils literal notranslate"><span class="pre">grayscale</span>
 </tbody>
 </table>
 <section id="imscale">
-<h2>imscale<a class="headerlink" href="#imscale" title="Permalink to this headline"></a></h2>
+<h2>imscale<a class="headerlink" href="#imscale" title="Permalink to this heading"></a></h2>
 <p>The <em>imscale</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imscale()</span></code> is only applicable for 2D-arrays (images).
 Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.</p>
 <p>The images are scaled between [0-255] by the following equation:</p>
@@ -513,13 +515,13 @@ Scaling data is an import pre-processing step to make sure all data is ranged be
 </div></blockquote>
 </section>
 <section id="imresize">
-<h2>imresize<a class="headerlink" href="#imresize" title="Permalink to this headline"></a></h2>
+<h2>imresize<a class="headerlink" href="#imresize" title="Permalink to this heading"></a></h2>
 <p>The <em>imresize</em> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.imresize" title="clustimage.clustimage.imresize"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.imresize()</span></code></a> resizes the images into 128x128 pixels (default) or to an user-defined size.
 The function depends on the functionality of <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> with the interpolation: <code class="docutils literal notranslate"><span class="pre">interpolation=cv2.INTER_AREA</span></code>.</p>
 </section>
 </section>
 <section id="output">
-<h1>Output<a class="headerlink" href="#output" title="Permalink to this headline"></a></h1>
+<h1>Output<a class="headerlink" href="#output" title="Permalink to this heading"></a></h1>
 <p>The results obtained from the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a> or <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a> is a dictionary containing the following keys:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*  img       : Image vector of the preprocessed images.
 *  feat      : Extracted feature.
@@ -573,10 +575,10 @@ The function depends on the functionality of <code class="docutils literal notra
 </div>
 </section>
 <section id="generic-functionalities">
-<h1>Generic functionalities<a class="headerlink" href="#generic-functionalities" title="Permalink to this headline"></a></h1>
+<h1>Generic functionalities<a class="headerlink" href="#generic-functionalities" title="Permalink to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">clustimage</span></code> contains various generic functionalities that are internally used but may be usefull too in other applications.</p>
 <section id="wget">
-<h2>wget<a class="headerlink" href="#wget" title="Permalink to this headline"></a></h2>
+<h2>wget<a class="headerlink" href="#wget" title="Permalink to this heading"></a></h2>
 <p>Download files from the internet and store on disk.
 Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.wget" title="clustimage.clustimage.wget"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.wget()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
@@ -587,7 +589,7 @@ Examples can be found here: <a class="reference internal" href="clustimage.clust
 </div>
 </section>
 <section id="unzip">
-<h2>unzip<a class="headerlink" href="#unzip" title="Permalink to this headline"></a></h2>
+<h2>unzip<a class="headerlink" href="#unzip" title="Permalink to this heading"></a></h2>
 <p>Unzip files into a destination directory.
 Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.unzip" title="clustimage.clustimage.unzip"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.unzip()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
@@ -598,7 +600,7 @@ Examples can be found here: <a class="reference internal" href="clustimage.clust
 </div>
 </section>
 <section id="listdir">
-<h2>listdir<a class="headerlink" href="#listdir" title="Permalink to this headline"></a></h2>
+<h2>listdir<a class="headerlink" href="#listdir" title="Permalink to this heading"></a></h2>
 <p>Recusively list the files in the directory.
 Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.listdir" title="clustimage.clustimage.listdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.listdir()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
@@ -610,7 +612,7 @@ Examples can be found here: <a class="reference internal" href="clustimage.clust
 </div>
 </section>
 <section id="set-logger">
-<h2>set_logger<a class="headerlink" href="#set-logger" title="Permalink to this headline"></a></h2>
+<h2>set_logger<a class="headerlink" href="#set-logger" title="Permalink to this heading"></a></h2>
 <p>Change status of the logger.
 Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.set_logger" title="clustimage.clustimage.set_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.set_logger()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Change to verbosity message of warnings and higher</span>
@@ -619,7 +621,7 @@ Examples can be found here: <a class="reference internal" href="clustimage.clust
 </div>
 </section>
 <section id="extract-hog">
-<h2>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this headline"></a></h2>
+<h2>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this heading"></a></h2>
 <p>Histogram of Oriented Gradients (HOG), is a feature descriptor that is often used to extract features from image data.
 Examples can be found here <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_hog" title="clustimage.clustimage.Clustimage.extract_hog"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_hog()</span></code></a> and a more detailed explanation can be found in the <strong>Feature Extraction</strong> - <strong>HOG</strong> section.</p>
 <hr>

@@ -1,3 +1,6 @@
+Sponsor
+############
+
 .. include:: sponsor.rst
 
 
@@ -23,6 +26,11 @@ Colab Notebook
 .. _Colab notebook: https://colab.research.google.com/github/erdogant/clustimage/blob/master/notebooks/clustimage.ipynb
 
 
+Citing
+#########
+
+.. note::
+	Bibtex can be found at the right side at the `github page <https://github.com/erdogant/clustimage/>`_.
 
 .. raw:: html
 
