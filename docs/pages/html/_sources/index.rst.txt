@@ -17,9 +17,10 @@ Many computer vision tasks rely on (deep) neural networks, and aim to predict "w
 	`For usage and more details, read the Medium blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
 
 
-Star is important
-======================
-If you ❤️ this project, **star** this repo at the `github page <https://github.com/erdogant/clustimage/>`_!
+You contribution is important
+==============================
+If you ❤️ this project, **star** this repo at the `github page <https://github.com/erdogant/clustimage/>`_ and have a look at the `sponser page <https://github.com/erdogant/clustimage/pages/html/Documentation.html>`_!
+
 
 
 Github

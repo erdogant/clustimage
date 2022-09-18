@@ -15,7 +15,6 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -161,10 +160,10 @@
            <div itemprop="articleBody">
              
   <section id="mnist-dataset">
-<h1>Mnist dataset<a class="headerlink" href="#mnist-dataset" title="Permalink to this heading"></a></h1>
+<h1>Mnist dataset<a class="headerlink" href="#mnist-dataset" title="Permalink to this headline"></a></h1>
 <p>In this example we will load the mnist dataset and cluster the images.</p>
 <section id="load-dataset">
-<h2>Load dataset<a class="headerlink" href="#load-dataset" title="Permalink to this heading"></a></h2>
+<h2>Load dataset<a class="headerlink" href="#load-dataset" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load library</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
@@ -188,7 +187,7 @@
 </div>
 </section>
 <section id="cluster-the-images">
-<h2>Cluster the images<a class="headerlink" href="#cluster-the-images" title="Permalink to this heading"></a></h2>
+<h2>Cluster the images<a class="headerlink" href="#cluster-the-images" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preprocessing and feature extraction</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
@@ -206,7 +205,7 @@
 </div>
 </section>
 <section id="detect-unique-images">
-<h2>Detect unique images<a class="headerlink" href="#detect-unique-images" title="Permalink to this heading"></a></h2>
+<h2>Detect unique images<a class="headerlink" href="#detect-unique-images" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the unique images</span>
 <span class="n">unique_samples</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 <span class="c1">#</span>
@@ -232,7 +231,7 @@
 </table>
 </section>
 <section id="cluster-evaluation">
-<h2>Cluster evaluation<a class="headerlink" href="#cluster-evaluation" title="Permalink to this heading"></a></h2>
+<h2>Cluster evaluation<a class="headerlink" href="#cluster-evaluation" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the explained variance</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="c1"># Make scatter plot of PC1 vs PC2</span>
@@ -269,7 +268,7 @@
 </table>
 </section>
 <section id="scatter-plot">
-<h2>Scatter plot<a class="headerlink" href="#scatter-plot" title="Permalink to this heading"></a></h2>
+<h2>Scatter plot<a class="headerlink" href="#scatter-plot" title="Permalink to this headline"></a></h2>
 <p>The scatterplot that is coloured on the clusterlabels. The clusterlabels should match the unique labels.
 Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make scatterplot</span>
@@ -312,7 +311,7 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 </table>
 </section>
 <section id="plot-images-detected-in-a-cluster">
-<h2>Plot images detected in a cluster<a class="headerlink" href="#plot-images-detected-in-a-cluster" title="Permalink to this heading"></a></h2>
+<h2>Plot images detected in a cluster<a class="headerlink" href="#plot-images-detected-in-a-cluster" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot all images per cluster</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
 
@@ -334,7 +333,7 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 </table>
 </section>
 <section id="dendrogram">
-<h2>Dendrogram<a class="headerlink" href="#dendrogram" title="Permalink to this heading"></a></h2>
+<h2>Dendrogram<a class="headerlink" href="#dendrogram" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The dendrogram is based on the high-dimensional feature space.</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">()</span>
 </pre></div>
@@ -352,13 +351,13 @@ Cluster 1 contains digit 4, and  Cluster 5 contains digit 2, etc.</p>
 </section>
 </section>
 <section id="caltech101-dataset">
-<h1>Caltech101 dataset<a class="headerlink" href="#caltech101-dataset" title="Permalink to this heading"></a></h1>
+<h1>Caltech101 dataset<a class="headerlink" href="#caltech101-dataset" title="Permalink to this headline"></a></h1>
 <p>The documentation and docstrings readily contains various examples but lets make another one with many samples.
 In this example, the <strong>Caltech101</strong> dataset will be clustered!
 The pictures of objects belonging to 101 categories. About 40 to 800 images per category. Most categories have about 50 images. The size of each image is roughly 300 x 200 pixels.
 Download the dataset over here: <a class="reference external" href="http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download">http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download</a></p>
 <section id="id1">
-<h2>Cluster the images<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<h2>Cluster the images<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># init</span>
@@ -374,7 +373,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </div>
 </section>
 <section id="id2">
-<h2>Cluster evaluation<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<h2>Cluster evaluation<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h2>
 <p>With <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> we extracted the features that explained 89% of the variance. The optimal number of clusters of 49 (right figure).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate the number of clusters.</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">clusteval</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -395,7 +394,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="silhouette-plot">
-<h2>Silhouette Plot<a class="headerlink" href="#silhouette-plot" title="Permalink to this heading"></a></h2>
+<h2>Silhouette Plot<a class="headerlink" href="#silhouette-plot" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot one of the clusters</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
 
@@ -415,7 +414,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="average-image-per-cluster">
-<h2>Average image per cluster<a class="headerlink" href="#average-image-per-cluster" title="Permalink to this heading"></a></h2>
+<h2>Average image per cluster<a class="headerlink" href="#average-image-per-cluster" title="Permalink to this headline"></a></h2>
 <p>For each of the detected clusters, we can collect the images and plot the image in the center (left figure), or we can average all images to a single image (right figure).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot unique images.</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_unique</span><span class="p">()</span>
@@ -436,7 +435,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="id3">
-<h2>Scatter plot<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<h2>Scatter plot<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h2>
 <p>A scatter plot demonstrates the samples with its cluster labels (colors), and the average images per cluster.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scatter</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -458,7 +457,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="plot-images-detected-in-a-particular-cluster">
-<h2>Plot images detected in a particular cluster<a class="headerlink" href="#plot-images-detected-in-a-particular-cluster" title="Permalink to this heading"></a></h2>
+<h2>Plot images detected in a particular cluster<a class="headerlink" href="#plot-images-detected-in-a-particular-cluster" title="Permalink to this headline"></a></h2>
 <table class="docutils align-center" id="id20">
 <caption><span class="caption-text">Two examples of the clusters that are detected.</span><a class="headerlink" href="#id20" title="Permalink to this table"></a></caption>
 <colgroup>
@@ -474,10 +473,10 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </section>
 </section>
 <section id="flower-dataset">
-<h1>Flower dataset<a class="headerlink" href="#flower-dataset" title="Permalink to this heading"></a></h1>
+<h1>Flower dataset<a class="headerlink" href="#flower-dataset" title="Permalink to this headline"></a></h1>
 <p>In this example we will load the flower dataset and cluster the images for which the path locations are on disk.</p>
 <section id="id4">
-<h2>Load dataset<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<h2>Load dataset<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load library</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
@@ -494,7 +493,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </div>
 </section>
 <section id="id5">
-<h2>Cluster the images<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<h2>Cluster the images<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preprocessing, feature extraction and clustering.</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">pathnames</span><span class="p">)</span>
 </pre></div>
@@ -518,7 +517,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="id6">
-<h2>Detect unique images<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<h2>Detect unique images<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot unique images</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_unique</span><span class="p">()</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_unique</span><span class="p">(</span><span class="n">img_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -541,7 +540,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="id7">
-<h2>Scatter plot<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<h2>Scatter plot<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h2>
 <p>A scatter plot demonstrates the samples with its cluster labels (colors), and the average images per cluster.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scatter</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -568,7 +567,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="id8">
-<h2>Plot images detected in a particular cluster<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<h2>Plot images detected in a particular cluster<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot the images in a specific cluster</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
@@ -591,7 +590,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="predict-unseen-sample">
-<h2>Predict unseen sample<a class="headerlink" href="#predict-unseen-sample" title="Permalink to this heading"></a></h2>
+<h2>Predict unseen sample<a class="headerlink" href="#predict-unseen-sample" title="Permalink to this headline"></a></h2>
 <p>Find images that are significanly similar as the unseen input image.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results_find</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path_to_imgs</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">plot_find</span><span class="p">()</span>
@@ -617,7 +616,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </section>
 </section>
 <section id="clustering-of-faces">
-<h1>Clustering of faces<a class="headerlink" href="#clustering-of-faces" title="Permalink to this heading"></a></h1>
+<h1>Clustering of faces<a class="headerlink" href="#clustering-of-faces" title="Permalink to this headline"></a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="c1"># Initialize with PCA</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">grayscale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -678,7 +677,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </table>
 </section>
 <section id="extract-images-belonging-to-clusters">
-<h1>Extract images belonging to clusters<a class="headerlink" href="#extract-images-belonging-to-clusters" title="Permalink to this heading"></a></h1>
+<h1>Extract images belonging to clusters<a class="headerlink" href="#extract-images-belonging-to-clusters" title="Permalink to this headline"></a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="c1"># Initialize</span>
@@ -718,7 +717,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </div>
 </section>
 <section id="set-image-filenames-using-pandas-dataframes">
-<h1>Set image filenames using pandas dataframes<a class="headerlink" href="#set-image-filenames-using-pandas-dataframes" title="Permalink to this heading"></a></h1>
+<h1>Set image filenames using pandas dataframes<a class="headerlink" href="#set-image-filenames-using-pandas-dataframes" title="Permalink to this headline"></a></h1>
 <p>In case a datamatrix is provided as an input to the model, the default setting is that random filenames are generated and stored in the tempdirectory. However, with a pandas dataframe as input you can provide the desired filenames by changing the index names!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -769,7 +768,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </div>
 </section>
 <section id="import-images-from-url-location">
-<h1>Import images from url location<a class="headerlink" href="#import-images-from-url-location" title="Permalink to this heading"></a></h1>
+<h1>Import images from url location<a class="headerlink" href="#import-images-from-url-location" title="Permalink to this headline"></a></h1>
 <p>Images can also be imported from url locations.
 Each image is first downloaded and stored on a (specified) temp directory.
 In this example we will download 5 images from url locations. Note that url images and path locations can be combined.</p>
@@ -807,7 +806,7 @@ In this example we will download 5 images from url locations. Note that url imag
 </div>
 </section>
 <section id="breaking-up-the-steps">
-<h1>Breaking up the steps<a class="headerlink" href="#breaking-up-the-steps" title="Permalink to this heading"></a></h1>
+<h1>Breaking up the steps<a class="headerlink" href="#breaking-up-the-steps" title="Permalink to this headline"></a></h1>
 <p>Instead of using the all-in-one functionality: fit_transform(), it is also possible to break-up the steps.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
