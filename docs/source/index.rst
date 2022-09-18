@@ -19,7 +19,7 @@ Many computer vision tasks rely on (deep) neural networks, and aim to predict "w
 
 You contribution is important
 ==============================
-If you ❤️ this project, **star** this repo at the `github page <https://github.com/erdogant/clustimage/>`_ and have a look at the `sponser page <https://github.com/erdogant/clustimage/pages/html/Documentation.html>`_!
+If you ❤️ this project, **star** this repo at the `github page <https://github.com/erdogant/clustimage/>`_ and have a look at the `sponser page <https://erdogant.github.io/clustimage/pages/html/Documentation.html>`_!
 
 
 
