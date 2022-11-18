@@ -1057,13 +1057,30 @@ class Clustimage():
         # Store results
         self.results = {'img': None, 'feat': None, 'xycoord': None, 'pathnames': None, 'labels': None, 'url': None}
 
-    def embedding(self, X, metric="euclidean"):
+    def embedding(self, X, metric="euclidean", embedding=None):
         """Compute embedding for the extracted features.
 
         Parameters
         ----------
         X : array-like
             NxM array for which N are the samples and M the features.
+        metric : str, (default: 'euclidean').
+            Distance measures. All metrics from sklearn can be used such as:
+                * 'euclidean'
+                * 'hamming'
+                * 'cityblock'
+                * 'correlation'
+                * 'cosine'
+                * 'jaccard'
+                * 'mahalanobis'
+                * 'seuclidean'
+                * 'sqeuclidean'
+        embedding : str, (default: retrieve from init)
+            Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
+            For UMAP parameters set set to default with densmap=True.
+                * 'tsne'
+                * 'umap'
+                * None: Return the first to axis of input data X.
 
         Returns
         -------
@@ -1072,6 +1089,8 @@ class Clustimage():
         """
         if X.shape[0]<=2:
             return [0, 0]
+        if embedding is None:
+            embedding = self.params.get('embedding', 'tsne')
 
         logger.info('Compute [%s] embedding', self.params['embedding'])
         # Embedding
