@@ -2173,7 +2173,7 @@ def unique_no_sort(x):
     indexes = np.unique(x, return_index=True)[1]
     return [x[index] for index in sorted(indexes)]
 
-# %% Resize image
+# %% Extract basename from path
 
 
 def basename(label):
