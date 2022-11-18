@@ -11,41 +11,23 @@ import pandas as pd
 # Init with default settings
 cl = Clustimage(method='pca')
 
-# load example with digits
-X = cl.import_example(data='mnist')
+
+from sklearn.datasets import load_digits
+X = load_digits(n_class=10, return_X_y=True)
+df = pd.DataFrame(data=X[0], index=X[1])
 
 # Cluster digits
-results = cl.fit_transform(X)
+results = cl.fit_transform(df.values)
 
-# Lets search for the following image:
-# plt.figure(); plt.imshow(X[0,:].reshape(cl.params['dim']), cmap='binary')
+from scatterd import scatterd
+scatterd(x=results['feat'][:, 0], y=results['feat'][:, 1], labels=df.index.values)
+scatterd(x=results['xycoord'][:, 0], y=results['xycoord'][:, 1], labels=df.index.values)
 
-# Find images
-results_find = cl.find(X[0:3,:], k=None, alpha=0.05)
+import numpy as np
+dffin = pd.DataFrame(data=np.c_[df.index.values, results['labels'], results['feat'][:, 0:2], results['xycoord'][:, 0:2]], columns=['y', 'cluster_labels', 'PC1', 'PC2', 'tsne_1', 'tsne_2'])
+dffin['y']=dffin['y'].astype(int)
+dffin['cluster_labels']=dffin['cluster_labels'].astype(int)
 
-# Show whatever is found. This looks pretty good.
-cl.plot_find()
-cl.scatter(zoom=3)
-cl.plot()
-
-# Extract the first input image name
-filename = [*results_find.keys()][1]
-
-# Plot the probabilities
-plt.figure(figsize=(8,6))
-plt.plot(results_find[filename]['y_proba'],'.')
-plt.grid(True)
-plt.xlabel('samples')
-plt.ylabel('Pvalue')
-
-# Extract the cluster labels for the input image
-results_find[filename]['labels']
-
-# The majority (=171) of labels is for class [0]
-print(pd.value_counts(results_find[filename]['labels']))
-# 0    171
-# 7      8
-# Name: labels, dtype: int64
 
 # %%
 import sys
