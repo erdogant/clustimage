@@ -2463,7 +2463,7 @@ def wget(url, writepath):
 
 
 # %% Get image HASH function
-def get_params_hash(hashmethod, params_hash):
+def get_params_hash(hashmethod, params_hash={}):
     """Get image hash function.
 
     Parameters
