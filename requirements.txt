@@ -8,7 +8,7 @@ colourmap
 numpy
 pandas
 tqdm
-sklearn
+scikit-learn
 matplotlib
 scikit-image
 scipy
