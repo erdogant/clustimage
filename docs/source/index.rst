@@ -1,6 +1,3 @@
-Clustimage documentation!
-=========================
-
 .. |fig1| image:: ../figs/schematic_overview.png
 
 .. table:: 
