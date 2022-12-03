@@ -4,6 +4,21 @@ import clustimage
 # print(clustimage.__version__)
 
 # %%
+import sys
+import os
+import glob
+import numpy as np
+from clustimage import Clustimage
+import matplotlib.pyplot as plt
+
+cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(128,128),params_pca={'n_components':0.95})
+
+some_files =  cl.import_example(data='flowers')
+
+results = cl.fit_transform(some_files, min_clust=3, max_clust=6)
+
+
+# %%
 from clustimage import Clustimage
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -43,14 +58,14 @@ cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(
 
 some_files =  cl.import_example(data='flowers')
 
-results = cl.fit_transform(some_files,
-cluster='agglomerative',
-evaluate='silhouette',
-metric='euclidean',
-linkage='ward',
-min_clust=3,
-max_clust=6,
-cluster_space='high')
+results = cl.fit_transform(some_files[0],
+                           cluster='agglomerative',
+                           evaluate='silhouette',
+                           metric='euclidean',
+                           linkage='ward',
+                           min_clust=3,
+                           max_clust=6,
+                           cluster_space='high')
 
 cl.clusteval.plot()
 cl.clusteval.scatter(cl.results['xycoord'])
