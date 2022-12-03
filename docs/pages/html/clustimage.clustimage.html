@@ -15,6 +15,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -30,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> clustimage
           </a>
               <div class="version">
-                1.5.9
+                1.5.10
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -134,7 +135,7 @@
            <div itemprop="articleBody">
              
   <section id="module-clustimage.clustimage">
-<span id="api-references"></span><h1>API References<a class="headerlink" href="#module-clustimage.clustimage" title="Permalink to this headline"></a></h1>
+<span id="api-references"></span><h1>API References<a class="headerlink" href="#module-clustimage.clustimage" title="Permalink to this heading"></a></h1>
 <p>Python package clustimage is for unsupervised clustering of images.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage">
@@ -439,11 +440,38 @@ feat : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.embedding">
-<span class="sig-name descname"><span class="pre">embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.embedding" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.embedding" title="Permalink to this definition"></a></dt>
 <dd><p>Compute embedding for the extracted features.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>array-like</em>) – NxM array for which N are the samples and M the features.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>array-like</em>) – NxM array for which N are the samples and M the features.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: 'euclidean'</em><em>)</em><em>.</em>) – <dl class="simple">
+<dt>Distance measures. All metrics from sklearn can be used such as:</dt><dd><ul>
+<li><p>’euclidean’</p></li>
+<li><p>’hamming’</p></li>
+<li><p>’cityblock’</p></li>
+<li><p>’correlation’</p></li>
+<li><p>’cosine’</p></li>
+<li><p>’jaccard’</p></li>
+<li><p>’mahalanobis’</p></li>
+<li><p>’seuclidean’</p></li>
+<li><p>’sqeuclidean’</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>embedding</strong> (<em>str</em><em>, </em><em>(</em><em>default: retrieve from init</em><em>)</em>) – <p>Perform embedding on the extracted features. The xycoordinates are used for plotting purposes.
+For UMAP parameters set set to default with densmap=True.</p>
+<blockquote>
+<div><ul>
+<li><p>’tsne’</p></li>
+<li><p>’umap’</p></li>
+<li><p>None: Return the first to axis of input data X.</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>xycoord</strong> – x,y coordinates after embedding or alternatively the first 2 features.</p>
@@ -1262,7 +1290,7 @@ None : Do not plot the image.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.get_params_hash">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">get_params_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hashmethod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.get_params_hash" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">get_params_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hashmethod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.get_params_hash" title="Permalink to this definition"></a></dt>
 <dd><p>Get image hash function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
