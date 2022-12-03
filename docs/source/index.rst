@@ -25,7 +25,7 @@ Many computer vision tasks rely on (deep) neural networks, and aim to predict "w
 
 
 .. tip::
-	`A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
+	`Medium Blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
 
 
 
