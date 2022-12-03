@@ -49,9 +49,9 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # load example with flowers
         pathnames = cl.import_example(data='flowers')
         # Cluster flowers
-        results = cl.fit_transform(pathnames)
+        assert cl.fit_transform(pathnames)
         # Read the unseen image. Note that the find functionality also performs exactly the same preprocessing steps as for the clustering.
-        results_find = cl.find(pathnames[0:2], k=0, alpha=0.05)
+        assert cl.find(pathnames[0:2], k=0, alpha=0.05)
 
 
     def test_embedding(self):
@@ -60,7 +60,8 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_example(data='flowers')
         X = cl.import_data(X)
         Xfeat = cl.extract_feat(X)
-        _ = cl.embedding(Xfeat)
+        out = cl.embedding(Xfeat)
+        assert out.shape==(214,2)
         assert cl.results['xycoord'].shape==(X['img'].shape[0], 2)
 
     def test_embedding(self):
@@ -70,6 +71,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_data(X)
         Xfeat = cl.extract_feat(X)
         xycoord = cl.embedding(Xfeat)
+        assert xycoord.shape ==(214, 2)
         labels = cl.cluster()
         assert len(cl.results['labels'])==X['img'].shape[0]
 
@@ -117,7 +119,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         featshape = cl.results['feat'].shape
         # Predict
         results_find = cl.find(path_to_imgs[0:5], k=None, alpha=0.05)
-        assert  cl.results['feat'].shape==featshape
+        assert cl.results['feat'].shape==featshape
 
     def test_predict(self):
         # Init
