@@ -2174,31 +2174,23 @@ def unique_no_sort(x):
     return [x[index] for index in sorted(indexes)]
 
 # %% Extract basename from path
-
-
 def basename(label):
     """Extract basename from path."""
     return os.path.basename(label)
 
 # %% Resize image
-
-
 def img_flatten(img):
     """Flatten image."""
     return img.flatten()
 
 # %% Resize image
-
-
 def imresize(img, dim=(128, 128)):
     """Resize image."""
-    if dim is not None:
+    if (dim is not None) and (img.shape[0:2] != dim):
         img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
     return img
 
 # %% Set cmap
-
-
 def _set_cmap(cmap, grayscale):
     """Set the colourmap."""
     if cmap is None:
@@ -2206,8 +2198,6 @@ def _set_cmap(cmap, grayscale):
     return cmap
 
 # %% Scaling
-
-
 def imscale(img):
     """Normalize image by scaling.
 
