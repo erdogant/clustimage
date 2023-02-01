@@ -15,7 +15,7 @@ cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(
 
 some_files =  cl.import_example(data='flowers')
 
-results = cl.fit_transform(some_files[0:20], min_clust=3, max_clust=6)
+results = cl.fit_transform(some_files, min_clust=3, max_clust=6)
 
 
 # %%
