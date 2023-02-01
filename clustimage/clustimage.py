@@ -1095,7 +1095,8 @@ class Clustimage():
         logger.info('Compute [%s] embedding', self.params['embedding'])
         # Embedding
         if self.params['embedding']=='tsne':
-            xycoord = TSNE(n_components=2, init='random', metric=metric).fit_transform(X)
+            perplexity = np.minimum(X.shape[0]-1, 30)
+            xycoord = TSNE(n_components=2, init='random', metric=metric, perplexity=perplexity).fit_transform(X)
         elif self.params['embedding']=='umap':
             xycoord = UMAP(densmap=True).fit_transform(X)
         else:
@@ -2546,6 +2547,7 @@ def url2disk(urls, save_dir):
     >>> model.plot()
 
     """
+    if isinstance(urls, list): urls = [urls]
     # Set filepath to the output of urls in case no url are used. Then the normal filepath is returned.
     filepath = urls.copy()
     idx_url = np.where(list(map(lambda x: x[0:4]=='http', urls)))[0]

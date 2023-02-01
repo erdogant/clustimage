@@ -2,6 +2,9 @@ from clustimage.clustimage import Clustimage
 
 from clustimage.clustimage import (
     import_example,
+    url2disk,
+    imscale,
+    imresize,
     wget,
     unzip,
     listdir,
