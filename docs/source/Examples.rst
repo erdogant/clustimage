@@ -1,3 +1,5 @@
+.. include:: add_top.add
+
 Mnist dataset
 #####################
 
@@ -756,10 +758,5 @@ Instead of using the all-in-one functionality: fit_transform(), it is also possi
 	cl.plot_find()
 
 
-.. raw:: html
 
-	<hr>
-	<center>
-		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
-	</center>
-	<hr>
+.. include:: add_bottom.add

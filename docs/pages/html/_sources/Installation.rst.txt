@@ -1,3 +1,5 @@
+.. include:: add_top.add
+
 Installation
 ################
 
@@ -63,16 +65,6 @@ Note that the removal of the environment will also remove the ``clustimage`` ins
 
 
 
-.. raw:: html
-
-	<hr>
-	<center>
-		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
-	</center>
-	<hr>
-
-
-
 Quickstart
 **********************
 
@@ -114,10 +106,6 @@ A quick example how to learn a model on a given dataset.
     cl.scatter()
 
 
-.. raw:: html
 
-	<hr>
-	<center>
-		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
-	</center>
-	<hr>
+
+.. include:: add_bottom.add

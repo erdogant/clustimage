@@ -53,8 +53,6 @@ logger = logging.getLogger()
 class Clustimage():
     """Clustering of images.
 
-    Description
-    -----------
     Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
     Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
     Some parameters are choosen based on best practice, some parameters are optimized, while others are set as a constant.
@@ -236,8 +234,6 @@ class Clustimage():
     def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high', black_list=None):
         """Group samples into clusters that are similar in their feature space.
 
-        Description
-        -----------
         The fit_transform function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
         The optimal number of clusters are determined using well known methods suchs as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
         Based on the clustering results, the unique images are also gathered.
@@ -366,8 +362,6 @@ class Clustimage():
     def cluster(self, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high'):
         """Detect the optimal number of clusters given the input set of features.
 
-        Description
-        -----------
         This function is build on clusteval, which is a python package that provides various evalution methods for unsupervised cluster validation.
 
         Parameters
@@ -494,8 +488,6 @@ class Clustimage():
     def unique(self, metric=None):
         """Compute the unique images.
 
-        Description
-        -----------
         The unique images are detected by first computing the center of the cluster, and then taking the image closest to the center.
 
         Parameters
@@ -592,8 +584,6 @@ class Clustimage():
     def find(self, Xnew, metric=None, k=None, alpha=0.05):
         """Find images that are similar to that of the input image.
 
-        Description
-        -----------
         Finding images can be performed in two manners:
 
             * Based on the k-nearest neighbour
@@ -689,8 +679,6 @@ class Clustimage():
     def extract_faces(self, pathnames):
         """Detect and extract faces from images.
 
-        Description
-        -----------
         To cluster faces on images, we need to detect, and extract the faces from the images which is done in this function.
         Faces and eyes are detected using ``haarcascade_frontalface_default.xml`` and ``haarcascade_eye.xml`` in ``python-opencv``.
 
@@ -933,8 +921,6 @@ class Clustimage():
     def import_data(self, Xraw, flatten=True, black_list=None):
         """Import images and return in an consistent manner.
 
-        Description
-        -----------
         The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
         This requires that each of the input needs to be processed in its own manner but each should return the same structure to make it compatible across all functions.
         The following steps are used for the import:
@@ -1193,8 +1179,6 @@ class Clustimage():
     def _compute_distances(self, X, metric, alpha):
         """Compute distances and probabilities for new unseen samples.
 
-        Description
-        ------------
         In case of PCA, a transformation needs to take place first.
 
         Parameters
@@ -1356,8 +1340,6 @@ class Clustimage():
     def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True, return_succes=False):
         """Read and pre-processing of images.
 
-        Description
-        -----------
         The pre-processing has 4 steps and are exectued in this order.
             * 1. Import data.
             * 2. Conversion to gray-scale (user defined)
@@ -1518,8 +1500,6 @@ class Clustimage():
     def plot_faces(self, faces=True, eyes=True, cmap=None):
         """Plot detected faces.
 
-        Description
-        -----------
         Plot the detected faces in images after using the fit_transform() function.
         * For each input image, rectangles are drawn over the detected faces.
         * Each face is plotted seperately for which rectlangles are drawn over the detected eyes.
@@ -2068,8 +2048,6 @@ class Clustimage():
     def import_example(self, data='flowers', url=None, curpath=None):
         """Import example dataset from github source.
 
-        Description
-        -----------
         Import one of the few datasets from github source or specify your own download url link.
 
         Parameters
@@ -2202,8 +2180,6 @@ def _set_cmap(cmap, grayscale):
 def imscale(img):
     """Normalize image by scaling.
 
-    Description
-    -----------
     Scaling in range [0-255] by img*(255/max(img))
 
     Parameters
@@ -2280,8 +2256,6 @@ def disable_tqdm():
 def import_example(data='flowers', url=None, curpath=None):
     """Import example dataset from github source.
 
-    Description
-    -----------
     Import one of the few datasets from github source or specify your own download url link.
 
     Parameters
@@ -2506,8 +2480,6 @@ def get_params_hash(hashmethod, params_hash={}):
 def url2disk(urls, save_dir):
     """Write url locations to disk.
 
-    Description
-    -----------
     Import images from url locations and store to disk.
 
     Parameters

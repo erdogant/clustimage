@@ -1,6 +1,5 @@
-.. _code_directive:
+.. include:: add_top.add
 
--------------------------------------
 
 Abstract
 ''''''''
@@ -46,10 +45,4 @@ The schematic overview of our approach is as following:
 .. figure:: ../figs/schematic_overview.png
 
 
-.. raw:: html
-
-	<hr>
-	<center>
-		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
-	</center>
-	<hr>
+.. include:: add_bottom.add

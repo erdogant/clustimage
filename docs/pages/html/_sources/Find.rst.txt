@@ -1,3 +1,5 @@
+.. include:: add_top.add
+
 This section describes how to predict new unseen data points with a readily fitted model.
 
 The ``find`` function :func:`clustimage.clustimage.Clustimage.find` allows to find images that are similar for what is readily being seen by the model. Finding images can be performed in two manners as described below. In both cases, the adjacency matrix is first computed using the distance metric (default Euclidean).
@@ -274,10 +276,6 @@ More examples
 .. _clusteval: https://github.com/erdogant/clusteval
 
 
-.. raw:: html
 
-	<hr>
-	<center>
-		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
-	</center>
-	<hr>
+
+.. include:: add_bottom.add

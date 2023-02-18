@@ -1,3 +1,5 @@
+.. include:: add_top.add
+
 This section describes the core functionalities of ``clustimage``.
 Many of the functionalities are written in a generic manner which allows to be used in various applications.
 
@@ -492,10 +494,5 @@ Examples can be found here :func:`clustimage.clustimage.Clustimage.extract_hog` 
 .. _clusteval: https://github.com/erdogant/clusteval
 
 
-.. raw:: html
 
-	<hr>
-	<center>
-		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
-	</center>
-	<hr>
+.. include:: add_bottom.add

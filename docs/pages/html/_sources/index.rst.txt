@@ -1,3 +1,11 @@
+clustimage's documentation!
+===========================
+
+|python| |pypi| |docs| |stars| |LOC| |downloads_month| |downloads_total| |license| |forks| |open issues| |project status| |medium| |colab| |DOI| |repo-size| |donate|
+
+.. include:: add_top.add
+
+
 .. |fig1| image:: ../figs/schematic_overview.png
 
 .. table:: 
@@ -8,9 +16,6 @@
    +----------+
 
 -----------------------------------
-
-|python| |pypi| |docs| |LOC| |downloads_month| |downloads_total| |license| |forks| |open issues| |project status| |medium| |colab| |DOI| |donate|
-
 
 The aim of ``clustimage`` is to detect natural groups or clusters of images.
 
@@ -28,13 +33,17 @@ Many computer vision tasks rely on (deep) neural networks, and aim to predict "w
 	`Medium Blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
 
 
+-----------------------------------
 
-Quick install
-=============
+.. note::
+	**Your ❤️ is important to keep maintaining this package.** You can `support <https://erdogant.github.io/clustimage/pages/html/Documentation.html>`_ in various ways, have a look at the `sponser page <https://erdogant.github.io/clustimage/pages/html/Documentation.html>`_.
+	Report bugs, issues and feature extensions at `github <https://github.com/erdogant/clustimage/>`_ page.
 
-.. code-block:: console
+	.. code-block:: console
 
-   pip install clustimage
+	   pip install clustimage
+
+-----------------------------------
 
 
 
@@ -121,16 +130,14 @@ Indices and tables
 * :ref:`search`
 
 
-.. raw:: html
 
-	<hr>
-	<center>
-		<script async type="text/javascript" src="//cdn.carbonads.com/carbon.js?serve=CEADP27U&placement=erdogantgithubio" id="_carbonads_js"></script>
-	</center>
-	<hr>
+.. |repo-size| image:: https://img.shields.io/github/repo-size/erdogant/clustimage
+    :alt: repo-size
+    :target: https://img.shields.io/github/repo-size/erdogant/clustimage
 
-
-
+.. |stars| image:: https://img.shields.io/github/stars/erdogant/clustimage
+    :alt: Stars
+    :target: https://img.shields.io/github/stars/erdogant/clustimage
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/clustimage.svg
     :alt: |Python
@@ -188,3 +195,5 @@ Indices and tables
     :alt: Cite
     :target: https://zenodo.org/badge/latestdoi/423822054
 
+
+.. include:: add_bottom.add
