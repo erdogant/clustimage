@@ -3,7 +3,8 @@ clustimage's documentation!
 
 |python| |pypi| |docs| |stars| |LOC| |downloads_month| |downloads_total| |license| |forks| |open issues| |project status| |medium| |colab| |DOI| |repo-size| |donate|
 
-.. include:: add_top.add
+.. tip::
+	`Medium Blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
 
 
 .. |fig1| image:: ../figs/schematic_overview.png
@@ -27,10 +28,6 @@ Many computer vision tasks rely on (deep) neural networks, and aim to predict "w
     * 2. Returns the unique images.
     * 3. Many plots for deeper exploration.
     * 4. Finds higly similar images for a given input image.
-
-
-.. tip::
-	`Medium Blog: A step-by-step guide for clustering images <https://towardsdatascience.com/a-step-by-step-guide-for-clustering-images-4b45f9906128>`_
 
 
 -----------------------------------

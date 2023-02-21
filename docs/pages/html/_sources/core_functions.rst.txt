@@ -1,5 +1,3 @@
-.. include:: add_top.add
-
 This section describes the core functionalities of ``clustimage``.
 Many of the functionalities are written in a generic manner which allows to be used in various applications.
 

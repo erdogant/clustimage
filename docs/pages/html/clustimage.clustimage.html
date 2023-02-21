@@ -17,6 +17,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -105,7 +106,51 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.Clustimage"><code class="docutils literal notranslate"><span class="pre">Clustimage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.clean_files"><code class="docutils literal notranslate"><span class="pre">Clustimage.clean_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.clean_init"><code class="docutils literal notranslate"><span class="pre">Clustimage.clean_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.cluster"><code class="docutils literal notranslate"><span class="pre">Clustimage.cluster()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.compute_hash"><code class="docutils literal notranslate"><span class="pre">Clustimage.compute_hash()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.dendrogram"><code class="docutils literal notranslate"><span class="pre">Clustimage.dendrogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.embedding"><code class="docutils literal notranslate"><span class="pre">Clustimage.embedding()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.extract_faces"><code class="docutils literal notranslate"><span class="pre">Clustimage.extract_faces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.extract_feat"><code class="docutils literal notranslate"><span class="pre">Clustimage.extract_feat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.extract_hog"><code class="docutils literal notranslate"><span class="pre">Clustimage.extract_hog()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.extract_pca"><code class="docutils literal notranslate"><span class="pre">Clustimage.extract_pca()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.find"><code class="docutils literal notranslate"><span class="pre">Clustimage.find()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.fit_transform"><code class="docutils literal notranslate"><span class="pre">Clustimage.fit_transform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.get_dim"><code class="docutils literal notranslate"><span class="pre">Clustimage.get_dim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.import_data"><code class="docutils literal notranslate"><span class="pre">Clustimage.import_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.import_example"><code class="docutils literal notranslate"><span class="pre">Clustimage.import_example()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.imread"><code class="docutils literal notranslate"><span class="pre">Clustimage.imread()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.load"><code class="docutils literal notranslate"><span class="pre">Clustimage.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.plot"><code class="docutils literal notranslate"><span class="pre">Clustimage.plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.plot_faces"><code class="docutils literal notranslate"><span class="pre">Clustimage.plot_faces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.plot_find"><code class="docutils literal notranslate"><span class="pre">Clustimage.plot_find()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.plot_unique"><code class="docutils literal notranslate"><span class="pre">Clustimage.plot_unique()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.preprocessing"><code class="docutils literal notranslate"><span class="pre">Clustimage.preprocessing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.save"><code class="docutils literal notranslate"><span class="pre">Clustimage.save()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.scatter"><code class="docutils literal notranslate"><span class="pre">Clustimage.scatter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.unique"><code class="docutils literal notranslate"><span class="pre">Clustimage.unique()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.basename"><code class="docutils literal notranslate"><span class="pre">basename()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.disable_tqdm"><code class="docutils literal notranslate"><span class="pre">disable_tqdm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.get_params_hash"><code class="docutils literal notranslate"><span class="pre">get_params_hash()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.img_flatten"><code class="docutils literal notranslate"><span class="pre">img_flatten()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.import_example"><code class="docutils literal notranslate"><span class="pre">import_example()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.imresize"><code class="docutils literal notranslate"><span class="pre">imresize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.imscale"><code class="docutils literal notranslate"><span class="pre">imscale()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.listdir"><code class="docutils literal notranslate"><span class="pre">listdir()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.set_logger"><code class="docutils literal notranslate"><span class="pre">set_logger()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.store_to_disk"><code class="docutils literal notranslate"><span class="pre">store_to_disk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.unique_no_sort"><code class="docutils literal notranslate"><span class="pre">unique_no_sort()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.unzip"><code class="docutils literal notranslate"><span class="pre">unzip()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.url2disk"><code class="docutils literal notranslate"><span class="pre">url2disk()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.wget"><code class="docutils literal notranslate"><span class="pre">wget()</span></code></a></li>
+</ul>
+</li>
 </ul>
 
     <a href= "genindex.html">Index</a>
@@ -134,13 +179,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <hr>
-<center>
-        <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
-        <div data-ea-publisher="erdogantgithubio" data-ea-type="text"></div>
-        <!-- <div data-ea-publisher="erdogantgithubio" data-ea-type="text" data-ea-style="fixedfooter"></div> -->
-</center>
-<hr><section id="module-clustimage.clustimage">
+  <section id="module-clustimage.clustimage">
 <span id="api-references"></span><h1>API References<a class="headerlink" href="#module-clustimage.clustimage" title="Permalink to this heading"></a></h1>
 <p>Python package clustimage is for unsupervised clustering of images.</p>
 <dl class="py class">
@@ -496,7 +535,7 @@ For UMAP parameters set set to default with densmap=True.</p>
 Faces and eyes are detected using <code class="docutils literal notranslate"><span class="pre">haarcascade_frontalface_default.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">haarcascade_eye.xml</span></code> in <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pathnames</strong> (<em>list of str.</em>) – Full path to images that are used in the model.</p>
+<dd class="field-odd"><p><strong>pathnames</strong> (<em>list</em><em> of </em><em>str.</em>) – Full path to images that are used in the model.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul>
@@ -644,8 +683,8 @@ Note that the metric can be changed in this function but this may lead to confus
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pathnames</strong> (<em>list of str.</em>) – Full path to images that are used in the model.</p></li>
-<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: the input of fit_transform</em><em>(</em><em>)</em><em>)</em><em>.</em>) – <dl class="simple">
+<li><p><strong>pathnames</strong> (<em>list</em><em> of </em><em>str.</em>) – Full path to images that are used in the model.</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>(</em><em>default: the input</em><em> of </em><em>fit_transform</em><em>(</em><em>)</em><em>)</em><em>.</em>) – <dl class="simple">
 <dt>Distance measures. All metrics from sklearn can be used such as:</dt><dd><ul>
 <li><p>’euclidean’</p></li>
 <li><p>’hamming’</p></li>
@@ -716,7 +755,7 @@ Based on the clustering results, the unique images are also gathered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>[</em><em>str of list</em><em>] or </em><em>[</em><em>np.array</em><em>]</em><em>.</em>) – <dl class="simple">
+<li><p><strong>X</strong> (<em>[</em><em>str</em><em> of </em><em>list</em><em>] or </em><em>[</em><em>np.array</em><em>]</em><em>.</em>) – <dl class="simple">
 <dt>The input can be:</dt><dd><ul>
 <li><p>”c://temp//” : Path to directory with images</p></li>
 <li><p>[‘c://temp//image1.png’, ‘c://image2.png’, …] : List of exact pathnames.</p></li>
@@ -1125,7 +1164,7 @@ img : array-like.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pathnames</strong> (<em>list of str.</em>) – Full path to images that are used in the model.</p></li>
+<li><p><strong>pathnames</strong> (<em>list</em><em> of </em><em>str.</em>) – Full path to images that are used in the model.</p></li>
 <li><p><strong>grayscale</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Colorscaling the image to gray. This can be usefull when clustering e.g., faces.</p></li>
 <li><p><strong>dim</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>128</em><em>,</em><em>128</em><em>)</em><em>)</em>) – Rescale images. This is required because the feature-space need to be the same across samples.</p></li>
 <li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
