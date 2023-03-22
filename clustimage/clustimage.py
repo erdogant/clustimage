@@ -444,6 +444,7 @@ class Clustimage():
         """
         if self.results.get('feat', None) is None: raise Exception(logger.error('First run the "fit_transform(pathnames)" function.'))
         self.params['cluster_space'] = cluster_space
+        if min_clust==max_clust: max_clust=min_clust + 1
         ce = None
 
         if len(self.results['feat'])==0:
