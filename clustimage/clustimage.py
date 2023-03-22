@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from sklearn.manifold import TSNE
-from umap import UMAP
+from umap.umap_ import UMAP
 import os
 import logging
 from urllib.parse import urlparse
@@ -1081,10 +1081,12 @@ class Clustimage():
         logger.info('Compute [%s] embedding', self.params['embedding'])
         # Embedding
         if self.params['embedding']=='tsne':
-            perplexity = np.minimum(X.shape[0]-1, 30)
+            perplexity = np.minimum(X.shape[0] - 1, 30)
             xycoord = TSNE(n_components=2, init='random', metric=metric, perplexity=perplexity).fit_transform(X)
         elif self.params['embedding']=='umap':
-            xycoord = UMAP(densmap=True).fit_transform(X)
+            um = UMAP(densmap=True)
+            xycoord = um.fit_transform(X)
+            # xycoord = UMAP(densmap=True).fit_transform(X)
         else:
             xycoord = X[:, 0:2]
         # Return
