@@ -2207,7 +2207,6 @@ def imscale(img):
         logger.warning('Scaling not possible.')
     return img
 
-
 # %% Read image
 def _imread(filepath, colorscale=1):
     """Read image from filepath using colour-scaling.
@@ -2231,7 +2230,19 @@ def _imread(filepath, colorscale=1):
     img=None
     # if os.path.isfile(filepath):
     # Read the image
-    img = cv2.imread(filepath, colorscale)
+    # img = cv2.imread(, colorscale)
+    img = Image.open(filepath)
+
+    # Convert Image to numpy array
+    # It's not the most efficient way, but it works.
+    img = np.asarray(img)
+
+    # Remove alpha channel if existent
+    if len(img.shape) == 3 and img.shape[2] == 4:
+        img = img[:, :, : 3]
+
+    # Restore RGB colors
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # In case of rgb images: make gray images compatible with RGB
     if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
@@ -2239,7 +2250,40 @@ def _imread(filepath, colorscale=1):
     # else:
     #     logger.warning('File does not exists: %s', filepath)
 
-    return img
+    return cv2.cvtColor(img, colorscale)
+
+# %% Read image
+# def _imread_old(filepath, colorscale=1):
+#     """Read image from filepath using colour-scaling.
+
+#     Parameters
+#     ----------
+#     filepath : str
+#         path to file.
+#     colorscale : int, default: 1 (gray)
+#         colour-scaling from opencv.
+#         * 0: cv2.IMREAD_GRAYSCALE
+#         * 1: cv2.IMREAD_COLOR
+#         * 8: cv2.COLOR_GRAY2RGB
+
+#     Returns
+#     -------
+#     img : numpy array
+#         raw rgb or gray image.
+
+#     """
+#     img=None
+#     # if os.path.isfile(filepath):
+#     # Read the image
+#     img = cv2.imread(filepath, colorscale)
+
+#     # In case of rgb images: make gray images compatible with RGB
+#     if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
+#         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+#     # else:
+#     #     logger.warning('File does not exists: %s', filepath)
+
+#     return img
 
 # %%
 
