@@ -3,7 +3,7 @@
 
 pca
 distfit
-clusteval
+clusteval>="2.1.5"
 colourmap
 numpy
 pandas
