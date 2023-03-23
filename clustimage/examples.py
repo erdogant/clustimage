@@ -14,7 +14,7 @@ cl = Clustimage(method='pca',dirpath=None, embedding='tsne',grayscale=False,dim=
 
 some_files =  cl.import_example(data='flowers')
 
-results = cl.fit_transform(some_files, min_clust=5, max_clust=5)
+results = cl.fit_transform(some_files, min_clust=2, max_clust=2)
 
 cl.clusteval.plot()
 cl.clusteval.scatter(cl.results['xycoord'])
