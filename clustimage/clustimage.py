@@ -141,6 +141,7 @@ class Clustimage():
     >>> # Cluster evaluation
     >>> cl.clusteval.plot()
     >>> cl.clusteval.scatter(cl.results['xycoord'])
+    >>> cl.clusteval.plot_silhouette(cl.results['xycoord'])
     >>> cl.pca.plot()
     >>>
     >>> # Unique
