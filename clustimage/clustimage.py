@@ -1539,9 +1539,9 @@ class Clustimage():
                     plt.figure()
                     for (x, y, w, h) in coord_faces:
                         cv2.rectangle(img, (x, y), (x +w, y +h), (255, 0, 0), 2)
-                    if len(img.shape)==3:
-                        plt.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
-                    else:
+                    # if len(img.shape)==3:
+                    #     plt.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
+                    # else:
                         plt.imshow(img, cmap=cmap)
 
                 # Plot the eyes
@@ -1963,7 +1963,13 @@ class Clustimage():
     def _make_subplots(self, imgs, ncols, cmap, figsize, title='', labels=None):
         """Make subplots."""
         # Get appropriate dimension
-        dim = self.params['dim'] if self.params['grayscale'] else np.append(self.params['dim'], 3)
+        if self.params['grayscale']:
+            dim = self.params['dim']
+            dimlen=4
+        else:
+            dim = np.append(self.params['dim'], 3)
+            dimlen=3
+
         # Setup rows and columns
         nrows, ncols = self._get_rows_cols(len(imgs), ncols=ncols)
         # Make figure
@@ -1975,9 +1981,12 @@ class Clustimage():
             for i, ax in enumerate(axs.ravel()):
                 if i<len(imgs):
                     img = imgs[i]
-                    if len(img.shape)==1: img = img.reshape((dim[0], dim[1], 3))
+                    if len(img.shape)==1:
+                        img = img.reshape((dim[0], dim[1], dimlen))
+                        img = img[:, :, : 3]
                     if len(img.shape)==3:
-                        ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
+                        # ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
+                        ax.imshow(img, cmap=cmap)
                     else:
                         ax.imshow(img, cmap=cmap)
                     if labels is not None: ax.set_title(labels[i])
@@ -2260,7 +2269,7 @@ def _imread(filepath, colorscale=1):
     # else:
     #     logger.warning('File does not exists: %s', filepath)
     # plt.imshow(img, cmap=plt.get_cmap('gray'), vmin=0, vmax=1)
-    return img
+    return cv2.cvtColor(img, colorscale)
 
 # %% Read image
 # def _imread_old(filepath, colorscale=1):
