@@ -24,6 +24,9 @@ cl.plot(cmap='binary')
 cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
 cl.scatter(zoom=0.15, img_mean=False, plt_all=True)
 
+# %%
+cl.results['labels']
+cl.results_unique['labels']
 
 # %%
 from clustimage import Clustimage
@@ -232,20 +235,23 @@ cl.plot_find()
 # %% SAVE AND LOAD
 from clustimage import Clustimage
 
-cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(128,128),params_pca={'n_components':0.5})
-
+cl = Clustimage(method='pca',dirpath=None, grayscale=False,dim=(128,128),params_pca={'n_components':0.5})
+cl = Clustimage()
 
 # load example with flowers
 pathnames = cl.import_example(data='flowers')
 
 # Cluster flowers
-cl.fit_transform(pathnames)
+cl.fit_transform(pathnames);
 
 # Make plot
 cl.clusteval.plot()
-cl.clusteval.scatter(cl.results['xycoord'])
+cl.clusteval.scatter(cl.results['xycoord'], s=100)
+cl.clusteval.scatter(embedding='pca', density=True, s=100, params_scatterd={'edgecolor': 'black'})
 
 
+cl.results['labels']
+cl.results_unique['labels']
 
 
 # %%
