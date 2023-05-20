@@ -69,7 +69,7 @@ cl = Clustimage(method='pca',dirpath=None,embedding='tsne',grayscale=False,dim=(
 
 some_files =  cl.import_example(data='flowers')
 
-results = cl.fit_transform(some_files[0],
+results = cl.fit_transform(some_files,
                            cluster='agglomerative',
                            evaluate='silhouette',
                            metric='euclidean',
@@ -224,7 +224,6 @@ cl.load()
 
 results_find = cl.find(pathnames[0:5], k=10, alpha=0.05)
 cl.plot_find()
-
 
 cl.save(overwrite=True)
 cl.load()
