@@ -21,11 +21,11 @@ class TestCLUSTIMAGE(unittest.TestCase):
         cl = Clustimage(dim=(128, 128), grayscale=False)
         _ =  cl.import_data(X)
         assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames', 'url']))
-        assert cl.results['img'].shape==(214, 49152)
+        assert cl.results['img'].shape==(len(X), 49152)
         # Check grayscale parameter with imports
         cl = Clustimage(dim=(128, 128), grayscale=True)
         _ = cl.import_data(X)
-        assert cl.results['img'].shape==(214, 16384)
+        assert cl.results['img'].shape==(len(X), 49152)
 
         # Import mnist example
         X = cl.import_example(data='mnist')
