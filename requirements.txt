@@ -17,6 +17,5 @@ pypickle
 imagehash
 scatterd
 requests
-umap-learn
 pypickle
 ismember

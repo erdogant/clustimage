@@ -451,7 +451,7 @@ class Clustimage():
         if len(self.results['feat'])==0:
             return None
 
-        ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=3)
+        ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=get_logger())
         # Fit
         if cluster_space=='low':
             feat = self.results['xycoord']
@@ -741,7 +741,7 @@ class Clustimage():
         set_logger(verbose=30)
 
         # Extract faces and eyes from image
-        for pathname in tqdm(X['pathnames'], disable=disable_tqdm()):
+        for pathname in tqdm(X['pathnames'], disable=disable_tqdm(), desc='[clustimage]'):
             # Extract faces
             pathnames_face, imgfaces, coord_faces, coord_eyes, filename, path_to_image = self._extract_faces(pathname)
             # Store
@@ -803,7 +803,7 @@ class Clustimage():
             flatten=False
 
         # Read and preprocess data
-        imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True), tqdm(pathnames, disable=disable_tqdm())))
+        imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True), tqdm(pathnames, disable=disable_tqdm(), desc='[clustimage]')))
         img, imgOK = zip(*imgs)
         img = np.array(img)
 
@@ -1393,7 +1393,7 @@ class Clustimage():
         >>>
 
         """
-        logger.debug('[%s]' %(filepath))
+        # logger.debug('[%s]' %(filepath))
         img=[]
         readOK = False
         try:
@@ -2286,11 +2286,55 @@ def _imread(filepath, colorscale=1):
 
 #     return img
 
+
 # %%
+def get_logger():
+    """Return logger status."""
+    return logger.getEffectiveLevel()
 
 
-def set_logger(verbose=20):
-    """Set the logger for verbosity messages."""
+# %%
+def set_logger(verbose: [str, int] = 'info'):
+    """Set the logger for verbosity messages.
+
+    Parameters
+    ----------
+    verbose : [str, int], default is 'info' or 20
+        Set the verbose messages using string or integer values.
+        * [0, 60, None, 'silent', 'off', 'no']: No message.
+        * [10, 'debug']: Messages from debug level and higher.
+        * [20, 'info']: Messages from info level and higher.
+        * [30, 'warning']: Messages from warning level and higher.
+        * [50, 'critical']: Messages from critical level and higher.
+
+    Returns
+    -------
+    None.
+
+    > # Set the logger to warning
+    > set_logger(verbose='warning')
+    > # Test with different messages
+    > logger.debug("Hello debug")
+    > logger.info("Hello info")
+    > logger.warning("Hello warning")
+    > logger.critical("Hello critical")
+
+    """
+    # Set 0 and None as no messages.
+    if (verbose==0) or (verbose is None):
+        verbose=60
+    # Convert str to levels
+    if isinstance(verbose, str):
+        levels = {'silent': 60,
+                  'off': 60,
+                  'no': 60,
+                  'debug': 10,
+                  'info': 20,
+                  'warning': 30,
+                  'critical': 50}
+        verbose = levels[verbose]
+
+    # Show examples
     logger.setLevel(verbose)
 
 
