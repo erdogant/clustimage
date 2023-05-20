@@ -1089,6 +1089,7 @@ class Clustimage():
             logger.info('Due to a "numba" error, UMAP is temporarily disabled.')
             # um = UMAP(densmap=True)
             # xycoord = um.fit_transform(X)
+            xycoord = X[:, 0:2]
         else:
             xycoord = X[:, 0:2]
         # Return
