@@ -10,15 +10,15 @@ import numpy as np
 from clustimage import Clustimage
 import matplotlib.pyplot as plt
 
-cl = Clustimage(method='pca',dirpath=None, embedding='tsne',grayscale=False,dim=(128,128),params_pca={'n_components':0.95})
+# cl = Clustimage(method='pca',dirpath=None, embedding='tsne',grayscale=False, dim=(128,128),params_pca={'n_components':0.95})
+cl = Clustimage(method='pca', grayscale=True, dim=(128,128))
 
-some_files =  cl.import_example(data='flowers')
+some_files = cl.import_example(data='flowers')
+results = cl.fit_transform(some_files, min_clust=4)
 
-results = cl.fit_transform(some_files, min_clust=2, max_clust=2)
-
-cl.clusteval.plot()
-cl.clusteval.scatter(cl.results['xycoord'])
-cl.pca.plot()
+# cl.clusteval.plot()
+# cl.clusteval.scatter()
+# cl.pca.plot()
 cl.plot_unique(img_mean=False)
 cl.plot(cmap='binary')
 cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})

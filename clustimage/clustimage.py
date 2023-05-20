@@ -1975,7 +1975,7 @@ class Clustimage():
             for i, ax in enumerate(axs.ravel()):
                 if i<len(imgs):
                     img = imgs[i]
-                    if len(img.shape)==1: img = img.reshape(dim)
+                    if len(img.shape)==1: img = img.reshape((dim[0], dim[1], 3))
                     if len(img.shape)==3:
                         ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
                     else:
@@ -2209,6 +2209,7 @@ def imscale(img):
         logger.warning('Scaling not possible.')
     return img
 
+
 # %% Read image
 def _imread(filepath, colorscale=1):
     """Read image from filepath using colour-scaling.
@@ -2232,9 +2233,13 @@ def _imread(filepath, colorscale=1):
     img=None
     # if os.path.isfile(filepath):
     # Read the image
-    # img = cv2.imread(, colorscale)
-    img = Image.open(filepath)
+    if colorscale==0:
+        # In case of gray-scale:
+        img = Image.open(filepath).convert('L')
+    else:
+        img = Image.open(filepath)
 
+    # plt.imshow(img)
     # Convert Image to numpy array
     # It's not the most efficient way, but it works.
     img = np.asarray(img)
@@ -2243,7 +2248,10 @@ def _imread(filepath, colorscale=1):
     if len(img.shape) == 3 and img.shape[2] == 4:
         img = img[:, :, : 3]
 
-    # Restore RGB colors
+    # Restore to RGB colors
+    # if colorscale==0:
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # else:
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # In case of rgb images: make gray images compatible with RGB
@@ -2251,8 +2259,8 @@ def _imread(filepath, colorscale=1):
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
     # else:
     #     logger.warning('File does not exists: %s', filepath)
-
-    return cv2.cvtColor(img, colorscale)
+    # plt.imshow(img, cmap=plt.get_cmap('gray'), vmin=0, vmax=1)
+    return img
 
 # %% Read image
 # def _imread_old(filepath, colorscale=1):
