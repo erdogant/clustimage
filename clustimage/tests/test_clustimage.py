@@ -25,7 +25,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Check grayscale parameter with imports
         cl = Clustimage(dim=(128, 128), grayscale=True)
         _ = cl.import_data(X)
-        assert cl.results['img'].shape==(len(X), 49152)
+        assert cl.results['img'].shape==(len(X), 65536)
 
         # Import mnist example
         X = cl.import_example(data='mnist')
