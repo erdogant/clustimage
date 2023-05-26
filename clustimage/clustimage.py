@@ -1037,7 +1037,7 @@ class Clustimage():
         if hasattr(self, 'results'):
             logger.info('Cleaning previous fitted model results')
             if hasattr(self, 'results'): del self.results
-            if hasattr(self, 'results_faces'): del self.results_faces
+            # if hasattr(self, 'results_faces'): del self.results_faces
             if hasattr(self, 'results_unique'): del self.results_unique
             if hasattr(self, 'distfit'): del self.distfit
             if hasattr(self, 'clusteval'): del self.clusteval
