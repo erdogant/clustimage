@@ -45,7 +45,8 @@ import matplotlib.pyplot as plt
 # cl = Clustimage(method='pca',dirpath=None, embedding='tsne',grayscale=False, dim=(128,128),params_pca={'n_components':0.95})
 cl = Clustimage(method='hog', grayscale=True, dim=(128,128))
 
-some_files = cl.import_example(data='flowers')[0:10]
+# some_files = cl.import_example(data='flowers')[0:10]
+some_files = cl.import_example(data='faces')[0:10]
 results = cl.fit_transform(some_files, min_clust=4)
 
 # cl.clusteval.plot()

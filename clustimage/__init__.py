@@ -10,15 +10,13 @@ from clustimage.clustimage import (
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.5.15'
+__version__ = '1.5.16'
 
 # module level doc-string
 __doc__ = """
 clustimage
 =====================================================================
 
-Description
------------
 Python package clustimage is to detect natural groups or clusters of images.
 
 The aim of ``clustimage`` is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clusters across the feature space.

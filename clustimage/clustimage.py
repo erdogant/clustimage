@@ -2493,7 +2493,9 @@ def get_params_hash(hashmethod, params_hash={}):
 def url2disk(urls, save_dir):
     """Write url locations to disk.
 
-    Import images from url locations and store to disk.
+    Images can also be imported from url locations.
+    Each image is first downloaded and stored on a (specified) temp directory.
+    In this example we will download 5 images from url locations. Note that url images and path locations can be combined.
 
     Parameters
     ----------

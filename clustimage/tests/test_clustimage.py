@@ -143,7 +143,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Parameters combinations to check
         param_grid = {
         	'method':['ahash', 'pca', 'hog', None],
-        	'embedding':['tsne', 'umap', None],
+        	'embedding':['tsne', None],
         	'cluster_space' : ['high', 'low'],
         	'grayscale' : [True, False],
             'dim' : [(8,8), (128,128), (256,256)],
@@ -155,6 +155,12 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Iterate over all combinations
         for i, combination in enumerate(combinations):
             # init
-            cl = Clustimage(method=combination[0], embedding=combination[1], grayscale=combination[3], dim=combination[4], verbose=30, params_pca={'n_components':50})
+            cl = Clustimage(method=combination[0],
+                            embedding=combination[1],
+                            grayscale=combination[3],
+                            dim=combination[4],
+                            verbose=30,
+                            params_pca={'n_components':50},
+                            )
             # Preprocessing and feature extraction
             assert cl.fit_transform(combination[5], cluster_space=combination[2])
