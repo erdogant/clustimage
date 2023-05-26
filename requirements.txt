@@ -16,6 +16,7 @@ opencv-python
 pypickle
 imagehash
 scatterd
-requests
 pypickle
 ismember
+datazets>="0.1.5"
+

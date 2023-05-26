@@ -14,6 +14,7 @@ from scatterd import scatterd
 import pypickle as pypickle
 from ismember import ismember
 import colourmap
+import datazets as dz
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -21,10 +22,10 @@ from sklearn.manifold import TSNE
 # from umap.umap_ import UMAP
 import os
 import logging
-from urllib.parse import urlparse
+# from urllib.parse import urlparse
 import fnmatch
-import zipfile
-import requests
+# import zipfile
+# import requests
 import cv2
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
@@ -37,7 +38,7 @@ import shutil
 import random
 import imagehash
 from PIL import Image
-from io import BytesIO
+# from io import BytesIO
 
 # Configure the logger
 logger = logging.getLogger('')
@@ -1751,9 +1752,6 @@ class Clustimage():
                         color = colours[1].get(y_predict, [0, 0, 0])
                         ax.scatter(x, y, color=color, edgecolors=[0, 0, 0], marker='*', s=dotsize * 10)
                         if text: ax.text(x, y, key, color=color)
-                        # if self.results['feat'].shape[1]>=2:
-                            # idx = self.results['predict'][key]['y_idx']
-                            # ax.scatter(self.results['feat'][idx][:, 0], self.results['feat'][idx][:, 1], edgecolors=[0, 0, 0])
                 plt.show()
                 plt.draw()
             else:
@@ -1899,7 +1897,6 @@ class Clustimage():
         self._check_status()
         cmap = _set_cmap(cmap, self.params['grayscale'])
 
-
         # Plot the clustered images
         if (self.results.get('labels', None) is not None) and (self.results.get('pathnames', None) is not None):
             # Set logger to error only
@@ -1943,7 +1940,7 @@ class Clustimage():
                                 ax[fignum +1].imshow(hog_image_rescaled, cmap=cmap)
                                 ax[fignum +1].axis('off')
                                 fignum=fignum +2
-    
+
                             _ = fig.suptitle('Histogram of Oriented Gradients', fontsize=16)
                             plt.tight_layout()
                             plt.show()
@@ -2161,22 +2158,26 @@ def store_to_disk(Xraw, dim, tempdir, files=None):
         pathnames.append(pathname)
     return pathnames, filenames
 
+
 # %% Unique without sort
 def unique_no_sort(x):
-    """Unique without sort."""
+    """Uniques without sort."""
     x = x[x!=None]
     indexes = np.unique(x, return_index=True)[1]
     return [x[index] for index in sorted(indexes)]
+
 
 # %% Extract basename from path
 def basename(label):
     """Extract basename from path."""
     return os.path.basename(label)
 
+
 # %% Resize image
 def img_flatten(img):
     """Flatten image."""
     return img.flatten()
+
 
 # %% Resize image
 def imresize(img, dim=(128, 128)):
@@ -2185,12 +2186,14 @@ def imresize(img, dim=(128, 128)):
         img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
     return img
 
+
 # %% Set cmap
 def _set_cmap(cmap, grayscale):
     """Set the colourmap."""
     if cmap is None:
         cmap = 'gray' if grayscale else None
     return cmap
+
 
 # %% Scaling
 def imscale(img):
@@ -2364,8 +2367,8 @@ def disable_tqdm():
     return (True if (logger.getEffectiveLevel()>=30) else False)
 
 
-# %% Import example dataset from github.
-def import_example(data='flowers', url=None, curpath=None):
+# %% import examples
+def import_example(**args):
     """Import example dataset from github source.
 
     Import one of the few datasets from github source or specify your own download url link.
@@ -2382,53 +2385,17 @@ def import_example(data='flowers', url=None, curpath=None):
 
     Returns
     -------
-    pd.DataFrame()
-        Dataset containing mixed features.
-
+    list or numpy array
     """
-    if url is None:
-        if data=='flowers':
-            url='https://erdogant.github.io/datasets/flower_images.zip'
-        elif data=='faces':
-            from sklearn.datasets import fetch_olivetti_faces
-            X = fetch_olivetti_faces()
-            # y = X['target']
-            # return list(map(lambda x: x.reshape(64,64), X['data']))
-            return X['data']
-        elif data=='scenes':
-            url='https://erdogant.github.io/datasets/scenes.zip'
-        elif data=='mnist':
-            from sklearn.datasets import load_digits
-            digits = load_digits(n_class=10)
-            # y = digits.target
-            return digits.data
+    # Dowload
+    df = dz.get(**args)
+    # Proces
+    if args.get('data', None)=='faces' or args.get('data', None)=='mnist':
+        # y = df['target'].values
+        X = df.iloc[:, 1:].values
+        return X
     else:
-        logger.warning('Lets download the dataset from url: [%s]', url)
-
-    if url is None:
-        logger.warning('Nothing to download.')
-        return None
-
-    if curpath is None:
-        curpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-    logger.info('Store examples at [%s]..', curpath)
-
-    filename = basename(urlparse(url).path)
-    path_to_data = os.path.join(curpath, filename)
-    if not os.path.isdir(curpath):
-        os.makedirs(curpath, exist_ok=True)
-
-    # Check file exists.
-    if not os.path.isfile(path_to_data):
-        logger.info('Downloading [%s] dataset from github source..', data)
-        wget(url, path_to_data)
-
-    # Unzip
-    dirpath = unzip(path_to_data)
-    # Import local dataset
-    image_files = listdir(dirpath)
-    # Return
-    return image_files
+        return df
 
 
 # %% Recursively list files from directory
@@ -2471,72 +2438,6 @@ def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
             logger.info('Excluded: <%s>' %(root))
     logger.info('[%s] files are collected recursively from path: [%s]', len(getfiles), dirpath)
     return getfiles
-
-
-# %% unzip
-def unzip(path_to_zip):
-    """Unzip files.
-
-    Parameters
-    ----------
-    path_to_zip : str
-        Path of the zip file.
-
-    Returns
-    -------
-    getpath : str
-        Path containing the unzipped files.
-
-    Example
-    -------
-    >>> import clustimage as cl
-    >>> dirpath = cl.unzip('c://temp//flower_images.zip')
-
-    """
-    getpath = None
-    if path_to_zip[-4:]=='.zip':
-        if not os.path.isdir(path_to_zip):
-            logger.info('Extracting files..')
-            pathname, _ = os.path.split(path_to_zip)
-            # Unzip
-            zip_ref = zipfile.ZipFile(path_to_zip, 'r')
-            zip_ref.extractall(pathname)
-            zip_ref.close()
-            getpath = path_to_zip.replace('.zip', '')
-            if not os.path.isdir(getpath):
-                logger.error('Directory does not exists: [%s]' %(getpath))
-                getpath = None
-    else:
-        logger.warning('Input is not a zip file: [%s]', path_to_zip)
-    # Return
-    return getpath
-
-
-# %% Download files from github source
-def wget(url, writepath):
-    """Retrieve file from url.
-
-    Parameters
-    ----------
-    url : str.
-        Internet source.
-    writepath : str.
-        Directory to write the file.
-
-    Returns
-    -------
-    None.
-
-    Example
-    -------
-    >>> import clustimage as cl
-    >>> images = cl.wget('https://erdogant.github.io/datasets/flower_images.zip', 'c://temp//flower_images.zip')
-
-    """
-    r = requests.get(url, stream=True)
-    with open(writepath, "wb") as fd:
-        for chunk in r.iter_content(chunk_size=1024):
-            fd.write(chunk)
 
 
 # %% Get image HASH function
@@ -2609,7 +2510,7 @@ def url2disk(urls, save_dir):
     Examples
     --------
     >>> # Init with default settings
-    >>> model = Undouble()
+    >>> import clustimage as cl
     >>>
     >>> # Importing the files files from disk, cleaning and pre-processing
     >>> url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
@@ -2619,55 +2520,11 @@ def url2disk(urls, save_dir):
     >>>                  'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png']
     >>>
     >>> # Import into model
-    >>> model.import_data(url_to_images)
+    >>> results = cl.url2disk(url_to_images, r'c:/temp/out/')
     >>>
-    >>> # Compute image-hash
-    >>> model.compute_hash(method='phash', hash_size=16)
-    >>>
-    >>> # Find images with image-hash <= threshold
-    >>> model.group(threshold=0)
-    >>>
-    >>> # Plot the images
-    >>> model.plot()
 
     """
-    if isinstance(urls, list): urls = [urls]
-    # Set filepath to the output of urls in case no url are used. Then the normal filepath is returned.
-    filepath = urls.copy()
-    idx_url = np.where(list(map(lambda x: x[0:4]=='http', urls)))[0]
-    if len(idx_url)>0:
-        logger.info('[%.0d] urls are detected and stored on disk: [%s]' %(len(idx_url), save_dir))
-    else:
-        urls = None
-
-    if not os.path.isdir(save_dir):
-        logger.info('Create dir: [%s]' %(save_dir))
-        os.mkdir(save_dir)
-
-    for idx in idx_url:
-        try:
-            # Make connection to file
-            response = requests.get(urls[idx])
-            img = Image.open(BytesIO(response.content))
-            # Get url
-            url = urlparse(urls[idx])
-            # Extract filename from url
-            url_filename = os.path.basename(url.path)
-            path_to_file = os.path.join(save_dir, url_filename)
-            if os.path.isfile(path_to_file):
-                logger.info('File already exists and is overwritten: [%s]' %(url.path))
-            # save a image using extension
-            img.save(path_to_file)
-            # Store new location
-            filepath[idx] = path_to_file
-        except:
-            logger.warning('error downloading file from [%s]' %(urls[idx]))
-
-    # Make dictionary output
-    out = {'url': urls, 'pathnames': filepath}
-
-    # Return
-    return out
+    return dz.url2disk(urls, save_dir)
 
 
 # %%

@@ -5,8 +5,6 @@ from clustimage.clustimage import (
     url2disk,
     imscale,
     imresize,
-    wget,
-    unzip,
     listdir,
     set_logger)
 

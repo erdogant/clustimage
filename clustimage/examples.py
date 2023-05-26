@@ -4,6 +4,29 @@
 # print(clustimage.__version__)
 
 # %%
+# Init with default settings
+import clustimage as cl
+# Importing the files files from disk, cleaning and pre-processing
+url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png',
+                 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png']
+
+# Import into model
+out = cl.url2disk(url_to_images, r'c:/temp/out/')
+
+
+# %% load examples
+from clustimage import Clustimage
+cl = Clustimage()
+some_files = cl.import_example(data='flowers')
+some_files = cl.import_example(data='scenes')
+
+X = cl.import_example(data='faces')
+X = cl.import_example(data='mnist')
+
+# %%
 from clustimage import Clustimage
 cl = Clustimage(method='pca', grayscale=True)
 face_results = cl.extract_faces(r'D://magweg//Various//')
