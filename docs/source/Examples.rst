@@ -669,42 +669,10 @@ In case a datamatrix is provided as an input to the model, the default setting i
 Import images from url location
 ##################################
 
-Images can also be imported from url locations.
-Each image is first downloaded and stored on a (specified) temp directory.
-In this example we will download 5 images from url locations. Note that url images and path locations can be combined.
 
-.. code:: python
-
-	from clustimage import Clustimage
-
-	# Initialize
-	cl = Clustimage(method='pca', embedding='umap')
-
-	# Importing the files files from disk, cleaning and pre-processing
-	url_to_images = ['https://erdogant.github.io/datasets/images/flower_images/flower_orange.png',
-			 'https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png',
-			 'https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png',
-			 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png',
-			 'https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png']
-
-	# Import into model
-	X = cl.import_data(url_to_images)
-
-	# Extract features using method
-	Xfeat = cl.extract_feat(X)
-
-	# Embedding
-	xycoord = cl.embedding(Xfeat)
-
-	# Cluster
-	labels = cl.cluster()
-
-	# Return
-	results = cl.results
-
-	# Make plots
-	cl.plot()
-	cl.dendrogram()
+.. automodule:: clustimage.clustimage.url2disk
+    :members:
+    :undoc-members:
 
 
 
