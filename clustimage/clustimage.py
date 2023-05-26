@@ -714,17 +714,19 @@ class Clustimage():
         >>> # Init with default settings
         >>> cl = Clustimage(method='pca', grayscale=True)
         >>>
-        >>> # load example with faces
-        >>> pathnames = cl.import_example(data='faces')
-        >>>
         >>> # Detect faces
-        >>> face_results = cl.extract_faces(pathnames)
-        >>>
-        >>> # Cluster the faces
-        >>> results = cl.fit_transform(face_results['pathnames_face'])
+        >>> face_results = cl.extract_faces(r'c://temp//my_photos//')
+        >>> pathnames_face = face_results['pathnames_face']
         >>>
         >>> # Plot facces
         >>> cl.plot_faces(faces=True, eyes=True)
+        >>>
+        >>> # load example with faces
+        >>> pathnames_face = cl.import_example(data='faces')
+        >>>
+        >>> # Cluster the faces
+        >>> results = cl.fit_transform(pathnames_face)
+        >>>
         >>>
 
         """

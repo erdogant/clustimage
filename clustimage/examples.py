@@ -4,6 +4,15 @@
 # print(clustimage.__version__)
 
 # %%
+from clustimage import Clustimage
+cl = Clustimage(method='pca', grayscale=True)
+face_results = cl.extract_faces(r'D://magweg//Various//')
+results = cl.fit_transform(face_results['pathnames_face'])
+cl.plot()
+cl.scatter(img_mean=False, plt_all=True)
+cl.plot_faces()
+
+# %%
 import sys
 import os
 import numpy as np
