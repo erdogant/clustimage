@@ -19,6 +19,7 @@ out = cl.url2disk(url_to_images, r'c:/temp/out/')
 
 # %% load examples
 import os
+import numpy as np
 from clustimage import Clustimage
 cl = Clustimage()
 some_files = cl.import_example(data='flowers')
