@@ -18,13 +18,17 @@ out = cl.url2disk(url_to_images, r'c:/temp/out/')
 
 
 # %% load examples
+import os
 from clustimage import Clustimage
 cl = Clustimage()
 some_files = cl.import_example(data='flowers')
 some_files = cl.import_example(data='scenes')
+X = cl.import_example(data='mnist')
 
 X = cl.import_example(data='faces')
-X = cl.import_example(data='mnist')
+cl.fit_transform(X)
+np.all(np.array(list(map(os.path.basename, cl.results['pathnames'])))==cl.results['filenames'])
+
 
 # %%
 from clustimage import Clustimage
