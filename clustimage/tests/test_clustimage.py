@@ -21,7 +21,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         cl = Clustimage(dim=(128, 128), grayscale=False)
         _ =  cl.import_data(X)
         assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames', 'url']))
-        assert cl.results['img'].shape==(len(X), 49152)
+        assert cl.results['img'].shape==(len(X), 65536)
         # Check grayscale parameter with imports
         cl = Clustimage(dim=(128, 128), grayscale=True)
         _ = cl.import_data(X)
@@ -42,7 +42,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_example(data='flowers')
         X = cl.import_data(X)
         _ = cl.extract_feat(X)
-        assert cl.results['feat'].shape==(X['img'].shape[0], 153)
+        assert cl.results['feat'].shape==(X['img'].shape[0], 152)
 
         # Init with settings such as PCA
         cl = Clustimage(method='hog', verbose=50)
