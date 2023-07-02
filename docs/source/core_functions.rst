@@ -549,7 +549,7 @@ Let's merge some of the clusters and set it to 5 clusters.
 .. |figP5| image:: ../figs/scatter_five.png
 .. |figP6| image:: ../figs/dendrogram_five.png
 
-.. table:: Scatterplot and dendrogram of the optimized number of clusters.
+.. table:: Scatterplot and dendrogram when we force to 5 clusters.
    :align: center
 
    +----------+----------+
@@ -575,7 +575,7 @@ Another manner to change the number of cluster is by specifying the height of th
 .. |figP7| image:: ../figs/scatter_three.png
 .. |figP8| image:: ../figs/dendrogram_three.png
 
-.. table:: Scatterplot and dendrogram of the optimized number of clusters.
+.. table:: Scatterplot and dendrogram where the number of clusters is defined by the dendrogram cut-off point.
    :align: center
 
    +----------+----------+
