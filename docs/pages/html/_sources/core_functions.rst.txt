@@ -591,6 +591,32 @@ Another manner to change the number of cluster is by specifying the height of th
    +----------+----------+
 
 
+
+Selection on the cluster labels
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+	# All results are stored in cl.results
+	cl.results.keys()
+	['img', 'feat', 'xycoord', 'pathnames', 'labels', 'url', 'filenames', 'predict']
+
+	# The cluster labels are stored in labels
+	cl.results['labels']
+
+	# Select cluster 0
+	Iloc = cl.results['labels']==0
+
+	# Select files for cluster 0
+	cl.results['pathnames'][Iloc]
+
+	# Select filenames for cluster 0
+	cl.results['filenames'][Iloc]
+
+	# Select xy-coordinates for cluster 0
+	cl.results['xycoord'][Iloc]
+
+
 .. _clusteval: https://github.com/erdogant/clusteval
 
 

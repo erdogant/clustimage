@@ -36,7 +36,7 @@ cl.dendrogram();
 
 
 # Look at the dendrogram y-axis and specify the height to merge clusters
-dendro_results = cl.dendrogram(max_d=80000)
+dendro_results = cl.dendrogram(max_d=60000)
 # Check number of clusters
 len(np.unique(cl.results['labels']))
 # Scatter
@@ -44,18 +44,18 @@ cl.scatter(dotsize=75)
 
 
 # Specify to expand clusters
-dendro_results = cl.dendrogram(max_d=20000)
+dendro_results = cl.dendrogram(max_d=30000)
 # Scatter
 cl.scatter(dotsize=75)
 # Check number of clusters
 len(np.unique(cl.results['labels']))
 
 
-# Return desired number of clusters
-labels = cl.cluster(min_clust=7, max_clust=7)
-dendro_results = cl.dendrogram()
-# Check number of clusters
-np.unique(dendro_results['labels'])
+# # Return desired number of clusters
+# labels = cl.cluster(min_clust=7, max_clust=7)
+# dendro_results = cl.dendrogram()
+# # Check number of clusters
+# np.unique(dendro_results['labels'])
 
 
 # %%

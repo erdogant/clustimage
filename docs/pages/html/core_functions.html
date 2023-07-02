@@ -88,6 +88,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#optimized-clusters">Optimized Clusters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#force-to-k-clusters">Force to K clusters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#set-clusters-by-dendrogram-threshold">Set clusters by dendrogram threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#selection-on-the-cluster-labels">Selection on the cluster labels</a></li>
 </ul>
 </li>
 </ul>
@@ -702,6 +703,29 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </tr>
 </tbody>
 </table>
+</section>
+<section id="selection-on-the-cluster-labels">
+<h2>Selection on the cluster labels<a class="headerlink" href="#selection-on-the-cluster-labels" title="Permalink to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># All results are stored in cl.results</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">,</span> <span class="s1">&#39;feat&#39;</span><span class="p">,</span> <span class="s1">&#39;xycoord&#39;</span><span class="p">,</span> <span class="s1">&#39;pathnames&#39;</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;filenames&#39;</span><span class="p">,</span> <span class="s1">&#39;predict&#39;</span><span class="p">]</span>
+
+<span class="c1"># The cluster labels are stored in labels</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span>
+
+<span class="c1"># Select cluster 0</span>
+<span class="n">Iloc</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span>
+
+<span class="c1"># Select files for cluster 0</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;pathnames&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+
+<span class="c1"># Select filenames for cluster 0</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;filenames&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+
+<span class="c1"># Select xy-coordinates for cluster 0</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
+</pre></div>
+</div>
 <hr>
 <center>
         <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
