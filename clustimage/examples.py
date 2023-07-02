@@ -3,6 +3,61 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %% Dendrogram merge clusters
+import numpy as np
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Initialize
+cl = Clustimage()
+
+# Import data
+X = cl.import_example(data='flowers')
+# Fit transform
+cl.fit_transform(X)
+# Check number of clusters
+len(np.unique(cl.results['labels']))
+
+# Scatter
+cl.scatter(dotsize=75)
+# Create dendrogram
+cl.dendrogram();
+
+
+# Set to 5 clusters
+labels = cl.cluster(min_clust=5, max_clust=5)
+# Check number of clusters
+len(np.unique(cl.results['labels']))
+# Scatter
+cl.scatter(dotsize=75)
+# Create dendrogram
+cl.dendrogram();
+
+
+
+# Look at the dendrogram y-axis and specify the height to merge clusters
+dendro_results = cl.dendrogram(max_d=80000)
+# Check number of clusters
+len(np.unique(cl.results['labels']))
+# Scatter
+cl.scatter(dotsize=75)
+
+
+# Specify to expand clusters
+dendro_results = cl.dendrogram(max_d=20000)
+# Scatter
+cl.scatter(dotsize=75)
+# Check number of clusters
+len(np.unique(cl.results['labels']))
+
+
+# Return desired number of clusters
+labels = cl.cluster(min_clust=7, max_clust=7)
+dendro_results = cl.dendrogram()
+# Check number of clusters
+np.unique(dendro_results['labels'])
+
+
 # %%
 from clustimage import Clustimage
 

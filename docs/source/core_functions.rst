@@ -10,7 +10,7 @@ The are 5 core functionalities of ``clustimage`` that allows to preprocess the i
     * cluster()
     * find()
     * unique()
-    
+
 Fit and transform
 ^^^^^^^^^^^^^^^^^^^^
 The *fit_transform* function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
@@ -427,7 +427,7 @@ Extract images that belong to a certain cluster and make some plots.
       plt.title(pathname)
 
 
-Generic functionalities
+Generic functions
 ''''''''''''''''''''''''
 ``clustimage`` contains various generic functionalities that are internally used but may be usefull too in other applications.
 
@@ -485,8 +485,102 @@ Examples can be found here: :func:`clustimage.clustimage.set_logger`
 extract_hog
 ^^^^^^^^^^^^
 Histogram of Oriented Gradients (HOG), is a feature descriptor that is often used to extract features from image data. 
-Examples can be found here :func:`clustimage.clustimage.Clustimage.extract_hog` and a more detailed explanation can be found in the **Feature Extraction** - **HOG** section.
+Examples: :func:`clustimage.clustimage.Clustimage.extract_hog` More detailed explanation can be found in the **Feature Extraction** - **HOG** section.
 
+
+
+Merge/ Expand Clusters
+''''''''''''''''''''''''''''''
+The number of clusters are optimized using the clusteval library. However, when desired it is also possible to manually merge of expand the number of clusters.
+
+
+.. code:: python
+
+	import numpy as np
+	import matplotlib.pyplot as plt
+	from clustimage import Clustimage
+
+	# Initialize
+	cl = Clustimage()
+
+	# Import data
+	X = cl.import_example(data='flowers')
+	# Fit transform
+	cl.fit_transform(X)
+	# Check number of clusters
+	len(np.unique(cl.results['labels']))
+	# 9
+
+	# Scatter
+	cl.scatter(dotsize=75)
+	# Create dendrogram
+	cl.dendrogram();
+
+
+.. |figP3| image:: ../figs/scatter_optimized.png
+.. |figP4| image:: ../figs/dendrogram_optimized.png
+
+.. table:: Scatterplot and dendrogram of the optimized number of clusters.
+   :align: center
+
+   +----------+----------+
+   | |figP3|  | |figP4|  |
+   +----------+----------+
+
+
+
+Let's merge some of the clusters and set it to 5 clusters.
+
+.. code:: python
+
+	# Set to 5 clusters
+	labels = cl.cluster(min_clust=5, max_clust=5)
+
+	# Check number of clusters
+	len(np.unique(cl.results['labels']))
+	# 5
+
+	# Scatter
+	cl.scatter(dotsize=75)
+	# Create dendrogram
+	cl.dendrogram();
+
+
+.. |figP5| image:: ../figs/scatter_five.png
+.. |figP6| image:: ../figs/dendrogram_five.png
+
+.. table:: Scatterplot and dendrogram of the optimized number of clusters.
+   :align: center
+
+   +----------+----------+
+   | |figP5|  | |figP6|  |
+   +----------+----------+
+
+
+Another manner to change the number of cluster is by specifying the height of the dendrogram. The number of clusters is automatically derived from the cut-off point.
+
+.. code:: python
+
+	# Look at the dendrogram y-axis and specify the height to merge clusters
+	dendro_results = cl.dendrogram(max_d=60000)
+
+	# Check number of clusters
+	len(np.unique(cl.results['labels']))
+	# 3
+	
+	# Scatter
+	cl.scatter(dotsize=75)
+
+
+.. |figP7| image:: ../figs/scatter_three.png
+.. |figP8| image:: ../figs/dendrogram_three.png
+
+.. table:: Scatterplot and dendrogram of the optimized number of clusters.
+   :align: center
+
+   +----------+----------+
+   | |figP7|  | |figP8|  |
+   +----------+----------+
 
 
 .. _clusteval: https://github.com/erdogant/clusteval
