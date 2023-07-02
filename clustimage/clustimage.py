@@ -486,7 +486,7 @@ class Clustimage():
 
     def _check_status(self):
         if not hasattr(self, 'results'):
-            raise Exception(logger.error('Results in missing! Hint: try to first fit_transform() your data!'))
+            raise Exception(logger.error('Results in missing. Hint: fit_transform(X)'))
 
     def unique(self, metric=None):
         """Compute the unique images.
@@ -987,7 +987,10 @@ class Clustimage():
             Xraw = Xraw.values
 
         # 2. Read images
-        if isinstance(Xraw, list) or isinstance(Xraw[0], str):
+        if isinstance(Xraw, dict):
+            logger.info('Skipping import because import is already performed outside the fit_transform()')
+            self.results = Xraw
+        elif isinstance(Xraw, list) or isinstance(Xraw[0], str):
             # Make sure that list in lists are flattend
             Xraw = np.hstack(Xraw)
             # Check whether url and store all url images to tempdir on disk.
@@ -1008,7 +1011,6 @@ class Clustimage():
                 self.results = X
                 # Add remaining output variables
                 self.results = {**defaults, **self.results}
-
         # 3. If input is array-like. Make sure X becomes compatible.
         elif isinstance(Xraw, np.ndarray):
             # Make 2D
@@ -1032,6 +1034,7 @@ class Clustimage():
                 self.results['img'] = Xraw
                 self.results['pathnames'] = pathnames
                 self.results['filenames'] = filenames
+
         # Return
         return self.results
 
@@ -1573,7 +1576,7 @@ class Clustimage():
 
         set_logger(verbose=verbose)
 
-    def dendrogram(self, max_d=None, figsize=(15, 10)):
+    def dendrogram(self, max_d=None, figsize=(15, 10), update_labels=True):
         """Plot Dendrogram.
 
         Parameters
@@ -1593,16 +1596,22 @@ class Clustimage():
         None.
 
         """
+        results = None
         self._check_status()
 
         if hasattr(self, 'clusteval'):
             results = self.clusteval.dendrogram(max_d=max_d, figsize=figsize)
-            # results = self.clusteval.dendrogram(X=feat, max_d=max_d, figsize=figsize)
+            if results.get('labx', None) is not None:
+                results['labels'] = results['labx']
+                results.pop('labx')
+            if update_labels:
+                self.results['labels'] = results['labels']
+                self.results_unique = self.unique()
+                logger.info('Updating cluster-labels ')
         else:
-            logger.warning('This Plot requires running fit_transform() first.')
+            logger.warning('This Plot requires running fit_transform()')
 
-        if max_d is not None:
-            return results
+        return results
 
     def _add_img_to_scatter(self, ax, pathnames, xycoord, cmap=None, zoom=0.2):
         # Plot the images on top of the scatterplot
@@ -1619,7 +1628,17 @@ class Clustimage():
                 imagebox = offsetbox.AnnotationBbox(offsetbox.OffsetImage(img, cmap=cmap, zoom=zoom), xycoord[i, :])
                 ax.add_artist(imagebox)
 
-    def scatter(self, dotsize=15, legend=False, zoom=0.3, img_mean=True, text=True, plt_all=False, density=False, figsize=(15, 10), args_scatter={}):
+    def scatter(self,
+                dotsize=15,
+                legend=False,
+                zoom=0.3,
+                img_mean=True,
+                text=True,
+                plt_all=False,
+                density=False,
+                figsize=(15, 10),
+                ax=None,
+                args_scatter={}):
         """Plot the samples using a scatterplot.
 
         Parameters
@@ -1678,7 +1697,7 @@ class Clustimage():
 
         """
         # Check status
-        fig, ax = None, None
+        fig = None
         self._check_status()
         if self.results['xycoord'] is None:
             logger.warning('Missing x,y coordinates in results dict. Hint: try to first run: cl.embedding(Xfeat)')
@@ -1711,7 +1730,7 @@ class Clustimage():
         set_logger(verbose=40)
 
         # Scatter
-        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], labels=labels, **args_scatter)
+        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], labels=labels, ax=ax, **args_scatter)
 
         if hasattr(self, 'results_unique'):
             if img_mean:
@@ -1731,7 +1750,7 @@ class Clustimage():
                 logger.info('Plotting predicted results..')
 
                 # Scatter all points
-                fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize, s=dotsize)
+                fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize, s=dotsize, ax=ax)
 
                 # Create unique colors
                 # colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
