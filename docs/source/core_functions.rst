@@ -494,6 +494,9 @@ Merge/ Expand Clusters
 The number of clusters are optimized using the clusteval library. However, when desired it is also possible to manually merge of expand the number of clusters.
 
 
+Optimized Clusters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. code:: python
 
 	import numpy as np
@@ -528,6 +531,8 @@ The number of clusters are optimized using the clusteval library. However, when 
    +----------+----------+
 
 
+Force to K clusters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Let's merge some of the clusters and set it to 5 clusters.
 
@@ -557,7 +562,10 @@ Let's merge some of the clusters and set it to 5 clusters.
    +----------+----------+
 
 
-Another manner to change the number of cluster is by specifying the height of the dendrogram. The number of clusters is automatically derived from the cut-off point.
+Set clusters by dendrogram threshold
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Another manner to change the number of cluster is by specifying the height of the dendrogram (setting a threshold point or cut-off). The number of clusters is automatically derived from that point.
 
 .. code:: python
 

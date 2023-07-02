@@ -84,7 +84,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#extract-hog">extract_hog</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#merge-expand-clusters">Merge/ Expand Clusters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#merge-expand-clusters">Merge/ Expand Clusters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#optimized-clusters">Optimized Clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#force-to-k-clusters">Force to K clusters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#set-clusters-by-dendrogram-threshold">Set clusters by dendrogram threshold</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction</span></p>
 <ul>
@@ -618,6 +623,8 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 <section id="merge-expand-clusters">
 <h1>Merge/ Expand Clusters<a class="headerlink" href="#merge-expand-clusters" title="Permalink to this heading"></a></h1>
 <p>The number of clusters are optimized using the clusteval library. However, when desired it is also possible to manually merge of expand the number of clusters.</p>
+<section id="optimized-clusters">
+<h2>Optimized Clusters<a class="headerlink" href="#optimized-clusters" title="Permalink to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
@@ -647,6 +654,9 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </tr>
 </tbody>
 </table>
+</section>
+<section id="force-to-k-clusters">
+<h2>Force to K clusters<a class="headerlink" href="#force-to-k-clusters" title="Permalink to this heading"></a></h2>
 <p>Let’s merge some of the clusters and set it to 5 clusters.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set to 5 clusters</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">min_clust</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_clust</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -669,7 +679,10 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </tr>
 </tbody>
 </table>
-<p>Another manner to change the number of cluster is by specifying the height of the dendrogram. The number of clusters is automatically derived from the cut-off point.</p>
+</section>
+<section id="set-clusters-by-dendrogram-threshold">
+<h2>Set clusters by dendrogram threshold<a class="headerlink" href="#set-clusters-by-dendrogram-threshold" title="Permalink to this heading"></a></h2>
+<p>Another manner to change the number of cluster is by specifying the height of the dendrogram (setting a threshold point or cut-off). The number of clusters is automatically derived from that point.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Look at the dendrogram y-axis and specify the height to merge clusters</span>
 <span class="n">dendro_results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">max_d</span><span class="o">=</span><span class="mi">60000</span><span class="p">)</span>
 
@@ -697,6 +710,7 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
         <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
 </center>
 <hr></section>
+</section>
 
 
            </div>
