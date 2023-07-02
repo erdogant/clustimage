@@ -12,6 +12,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -34,7 +36,7 @@
             clustimage
           </a>
               <div class="version">
-                1.5.16
+                1.5.17
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -74,7 +76,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#output">Output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#generic-functionalities">Generic functionalities</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#generic-functions">Generic functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#wget">wget</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#unzip">unzip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#listdir">listdir</a></li>
@@ -82,6 +84,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#extract-hog">extract_hog</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#merge-expand-clusters">Merge/ Expand Clusters</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction</span></p>
 <ul>
@@ -509,12 +512,12 @@ The function depends on the functionality of <code class="docutils literal notra
 <section id="output">
 <h1>Output<a class="headerlink" href="#output" title="Permalink to this heading"></a></h1>
 <p>The results obtained from the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a> or <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a> is a dictionary containing the following keys:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*  img       : Image vector of the preprocessed images.
-*  feat      : Extracted feature.
-*  xycoord   : X and Y coordinates from the embedding.
-*  pathnames : Absolute path location to the image file.
-*  filenames : File names of the image file.
-*  labels    : Cluster labels.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*<span class="w">  </span>img<span class="w">       </span>:<span class="w"> </span>Image<span class="w"> </span>vector<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>preprocessed<span class="w"> </span>images.
+*<span class="w">  </span>feat<span class="w">      </span>:<span class="w"> </span>Extracted<span class="w"> </span>feature.
+*<span class="w">  </span>xycoord<span class="w">   </span>:<span class="w"> </span>X<span class="w"> </span>and<span class="w"> </span>Y<span class="w"> </span>coordinates<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>embedding.
+*<span class="w">  </span>pathnames<span class="w"> </span>:<span class="w"> </span>Absolute<span class="w"> </span>path<span class="w"> </span>location<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>image<span class="w"> </span>file.
+*<span class="w">  </span>filenames<span class="w"> </span>:<span class="w"> </span>File<span class="w"> </span>names<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>image<span class="w"> </span>file.
+*<span class="w">  </span>labels<span class="w">    </span>:<span class="w"> </span>Cluster<span class="w"> </span>labels.
 </pre></div>
 </div>
 <p>For demonstration purposes I will load the flowers dataset and cluster the images.</p>
@@ -560,8 +563,8 @@ The function depends on the functionality of <code class="docutils literal notra
 </pre></div>
 </div>
 </section>
-<section id="generic-functionalities">
-<h1>Generic functionalities<a class="headerlink" href="#generic-functionalities" title="Permalink to this heading"></a></h1>
+<section id="generic-functions">
+<h1>Generic functions<a class="headerlink" href="#generic-functions" title="Permalink to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">clustimage</span></code> contains various generic functionalities that are internally used but may be usefull too in other applications.</p>
 <section id="wget">
 <h2>wget<a class="headerlink" href="#wget" title="Permalink to this heading"></a></h2>
@@ -609,7 +612,83 @@ Examples can be found here: <a class="reference internal" href="clustimage.clust
 <section id="extract-hog">
 <h2>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this heading"></a></h2>
 <p>Histogram of Oriented Gradients (HOG), is a feature descriptor that is often used to extract features from image data.
-Examples can be found here <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_hog" title="clustimage.clustimage.Clustimage.extract_hog"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_hog()</span></code></a> and a more detailed explanation can be found in the <strong>Feature Extraction</strong> - <strong>HOG</strong> section.</p>
+Examples: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_hog" title="clustimage.clustimage.Clustimage.extract_hog"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_hog()</span></code></a> More detailed explanation can be found in the <strong>Feature Extraction</strong> - <strong>HOG</strong> section.</p>
+</section>
+</section>
+<section id="merge-expand-clusters">
+<h1>Merge/ Expand Clusters<a class="headerlink" href="#merge-expand-clusters" title="Permalink to this heading"></a></h1>
+<p>The number of clusters are optimized using the clusteval library. However, when desired it is also possible to manually merge of expand the number of clusters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+
+<span class="c1"># Initialize</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
+
+<span class="c1"># Import data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">import_example</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;flowers&#39;</span><span class="p">)</span>
+<span class="c1"># Fit transform</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="c1"># Check number of clusters</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]))</span>
+<span class="c1"># 9</span>
+
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">75</span><span class="p">)</span>
+<span class="c1"># Create dendrogram</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">();</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id5">
+<caption><span class="caption-text">Scatterplot and dendrogram of the optimized number of clusters.</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figP3" src="_images/scatter_optimized.png" /></p></td>
+<td><p><img alt="figP4" src="_images/dendrogram_optimized.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<p>Let’s merge some of the clusters and set it to 5 clusters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set to 5 clusters</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">min_clust</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_clust</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Check number of clusters</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]))</span>
+<span class="c1"># 5</span>
+
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">75</span><span class="p">)</span>
+<span class="c1"># Create dendrogram</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">();</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id6">
+<caption><span class="caption-text">Scatterplot and dendrogram of the optimized number of clusters.</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figP5" src="_images/scatter_five.png" /></p></td>
+<td><p><img alt="figP6" src="_images/dendrogram_five.png" /></p></td>
+</tr>
+</tbody>
+</table>
+<p>Another manner to change the number of cluster is by specifying the height of the dendrogram. The number of clusters is automatically derived from the cut-off point.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Look at the dendrogram y-axis and specify the height to merge clusters</span>
+<span class="n">dendro_results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">max_d</span><span class="o">=</span><span class="mi">60000</span><span class="p">)</span>
+
+<span class="c1"># Check number of clusters</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]))</span>
+<span class="c1"># 3</span>
+
+<span class="c1"># Scatter</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">dotsize</span><span class="o">=</span><span class="mi">75</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils align-center" id="id7">
+<caption><span class="caption-text">Scatterplot and dendrogram of the optimized number of clusters.</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<tbody>
+<tr class="row-odd"><td><p><img alt="figP7" src="_images/scatter_three.png" /></p></td>
+<td><p><img alt="figP8" src="_images/dendrogram_three.png" /></p></td>
+</tr>
+</tbody>
+</table>
 <hr>
 <center>
         <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
@@ -618,7 +697,6 @@ Examples can be found here <a class="reference internal" href="clustimage.clusti
         <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
 </center>
 <hr></section>
-</section>
 
 
            </div>

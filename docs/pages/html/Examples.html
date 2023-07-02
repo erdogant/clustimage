@@ -12,6 +12,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -34,7 +36,7 @@
             clustimage
           </a>
               <div class="version">
-                1.5.16
+                1.5.17
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -60,7 +62,8 @@
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html">Core functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#preprocessing">Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#output">Output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core_functions.html#generic-functionalities">Generic functionalities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_functions.html#generic-functions">Generic functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_functions.html#merge-expand-clusters">Merge/ Expand Clusters</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction</span></p>
 <ul>
@@ -734,17 +737,17 @@ In this example we will download 5 images from url locations. Note that url imag
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Importing the files files from disk, cleaning and pre-processing</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">url_to_images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_orange.png&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_white_1.png&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_white_2.png&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_yellow_1.png&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                 <span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_yellow_2.png&#39;</span><span class="p">]</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Import into model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">url2disk</span><span class="p">(</span><span class="n">url_to_images</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;c:/temp/out/&#39;</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
 </section>

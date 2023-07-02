@@ -12,6 +12,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -34,7 +36,7 @@
             clustimage
           </a>
               <div class="version">
-                1.5.16
+                1.5.17
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -70,7 +72,8 @@
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html">Core functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#preprocessing">Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#output">Output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core_functions.html#generic-functionalities">Generic functionalities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_functions.html#generic-functions">Generic functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_functions.html#merge-expand-clusters">Merge/ Expand Clusters</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction</span></p>
 <ul>
@@ -159,17 +162,17 @@
 </section>
 <section id="pypi">
 <h2>Pypi<a class="headerlink" href="#pypi" title="Permalink to this heading"></a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install from Pypi:
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>from<span class="w"> </span>Pypi:
 <span class="go">pip install clustimage</span>
 
-<span class="gp"># </span>Force update to latest version
+<span class="gp"># </span>Force<span class="w"> </span>update<span class="w"> </span>to<span class="w"> </span>latest<span class="w"> </span>version
 <span class="go">pip install -U clustimage</span>
 </pre></div>
 </div>
 </section>
 <section id="github-source">
 <h2>Github source<a class="headerlink" href="#github-source" title="Permalink to this heading"></a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install directly from github
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>directly<span class="w"> </span>from<span class="w"> </span>github
 <span class="go">pip install git+https://github.com/erdogant/clustimage</span>
 </pre></div>
 </div>
@@ -179,13 +182,13 @@
 <h1>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this heading"></a></h1>
 <section id="remove-environment">
 <h2>Remove environment<a class="headerlink" href="#remove-environment" title="Permalink to this heading"></a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>List all the active environments. clustimage should be listed.
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>List<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>active<span class="w"> </span>environments.<span class="w"> </span>clustimage<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>listed.
 <span class="go">conda env list</span>
 
-<span class="gp"># </span>Remove the clustimage environment
+<span class="gp"># </span>Remove<span class="w"> </span>the<span class="w"> </span>clustimage<span class="w"> </span>environment
 <span class="go">conda env remove --name clustimage</span>
 
-<span class="gp"># </span>List all the active environments. clustimage should be absent.
+<span class="gp"># </span>List<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>active<span class="w"> </span>environments.<span class="w"> </span>clustimage<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>absent.
 <span class="go">conda env list</span>
 </pre></div>
 </div>
@@ -193,7 +196,7 @@
 <section id="remove-installation">
 <h2>Remove installation<a class="headerlink" href="#remove-installation" title="Permalink to this heading"></a></h2>
 <p>Note that the removal of the environment will also remove the <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> installation.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install from Pypi:
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>from<span class="w"> </span>Pypi:
 <span class="go">pip uninstall clustimage</span>
 </pre></div>
 </div>
