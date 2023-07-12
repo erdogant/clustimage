@@ -66,8 +66,8 @@ cl = Clustimage(method='pca')
 
 # Import data
 Xraw = cl.import_example(data='flowers')
-Xraw = cl.import_example(data='mnist')
-Xraw = cl.import_example(data='faces')
+Xraw, y = cl.import_example(data='mnist')
+Xraw, y = cl.import_example(data='faces')
 
 # Check whether in is dir, list of files or array-like
 X = cl.import_data(Xraw)
@@ -120,9 +120,9 @@ from clustimage import Clustimage
 cl = Clustimage()
 some_files = cl.import_example(data='flowers')
 some_files = cl.import_example(data='scenes')
-X = cl.import_example(data='mnist')
+X, y = cl.import_example(data='mnist')
+X, y = cl.import_example(data='faces')
 
-X = cl.import_example(data='faces')
 cl.fit_transform(X)
 np.all(np.array(list(map(os.path.basename, cl.results['pathnames'])))==cl.results['filenames'])
 
@@ -147,7 +147,7 @@ import matplotlib.pyplot as plt
 cl = Clustimage(method='hog', grayscale=True, dim=(128,128))
 
 # some_files = cl.import_example(data='flowers')[0:10]
-some_files = cl.import_example(data='faces')[0:10]
+some_files, y = cl.import_example(data='faces')[0:10]
 results = cl.fit_transform(some_files, min_clust=4)
 
 # cl.clusteval.plot()
@@ -490,8 +490,8 @@ cl = Clustimage(method='pca', embedding='tsne')
 
 # Import data
 Xraw = cl.import_example(data='flowers')
-# Xraw = cl.import_example(data='mnist')
-# Xraw = cl.import_example(data='faces')
+# Xraw, y = cl.import_example(data='mnist')
+# Xraw, y = cl.import_example(data='faces')
 
 # Import data in a standardized manner
 X = cl.import_data(Xraw)
@@ -593,8 +593,8 @@ from clustimage import Clustimage
 cl = Clustimage(method='pca', params_pca={'n_components':0.95}) 
 # Import data
 X = cl.import_example(data='flowers')
-# X = cl.import_example(data='mnist')
-# X = cl.import_example(data='faces')
+# X, y = cl.import_example(data='mnist')
+# X, y = cl.import_example(data='faces')
 
 # Check whether in is dir, list of files or array-like
 X = cl.import_data(X)
@@ -654,7 +654,7 @@ from clustimage import Clustimage
 # Init
 cl = Clustimage(method='pca', grayscale=False, dim=(64,64))
 # Load example with faces
-X = cl.import_example(data='faces')
+X, y = cl.import_example(data='faces')
 # Preproceesing, cluster detection
 results = cl.fit_transform(X, min_clust=4, max_clust=20)
 

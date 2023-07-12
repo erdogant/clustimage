@@ -1,9 +1,10 @@
 #conda create -n env_clustimage python=3.8
 #conda activate env_clustimage
 
+datazets>="0.1.7"
+clusteval>="2.1.5"
 pca
 distfit
-clusteval>="2.1.5"
 colourmap
 numpy
 pandas
@@ -18,5 +19,3 @@ imagehash
 scatterd
 pypickle
 ismember
-datazets>="0.1.5"
-

@@ -1,3 +1,5 @@
+from datazets import get as import_example
+
 from clustimage.clustimage import Clustimage
 
 from clustimage.clustimage import (

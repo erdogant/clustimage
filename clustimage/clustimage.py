@@ -24,8 +24,6 @@ import os
 import logging
 # from urllib.parse import urlparse
 import fnmatch
-# import zipfile
-# import requests
 import cv2
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
@@ -134,7 +132,7 @@ class Clustimage():
     >>> cl = Clustimage(method='pca')
     >>>
     >>> # load example with faces
-    >>> X = cl.import_example(data='mnist')
+    >>> X, y = cl.import_example(data='mnist')
     >>>
     >>> # Cluster digits
     >>> results = cl.fit_transform(X)
@@ -314,7 +312,7 @@ class Clustimage():
         >>> cl = Clustimage(method='pca', grayscale=True)
         >>>
         >>> # load example with faces
-        >>> pathnames = cl.import_example(data='faces')
+        >>> pathnames, y = cl.import_example(data='faces')
         >>> # Detect faces
         >>> face_results = cl.extract_faces(pathnames)
         >>>
@@ -530,7 +528,7 @@ class Clustimage():
         >>> cl = Clustimage()
         >>>
         >>> # load example with faces
-        >>> X = cl.import_example(data='mnist')
+        >>> X, y = cl.import_example(data='mnist')
         >>>
         >>> # Cluster digits
         >>> _ = cl.fit_transform(X)
@@ -644,7 +642,7 @@ class Clustimage():
         >>> cl = Clustimage(method='pca')
         >>>
         >>> # load example with faces
-        >>> X = cl.import_example(data='mnist')
+        >>> X, y = cl.import_example(data='mnist')
         >>>
         >>> # Cluster digits
         >>> results = cl.fit_transform(X)
@@ -723,7 +721,7 @@ class Clustimage():
         >>> cl.plot_faces(faces=True, eyes=True)
         >>>
         >>> # load example with faces
-        >>> pathnames_face = cl.import_example(data='faces')
+        >>> pathnames_face, y = cl.import_example(data='faces')
         >>>
         >>> # Cluster the faces
         >>> results = cl.fit_transform(pathnames_face)
@@ -1684,7 +1682,7 @@ class Clustimage():
         >>> cl = Clustimage()
         >>>
         >>> # Import example dataset
-        >>> X = cl.import_example(data='mnist')
+        >>> X, y = cl.import_example(data='mnist')
         >>>
         >>> # Run the model to find the optimal clusters.
         >>> results = cl.fit_transform(X)
@@ -2077,18 +2075,25 @@ class Clustimage():
         if dim is None: dim = self.params['dim']
         return _get_dim(Xraw, dim=dim)
 
-    def import_example(self, data='flowers', url=None, curpath=None):
+    def import_example(self, data='flowers', url=None, sep=','):
         """Import example dataset from github source.
 
-        Import one of the few datasets from github source or specify your own download url link.
+        Import one of the datasets from github source or specify your own download url link.
 
         Parameters
         ----------
         data : str
-            * 'flowers'
-            * 'faces'
-            * 'mnist'
-            * 'scenes'
+            Images:
+                * 'faces'
+                * 'mnist'
+            Files with images:
+                * 'southern_nebula'
+                * 'flowers'
+                * 'scenes'
+                * 'cat_and_dog'
+
+        url : str
+            url link to to dataset.
 
         Returns
         -------
@@ -2096,7 +2101,7 @@ class Clustimage():
             list of str containing filepath to images.
 
         """
-        return import_example(data=data, url=url, curpath=curpath)
+        return import_example(data=data, url=url, sep=sep)
 
 
 # %% Store images to disk
@@ -2387,32 +2392,42 @@ def disable_tqdm():
 
 
 # %% import examples
-def import_example(**args):
+def import_example(data='flowers', url=None, sep=','):
     """Import example dataset from github source.
 
-    Import one of the few datasets from github source or specify your own download url link.
+    Import the few datasets from github source or specify your own download url link.
 
     Parameters
     ----------
     data : str
-        * 'flowers'
-        * 'faces'
-        * 'mnist'
-        * 'scenes'
+        Images:
+            * 'faces'
+            * 'mnist'
+        Files with images:
+            * 'southern_nebula'
+            * 'flowers'
+            * 'scenes'
+            * 'cat_and_dog'
+
     url : str
         url link to to dataset.
+
+    Returns
+    -------
+    list of str
+        list of str containing filepath to images.
 
     Returns
     -------
     list or numpy array
     """
     # Dowload
-    df = dz.get(**args)
+    df = dz.get(data=data, url=url, sep=sep)
     # Proces
-    if args.get('data', None)=='faces' or args.get('data', None)=='mnist':
-        # y = df['target'].values
-        X = df.iloc[:, 1:].values
-        return X
+    if data=='mnist' or data=='faces':
+        X=df.iloc[:, 1:].values
+        y=df['target'].values
+        return X, y
     else:
         return df
 
