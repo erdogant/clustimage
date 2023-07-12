@@ -22,7 +22,6 @@ from sklearn.manifold import TSNE
 # from umap.umap_ import UMAP
 import os
 import logging
-# from urllib.parse import urlparse
 import fnmatch
 import cv2
 import matplotlib.pyplot as plt
@@ -36,12 +35,10 @@ import shutil
 import random
 import imagehash
 from PIL import Image
-# from io import BytesIO
 
 # Configure the logger
 logger = logging.getLogger('')
-for handler in logger.handlers[:]:  # get rid of existing old handlers
-    logger.removeHandler(handler)
+[logger.removeHandler(handler) for handler in logger.handlers[:]]
 console = logging.StreamHandler()
 formatter = logging.Formatter('[clustimage] >%(levelname)s> %(message)s')
 console.setFormatter(formatter)

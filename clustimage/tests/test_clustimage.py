@@ -28,7 +28,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         assert cl.results['img'].shape==(len(X), 65536)
 
         # Import mnist example
-        X = cl.import_example(data='mnist')
+        X, y = cl.import_example(data='mnist')
         cl = Clustimage()
         _ = cl.import_data(X)
         assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'labels', 'filenames', 'url']))
@@ -102,7 +102,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         for method in methods:
             cl = Clustimage(method=method)
             # Init
-            pathnames = cl.import_example(data='mnist')
+            pathnames, y = cl.import_example(data='mnist')
             # Cluster flowers
             cl.fit_transform(pathnames)
             cl.save(overwrite=True)
@@ -135,9 +135,9 @@ class TestCLUSTIMAGE(unittest.TestCase):
         cl = Clustimage()
         Xflowers = cl.import_example(data='flowers')
         Xflowers=Xflowers[0:50]
-        Xdigits = cl.import_example(data='mnist')
+        Xdigits, y = cl.import_example(data='mnist')
         Xdigits=Xdigits[0:50,:]
-        Xfaces = cl.import_example(data='faces')
+        Xfaces, y = cl.import_example(data='faces')
         Xfaces=Xfaces[0:50,:]
 
         # Parameters combinations to check
@@ -159,8 +159,8 @@ class TestCLUSTIMAGE(unittest.TestCase):
                             embedding=combination[1],
                             grayscale=combination[3],
                             dim=combination[4],
-                            verbose=30,
-                            params_pca={'n_components':50},
+                            verbose='debug',
+                            params_pca={'n_components': 50},
                             )
             # Preprocessing and feature extraction
             assert cl.fit_transform(combination[5], cluster_space=combination[2])

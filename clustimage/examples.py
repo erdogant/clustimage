@@ -227,7 +227,7 @@ import numpy as np
 # Init with default settings
 cl = Clustimage(method='pca')
 # load example with digits
-X = cl.import_example(data='mnist')
+X, y = cl.import_example(data='mnist')
 
 # Make 1st subset
 idx = np.unique(np.random.randint(0,X.shape[0], 25))
@@ -306,7 +306,7 @@ import pandas as pd
 cl = Clustimage(method='pca')
 
 # load example with digits
-X = cl.import_example(data='mnist')
+X, y = cl.import_example(data='mnist')
 
 # Cluster digits
 results = cl.fit_transform(X)
@@ -551,7 +551,7 @@ from clustimage import Clustimage
 cl = Clustimage(method='phash', params_hash={'threshold': 0, 'hash_size': 32})
 
 # Example data
-X = cl.import_example(data='mnist')
+X, y = cl.import_example(data='mnist')
 # Preprocessing, feature extraction and cluster evaluation
 results = cl.fit_transform(X, min_clust=4, max_clust=15, metric='euclidean', linkage='ward')
 
@@ -742,7 +742,7 @@ from clustimage import Clustimage
 cl = Clustimage(method='hog', grayscale=False, params_hog={'pixels_per_cell':(2,2)})
 # cl = Clustimage(method='hog', embedding='tsne', grayscale=False, dim=(8,8), params_pca={'n_components':50})
 # Example data
-X = cl.import_example(data='mnist')
+X, y = cl.import_example(data='mnist')
 # Preprocessing, feature extraction and cluster evaluation
 results = cl.fit_transform(X)
 
