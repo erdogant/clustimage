@@ -18,7 +18,7 @@ Lets load the **digits** dataset and see how the different methods detects the o
     # init
     cl = Clustimage()
     # Example data
-    X = cl.import_example(data='mnist')
+    X, y = cl.import_example(data='mnist')
 
 
 Silhouette

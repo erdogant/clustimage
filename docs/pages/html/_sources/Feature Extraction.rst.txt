@@ -16,7 +16,7 @@ The eigenface is a low-dimensional representation of face images. It is shown th
 	cl = Clustimage(method='pca', params_pca={'n_components':0.95})
 
 	# Load example data
-	X = cl.import_example(data='mnist')
+	X, y = cl.import_example(data='mnist')
 
 	# Check whether in is dir, list of files or array-like
 	X = cl.import_data(X)
@@ -59,7 +59,7 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
 	cl = Clustimage(method='hog', params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)})
 
 	# Load example data
-	X = cl.import_example(data='mnist')
+	X, y = cl.import_example(data='mnist')
 
 	# Check whether in is dir, list of files or array-like
 	X = cl.import_data(X)
@@ -69,7 +69,7 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
 	cl.results['feat']
 
 	# Alternatively, the features are also stored in the results dict using the run-at-once function.
-	X = cl.import_example(data='mnist')
+	X, y = cl.import_example(data='mnist')
 	# Fit and transform
 	results = cl.fit_transform(X)
 	# Extracted PC features

@@ -16,7 +16,7 @@ Example to find similar samples for an unseen dataset using k-nearest neighbour 
 	# Init with default settings
 	cl = Clustimage(method='pca')
 	# load example with digits
-	X = cl.import_example(data='mnist')
+	X, y = cl.import_example(data='mnist')
 
 	# Make 1st subset
 	idx = np.unique(np.random.randint(0,X.shape[0], 25))
@@ -97,7 +97,7 @@ Example to find similar samples for an unseen dataset using probability density 
 	# Init with default settings
 	cl = Clustimage(method='pca')
 	# load example with digits
-	X = cl.import_example(data='mnist')
+	X, y = cl.import_example(data='mnist')
 
 	# Make 1st subset
 	idx = np.unique(np.random.randint(0,X.shape[0], 25))
@@ -181,7 +181,7 @@ More examples
 	cl = Clustimage(method='pca')
 
 	# load example with digits
-	X = cl.import_example(data='mnist')
+	X, y = cl.import_example(data='mnist')
 
 	# Cluster digits
 	results = cl.fit_transform(X)

@@ -14,7 +14,7 @@ Load dataset
 	# init
 	cl = Clustimage()
 	# Load example digit data
-	X = cl.import_example(data='mnist')
+	X, y = cl.import_example(data='mnist')
 
 	print(X)
 	# Each row is an image that can be plotted after reshaping:
@@ -507,7 +507,7 @@ Clustering of faces
 	# Initialize with PCA
 	cl = Clustimage(method='pca', grayscale=True)
 	# Load example with faces
-	X = cl.import_example(data='faces')
+	X, y = cl.import_example(data='faces')
 	# Initialize and run
 	results = cl.fit_transform(X)
 
@@ -626,7 +626,7 @@ In case a datamatrix is provided as an input to the model, the default setting i
 	cl = Clustimage()
 
 	# Import data
-	Xraw = cl.import_example(data='mnist')
+	Xraw, y = cl.import_example(data='mnist')
 	
 	# The Xraw datamatrix is numpy array for which the rows are the different images.
 	print(Xraw)
@@ -691,8 +691,8 @@ Instead of using the all-in-one functionality: fit_transform(), it is also possi
 
 	# Import data
 	Xraw = cl.import_example(data='flowers')
-	Xraw = cl.import_example(data='mnist')
-	Xraw = cl.import_example(data='faces')
+	Xraw, y = cl.import_example(data='mnist')
+	Xraw, y = cl.import_example(data='faces')
 
 	# Check whether in is dir, list of files or array-like
 	X = cl.import_data(Xraw)
