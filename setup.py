@@ -14,13 +14,13 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
      install_requires=['datazets>=0.1.7',
-                       'scatterd>=1.1.2',
+                       'scatterd>=1.3.6',
                        'ismember',
                        'pypickle',
-                       'pca',
+                       'pca>=2.0.4',
                        'distfit',
                        'clusteval>=2.1.5',
-                       'colourmap',
+                       'colourmap>=1.1.16',
                        'numpy',
                        'pandas',
                        'tqdm',
