@@ -885,11 +885,11 @@ class Clustimage():
 
         # Extract hog features per image
         if flatten:
-            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X, disable=disable_tqdm())))
+            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X, disable=disable_tqdm(), desc='[clustimage]')))
             # Stack all hog features in NxM array
             feat = np.vstack(feat)
         else:
-            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1], tqdm(X, disable=disable_tqdm())))[0]
+            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1], tqdm(X, disable=disable_tqdm(), desc='[clustimage]')))[0]
         # Return
         return feat
 
@@ -1129,7 +1129,7 @@ class Clustimage():
         elif (self.params['method'] is not None) and ('hash' in self.params['method']):
             # Compute hash
             # hashs = list(map(self.compute_hash, tqdm(Xraw['pathnames'], disable=disable_tqdm())))
-            Xfeat = list(map(self.compute_hash, tqdm(Xraw['img'], disable=disable_tqdm())))
+            Xfeat = list(map(self.compute_hash, tqdm(Xraw['img'], disable=disable_tqdm(), desc='[clustimage]')))
             Xfeat = np.array(Xfeat)
 
             # Removing hashes from images that could not be read
@@ -1533,7 +1533,7 @@ class Clustimage():
 
         # Walk over all detected faces
         if hasattr(self, 'results_faces'):
-            for i, pathname in tqdm(enumerate(self.results_faces['pathnames']), disable=disable_tqdm()):
+            for i, pathname in tqdm(enumerate(self.results_faces['pathnames']), disable=disable_tqdm(), desc='[clustimage]'):
                 # Import image
                 img = self.preprocessing(pathname, grayscale=cv2.COLOR_BGR2RGB, dim=None, flatten=False)['img'][0].copy()
 
@@ -1927,7 +1927,7 @@ class Clustimage():
             uilabels = np.unique(labels)
 
             # Run over all labels.
-            for label in tqdm(uilabels, disable=disable_tqdm()):
+            for label in tqdm(uilabels, disable=disable_tqdm(), desc='[clustimage]'):
                 idx = np.where(self.results['labels']==label)[0]
                 if len(idx)>min_clust:
                     # Collect the images
@@ -2168,7 +2168,7 @@ def store_to_disk(Xraw, dim, tempdir, files=None):
     filenames, pathnames = [], []
 
     logger.info('Writing images to tempdir [%s]', tempdir)
-    for i in tqdm(np.arange(0, Xraw.shape[0]), disable=disable_tqdm()):
+    for i in tqdm(np.arange(0, Xraw.shape[0]), disable=disable_tqdm(), desc='[clustimage]'):
         if files is not None:
             filename = files[i]
         else:
