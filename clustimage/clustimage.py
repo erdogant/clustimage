@@ -101,9 +101,9 @@ class Clustimage():
         Parameters to initialize the pca model.
     params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
         Parameters to extract hog features.
-    verbose : int, (default: 20)
+    verbose : int, (default: 'info')
         Print progress to screen. The default is 20.
-        60: None, 40: Error, 30: Warn, 20: Info, 10: Debug
+        60: None, 40: error, 30: warning, 20: info, 10: debug
 
     Returns
     -------
@@ -174,7 +174,7 @@ class Clustimage():
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
-                 verbose=20):
+                 verbose='info'):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean_init()
@@ -182,7 +182,7 @@ class Clustimage():
         if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         # Check method types
         if (np.any(np.isin(method, ['hog', 'pca-hog']))) and ~grayscale:
-            logger.warning('Parameter grayscale is set to True coz you are using method="%s"' %(method))
+            logger.warning('Parameter grayscale is set to True because you are using method="%s"' %(method))
             grayscale=True
         if (dim is None) or ((dim[0]>1024) or (dim[1]>1024)):
             logger.warning('Setting dim > (1024, 1024) is most often not needed and can cause memory and other issues.')
@@ -913,7 +913,7 @@ class Clustimage():
             self.params_pca['n_components'] = X['img'].shape[0]
 
         # Fit model using PCA
-        self.pca = pca(**self.params_pca)
+        self.pca = pca(**self.params_pca, verbose='warning')
         self.pca.fit_transform(X['img'], row_labels=X['filenames'])
         # Return
         return self.pca.results['PC'].values
@@ -1239,7 +1239,7 @@ class Clustimage():
             Ytot = Ytot[xrow, :]
             Ytot = Ytot[:, yrow]
             # Init distfit
-            self.distfit = distfit(bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'])
+            self.distfit = distfit(bound='down', multtest=None, distr=['norm', 'expon', 'uniform', 'gamma', 't'], verbose='warning')
             # Fit theoretical distribution
             _ = self.distfit.fit_transform(Ytot)
             # self.distfit.plot()
@@ -1716,7 +1716,7 @@ class Clustimage():
                 title = (self.params['embedding'] + ' plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
 
         # Add colors
-        colours = colourmap.fromlist(labels, cmap=cmap)
+        colours = colourmap.fromlist(labels, cmap=cmap, verbose=get_logger())
         args_scatter['c'] = colours[0]
 
         # Defaults
@@ -1724,11 +1724,11 @@ class Clustimage():
         args_scatter = {**default_scatter, **args_scatter}
 
         # Set logger to warning-error only
-        verbose = logger.getEffectiveLevel()
-        set_logger(verbose=40)
+        # verbose = logger.getEffectiveLevel()
+        # set_logger(verbose=40)
 
         # Scatter
-        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], labels=labels, ax=ax, **args_scatter)
+        fig, ax = scatterd(self.results['xycoord'][:, 0], self.results['xycoord'][:, 1], labels=labels, ax=ax, **args_scatter, verbose=get_logger())
 
         if hasattr(self, 'results_unique'):
             if img_mean:
@@ -1775,7 +1775,7 @@ class Clustimage():
                 logger.info('Mapping predicted results is only possible when uing method="pca".')
 
         # Restore verbose status
-        set_logger(verbose=verbose)
+        # set_logger(verbose=verbose)
         # Return
         return fig, ax
 
@@ -2101,7 +2101,7 @@ class Clustimage():
             list of str containing filepath to images.
 
         """
-        return import_example(data=data, url=url, sep=sep)
+        return import_example(data=data, url=url, sep=sep, verbose=get_logger())
 
 
 # %% Store images to disk
@@ -2378,6 +2378,7 @@ def set_logger(verbose: [str, int] = 'info'):
                   'debug': 10,
                   'info': 20,
                   'warning': 30,
+                  'error': 50,
                   'critical': 50}
         verbose = levels[verbose]
 
@@ -2392,7 +2393,7 @@ def disable_tqdm():
 
 
 # %% import examples
-def import_example(data='flowers', url=None, sep=','):
+def import_example(data='flowers', url=None, sep=',', verbose='info'):
     """Import example dataset from github source.
 
     Import the few datasets from github source or specify your own download url link.
@@ -2422,7 +2423,7 @@ def import_example(data='flowers', url=None, sep=','):
     list or numpy array
     """
     # Dowload
-    df = dz.get(data=data, url=url, sep=sep)
+    df = dz.get(data=data, url=url, sep=sep, verbose=verbose)
     # Proces
     if data=='mnist' or data=='faces':
         X=df.iloc[:, 1:].values
