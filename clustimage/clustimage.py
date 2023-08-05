@@ -1172,7 +1172,10 @@ class Clustimage():
         if hash_size is None: hash_size=self.params_hash['hash_size']
         try:
             if self.params['method']=='crop-resistant-hash':
-                imghash = self.params_hash['hashfunc'](Image.fromarray(img)).segment_hashes[1].hash.ravel()
+                try:
+                    imghash = self.params_hash['hashfunc'](Image.fromarray(img)).segment_hashes[1].hash.ravel()
+                except:
+                    imghash = self.params_hash['hashfunc'](Image.fromarray(img)).segment_hashes[0].hash.ravel()
                 self.params_hash['hash_size']=np.sqrt(len(imghash))
             else:
                 imghash = self.params_hash['hashfunc'](Image.fromarray(img), hash_size=hash_size).hash.ravel()
