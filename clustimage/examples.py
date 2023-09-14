@@ -7,7 +7,7 @@
 from clustimage import Clustimage
 
 # Initialize
-cl = Clustimage(method='pca', verbose='silent')
+cl = Clustimage(method='pca', verbose='info')
 
 # Import data
 Xraw = cl.import_example(data='flowers')
