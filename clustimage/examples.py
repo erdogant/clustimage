@@ -8,6 +8,7 @@ from clustimage import Clustimage
 
 # Initialize
 cl = Clustimage(method='pca', verbose='info')
+cl = Clustimage(method='phash', verbose='info')
 
 # Import data
 Xraw = cl.import_example(data='flowers')
@@ -24,7 +25,8 @@ Xfeat = cl.extract_feat(X)
 xycoord = cl.embedding(Xfeat)
 
 # Cluster
-labels = cl.cluster(min_clust=7)
+labels = cl.cluster(min_clust=7, metric='hamming', linkage='complete')
+# labels = cl.cluster(min_clust=7)
 
 # Return
 results = cl.results
@@ -34,7 +36,7 @@ results = cl.results
 
 # Plots
 # cl.clusteval.plot();
-# cl.scatter();
+cl.scatter(dotsize=75, plt_all=True, zoom=0.1)
 # cl.plot_unique();
 # cl.plot();
 cl.dendrogram();
