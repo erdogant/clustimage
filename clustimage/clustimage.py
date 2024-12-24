@@ -795,7 +795,7 @@ class Clustimage():
         out = {'img': None, 'pathnames': pathnames, 'filenames': filenames}
 
         # No need to import and process data when using hash function but we do not to check the image size and readability.
-        logger.info("Reading and checking images.")
+        logger.info("Preprocessing images..")
         if (self.params['method'] is not None) and ('hash' in self.params['method']):
             # logger.warning("In case of method=%s, flatten is set to False." %(self.params['method']))
             flatten=False
@@ -803,15 +803,20 @@ class Clustimage():
         # Read and preprocess data
         imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True), tqdm(pathnames, disable=disable_tqdm(), desc='[clustimage]')))
         img, imgOK = zip(*imgs)
-        img = np.array(img)
 
         # Remove the images that could not be read (and thus are False)
         I_corrupt = ~np.array(imgOK)
-        if np.any(I_corrupt)>0:
+        if np.any(I_corrupt):
             logger.info("[%.0d] Corrupt image(s) removed.", (sum(I_corrupt)))
-            filenames = np.array(filenames)[~I_corrupt]
-            pathnames = np.array(pathnames)[~I_corrupt]
-            img = img[~I_corrupt]
+            # filenames = np.array(filenames)[~I_corrupt]
+            # pathnames = np.array(pathnames)[~I_corrupt]
+            # img = img[np.flatnonzero(~I_corrupt).astype(int)]
+            filenames = [filenames[i] for i in range(len(filenames)) if not I_corrupt[i]]
+            pathnames = [pathnames[i] for i in range(len(pathnames)) if not I_corrupt[i]]
+            img = [img[i] for i in range(len(img)) if not I_corrupt[i]]
+
+        # Create array
+        img = np.array(img)
 
         # Remove the images that are too small
         if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
