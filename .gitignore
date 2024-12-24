@@ -7,6 +7,7 @@ __pycache__/
 *.so
 *.zip
 clustimage/data/
+.pypirc
 
 # Distribution / packaging
 .pylint.*
