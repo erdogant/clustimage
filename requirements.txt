@@ -1,6 +1,3 @@
-#conda create -n env_clustimage python=3.8
-#conda activate env_clustimage
-
 datazets>="0.1.7"
 clusteval>="2.1.5"
 colourmap>="1.1.16""
@@ -19,3 +16,4 @@ pypickle
 imagehash
 pypickle
 ismember
+pillow-heif

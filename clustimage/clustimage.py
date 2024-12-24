@@ -170,7 +170,7 @@ class Clustimage():
                  dim_face=(64, 64),
                  dirpath=None,
                  store_to_disk=True,
-                 ext=['png', 'tiff', 'jpg'],
+                 ext=['png', 'tiff', 'jpg', 'jpeg'],
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
@@ -178,6 +178,12 @@ class Clustimage():
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean_init()
+
+        # Load Heic library if required
+        if np.isin('.heic', ext):
+            from pillow_heif import register_heif_opener
+            # Register HEIF opener for Pillow
+            register_heif_opener()
 
         if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         # Check method types
@@ -965,11 +971,11 @@ class Clustimage():
         # Check whether input is directory, list or array-like
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
-            logger.info('Extracting images from: [%s]', Xraw)
+            logger.info(f'Directory: {Xraw}')
             Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list)
-            logger.info('[%s] images are extracted.', len(Xraw))
+            logger.info(f'{len(Xraw)} images are extracted.')
 
-        logger.info("Reading and checking images.")
+        logger.info(f"{len(Xraw)} Read and check images..")
 
         # Return if no images are extracted.
         if len(Xraw)==0:
@@ -1404,7 +1410,7 @@ class Clustimage():
 
         """
         # logger.debug('[%s]' %(filepath))
-        img=[]
+        img = []
         readOK = False
         try:
             # Read the image
@@ -2273,7 +2279,7 @@ def _imread(filepath, colorscale=1):
         raw rgb or gray image.
 
     """
-    img=None
+    img = None
     # if os.path.isfile(filepath):
     # Read the image
     if colorscale==0:
