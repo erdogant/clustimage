@@ -3,6 +3,41 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %% import from disk
+from clustimage import Clustimage
+
+cl = Clustimage(method='pca',
+                embedding='tsne',
+                grayscale=False,
+                dim=(128, 128),
+                params_pca={'n_components':0.95},
+                store_to_disk=True,
+                ext=['png', 'tiff', 'jpg', 'heic', 'jpeg'],
+                verbose='info')
+
+path = cl.import_data('D://temp//Various//')
+
+# Run the model to find the optimal clusters
+results = cl.fit_transform(path, min_clust=3)
+
+# Scatter
+cl.scatter()
+cl.scatter(zoom=1, img_mean=False)
+
+# Scatter
+cl.scatter(plt_all=True)
+
+
+cl.plot();
+cl.dendrogram();
+
+
+# Predict which image is closests to input image.
+# predict = cl.find(path[0])
+# cl.plot_find()
+# cl.scatter()
+
+
 # %%
 from clustimage import Clustimage
 

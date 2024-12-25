@@ -36,6 +36,11 @@ import random
 import imagehash
 from PIL import Image
 
+# Support for Apple HEIC images
+from pillow_heif import register_heif_opener
+# Register HEIF opener for Pillow
+register_heif_opener()
+
 # Configure the logger
 logger = logging.getLogger('')
 [logger.removeHandler(handler) for handler in logger.handlers[:]]
@@ -839,6 +844,8 @@ class Clustimage():
         out['filenames'] = np.array(filenames)[idx]
         out['pathnames'] = np.array(pathnames)[idx]
         out['img'] = img
+
+        # Return
         return out
 
     def extract_hog(self, X, orientations=8, pixels_per_cell=(16, 16), cells_per_block=(1, 1), flatten=True):
@@ -971,11 +978,9 @@ class Clustimage():
         # Check whether input is directory, list or array-like
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
-            logger.info(f'Directory: {Xraw}')
             Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list)
-            logger.info(f'{len(Xraw)} images are extracted.')
 
-        logger.info(f"{len(Xraw)} Read and check images..")
+        logger.info(f"[{len(Xraw)}] Read and check..")
 
         # Return if no images are extracted.
         if len(Xraw)==0:
@@ -1838,7 +1843,7 @@ class Clustimage():
                         hogtmp = exposure.rescale_intensity(self.results['feat'][idx, :].reshape(self.params['dim']), in_range=(0, 10))
                         imgshog.append(hogtmp)
 
-            self._make_subplots(imgs, None, cmap, figsize, title='Unique images ' +subtitle, labels=txtlabels)
+            self._make_subplots(imgs, None, cmap, figsize, title='Unique images ' + subtitle, labels=txtlabels)
 
             if show_hog and (self.params['method']=='hog'):
                 self._make_subplots(imgshog, None, 'binary', figsize, title='Unique HOG images ' +subtitle, labels=txtlabels)
@@ -2482,7 +2487,7 @@ def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
                     getfiles.append(os.path.join(root, filename))
         else:
             logger.info('Excluded: <%s>' %(root))
-    logger.info('[%s] files are collected recursively from path: [%s]', len(getfiles), dirpath)
+    logger.info(f'[{len(getfiles)}] Images are recursively collected from path: [{dirpath}]')
     return getfiles
 
 
