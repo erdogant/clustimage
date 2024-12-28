@@ -8,7 +8,8 @@ from clustimage.clustimage import (
     imscale,
     imresize,
     listdir,
-    set_logger)
+    set_logger,
+    )
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'

@@ -19,6 +19,8 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from sklearn.manifold import TSNE
+from sklearn.cluster import DBSCAN
+
 # from umap.umap_ import UMAP
 import os
 import logging
@@ -35,6 +37,9 @@ import shutil
 import random
 import imagehash
 from PIL import Image
+
+import clustimage.exif as exif
+import webbrowser
 
 # Support for Apple HEIC images
 from pillow_heif import register_heif_opener
@@ -81,6 +86,8 @@ class Clustimage():
             * 'pca' : PCA feature extraction
             * 'hog' : hog features extraced
             * 'pca-hog' : PCA extracted features from the HOG desriptor
+            * 'exif': Use photo exif data to cluster photos on datetime  (set params_exif)
+            * 'location': Use photo exif data to cluster photos on lon/lat coordinates (set params_exif)
             hashmethod : str (default: 'ahash')
             * 'ahash': Average hash
             * 'phash': Perceptual hash
@@ -106,6 +113,8 @@ class Clustimage():
         Parameters to initialize the pca model.
     params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
         Parameters to extract hog features.
+    params_exif : dict, default: {'timeframe':'4H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False}
+        Parameters to proces exif information. Note that 'exif_location' derives the location based on lat/lon coordinates and the request rate per photo limited to 1 sec to prevent time-outs.
     verbose : int, (default: 'info')
         Print progress to screen. The default is 20.
         60: None, 40: error, 30: warning, 20: info, 10: debug
@@ -179,18 +188,19 @@ class Clustimage():
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
+                 params_exif={'timeframe': '4H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False},
                  verbose='info'):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean_init()
 
         # Load Heic library if required
-        if np.isin('.heic', ext):
-            from pillow_heif import register_heif_opener
-            # Register HEIF opener for Pillow
-            register_heif_opener()
+        # if np.isin('.heic', ext):
+        #     from pillow_heif import register_heif_opener
+        #     # Register HEIF opener for Pillow
+        #     register_heif_opener()
 
-        if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
+        if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog', 'exif', 'location'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         # Check method types
         if (np.any(np.isin(method, ['hog', 'pca-hog']))) and ~grayscale:
             logger.warning('Parameter grayscale is set to True because you are using method="%s"' %(method))
@@ -234,6 +244,10 @@ class Clustimage():
         hog_defaults = {'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)}
         params_hog = {**hog_defaults, **params_hog}
         self.params_hog = params_hog
+        # EXIF parameters
+        exif_defaults = {'timeframe': '4H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False}
+        params_exif = {**exif_defaults, **params_exif}
+        self.params_exif = params_exif
         # Set the logger
         set_logger(verbose=verbose)
         # This value is set to True when the find functionality (cl.find) is used to make sure specified subroutines are used.
@@ -354,6 +368,9 @@ class Clustimage():
         >>>
 
         """
+        if self.params['method']=='exif' and not np.isin(metric, ['datetime', 'location']):
+            logger.error('metric should be either "datetime" or "location" when using method="exif"')
+            return None
         # Cleaning
         self.clean_init()
         # Check whether in is dir, list of files or array-like
@@ -458,18 +475,30 @@ class Clustimage():
         if len(self.results['feat'])==0:
             return None
 
-        ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=get_logger())
-        # Fit
-        if cluster_space=='low':
-            feat = self.results['xycoord']
-            logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
+        # Get features from high or low dimensional space
+        if self.params['method']=='exif' and metric=='datetime':
+            # Cluster based on the datetime events from the images
+            cluster, linkage, evaluate = None, None, None
+            labels = cluster_on_datetime(self.results['feat']['datetime'], timeframe=self.params_exif['timeframe'], min_clust=min_clust, window_length=self.params_exif['window_length'])
+        elif self.params['method']=='exif' and metric=='location':
+            # Cluster based on the location from the images
+            cluster, linkage, evaluate = 'dbscan', None, None
+            labels = cluster_on_latlon(self.results['xycoord'], radius_meters=self.params_exif['radius_meters'])
         else:
-            feat = self.results['feat']
-            logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
-        # Fit model
-        _ = ce.fit(feat)
-        labels = ce.results['labx']
-        logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
+            if cluster_space=='low':
+                feat = self.results['xycoord']
+                logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
+            else:
+                feat = self.results['feat']
+                logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
+
+            # Initialize clusteval
+            ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=get_logger())
+            # Fit model
+            _ = ce.fit(feat)
+            # Get cluster labels
+            labels = ce.results['labx']
+            logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
 
         # Store results and params
         self.results['labels'] = labels
@@ -484,8 +513,9 @@ class Clustimage():
         self.params_clusteval['min_clust'] = min_clust
         self.params_clusteval['max_clust'] = max_clust
 
-        # Find unique
-        self.unique(metric=metric)
+        # Find unique images
+        if self.params['method'] != 'exif':
+            self.unique(metric=metric)
 
         # Return
         return self.results['labels']
@@ -553,6 +583,7 @@ class Clustimage():
         if self.results['xycoord'] is None:
             logger.warning('Missing x,y coordinates in results dict. Hint: try to first run: cl.embedding(Xfeat)')
             return None
+        logger.info('Compute unique images..')
 
         if metric is None: metric=self.params_clusteval['metric']
         eigen_img, pathnames, center_idx, center_coord = [], [], [], []
@@ -980,6 +1011,14 @@ class Clustimage():
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
             Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list)
 
+        # In case of method datetime or location, we only need the pathnames for now.
+        if self.params['method']=='exif':
+            self.results['img'] = None
+            self.results['pathnames'] = Xraw
+            self.results['filenames'] = list(map(os.path.basename, Xraw))
+            # self.results = {'pathnames': Xraw, 'filenames': list(map(os.path.basename, Xraw))}
+            return self.results
+
         logger.info(f"[{len(Xraw)}] Read and check..")
 
         # Return if no images are extracted.
@@ -1022,8 +1061,8 @@ class Clustimage():
                 self.results = X
                 # Add remaining output variables
                 self.results = {**defaults, **self.results}
-        # 3. If input is array-like. Make sure X becomes compatible.
         elif isinstance(Xraw, np.ndarray):
+            # 3. If input is array-like. Make sure X becomes compatible.
             # Make 2D
             if len(Xraw.shape)==1:
                 Xraw = Xraw.reshape(-1, 1).T
@@ -1097,20 +1136,25 @@ class Clustimage():
         if embedding is None:
             embedding = self.params.get('embedding', 'tsne')
 
-        logger.info('Compute [%s] embedding', self.params['embedding'])
         # Embedding
-        if self.params['embedding']=='tsne':
+        if self.params['method']=='exif':
+            xycoord = self.results['feat'][['lat', 'lon']]
+        elif self.params['embedding']=='tsne':
+            logger.info('Compute [%s] embedding', self.params['embedding'])
             perplexity = np.minimum(X.shape[0] - 1, 30)
             xycoord = TSNE(n_components=2, init='random', metric=metric, perplexity=perplexity).fit_transform(X)
         elif self.params['embedding']=='umap':
+            logger.info('Compute [%s] embedding', self.params['embedding'])
             logger.info('Due to a "numba" error, UMAP is temporarily disabled.')
             # um = UMAP(densmap=True)
             # xycoord = um.fit_transform(X)
             xycoord = X[:, 0:2]
         else:
             xycoord = X[:, 0:2]
-        # Return
+
+        # Store
         self.results['xycoord'] = xycoord
+
         # Return
         return self.results['xycoord']
 
@@ -1131,7 +1175,7 @@ class Clustimage():
 
         """
         # If the input is a directory, first collect the images from path
-        logger.info('Extracting features using method: [%s]', self.params['method'])
+        logger.info(f"Extracting features using [{self.params['method']}] method.")
         # Extract features
         if self.params['method']=='pca':
             Xfeat = self.extract_pca(Xraw)
@@ -1158,6 +1202,17 @@ class Clustimage():
             # Xfeat = np.abs(np.subtract.outer(hashs, hashs)).astype(float)
             # hex(int(''.join(hashs[0].hash.ravel().astype(int).astype(str)), 2))
             # plt.hist(diff[np.triu_indices(diff.shape[0], k=1)], bins=50)
+        elif self.params['method']=='exif':
+            # Extract the metadata from the image files
+            Xfeat = exif.extract_from_image(self.results['pathnames'], ext=self.params['ext'], logger=logger)
+            # Extract exif location information.
+            if self.params_exif['exif_location']:
+                Xfeat = exif.location(Xfeat, logger)
+            # Store in dataframe
+            Xfeat = pd.DataFrame(Xfeat)
+            # Update files because many can be thrown out because of no exif information.
+            self.results['pathnames'] = Xfeat['pathnames'].values
+            self.results['filenames'] = Xfeat['filenames'].values
         else:
             # Read images and preprocessing and flattening of images
             Xfeat = Xraw['img'].copy()
@@ -1542,6 +1597,10 @@ class Clustimage():
                 * None : uses rgb colorscheme
 
         """
+        if self.params['method']=='exif':
+            logger.info('Use the plot_map() function to plot the exif lat/lon coordinates on a Map.')
+            return None
+
         cmap = _set_cmap(cmap, self.params['grayscale'])
         # Set logger to warning-error only
         verbose = logger.getEffectiveLevel()
@@ -1610,6 +1669,10 @@ class Clustimage():
         None.
 
         """
+        if self.params['method']=='exif':
+            logger.info('Use the plot_map() function to plot the exif lat/lon coordinates on a Map.')
+            return None
+
         results = None
         self._check_status()
 
@@ -1621,7 +1684,7 @@ class Clustimage():
             if update_labels:
                 self.results['labels'] = results['labels']
                 self.results_unique = self.unique()
-                logger.info('Updating cluster-labels ')
+                logger.info('Updating cluster-labels')
         else:
             logger.warning('This Plot requires running fit_transform()')
 
@@ -1710,6 +1773,10 @@ class Clustimage():
         >>> cl.scatter(dotsize=35, args_scatter={'fontsize':24, 'density':'#FFFFFF', 'cmap':'Set2'})
 
         """
+        if self.params['method']=='exif':
+            logger.info('Use the plot_map() function to plot the exif lat/lon coordinates on a Map.')
+            return None
+
         # Check status
         fig = None
         self._check_status()
@@ -1903,7 +1970,39 @@ class Clustimage():
         else:
             logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
-    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=1, figsize=(15, 10)):
+    def plot_map(self, cluster_icons=None, polygon=None, thumbnail_size=400, blacklist=[0], save_path=None, showfig=True):
+        if self.params['method']!='exif':
+            logger.info('The plot_map() function requires to use the exif method. <return>')
+            return None
+
+        # from clustimage.plot_map import plot_map
+        if (save_path is not None):
+            if os.path.isdir(save_path):
+                logger.error('Save path should also contain filename such as: "c:/temp/map.html" <return>.')
+                return None
+
+            dirpath = os.path.split(save_path)[0]
+            if not os.path.isdir(dirpath):
+                logger.error('Save path directory does not exists <return>.')
+                return None
+
+        # Create folium map
+        logger.info('Rescaling images to thumbnails to show in map..')
+        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, thumbnail_size=thumbnail_size, blacklist=blacklist)
+
+        # Save to disk
+        if save_path is None:
+            save_path = os.path.join(self.params['tempdir'], 'clustimage_map.html')
+
+        # Save map
+        m.save(save_path)
+        if showfig:
+            webbrowser.open(save_path)
+
+        logger.info(f'Output: {save_path}')
+        return m, save_path
+
+    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=1, figsize=(15, 10), blacklist=None):
         """Plot the results.
 
         Parameters
@@ -1945,7 +2044,7 @@ class Clustimage():
             # Run over all labels.
             for label in tqdm(uilabels, disable=disable_tqdm(), desc='[clustimage]'):
                 idx = np.where(self.results['labels']==label)[0]
-                if len(idx)>min_clust:
+                if len(idx)>=min_clust and not np.isin(label, blacklist):
                     # Collect the images
                     getfiles = np.array(self.results['pathnames'])[idx]
                     getfiles = getfiles[np.array(list(map(lambda x: os.path.isfile(x), getfiles)))]
@@ -2011,14 +2110,14 @@ class Clustimage():
 
             # Make the actual plots
             for i, ax in enumerate(axs.ravel()):
-                if i<len(imgs):
+                if i < len(imgs):
                     img = imgs[i]
                     if len(img.shape)==1:
                         img = img.reshape((dim[0], dim[1], dimlen))
                         img = img[:, :, : 3]
-                    if len(img.shape)==3:
-                        # ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
-                        ax.imshow(img, cmap=cmap)
+                    elif len(img.shape)==3:
+                        ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
+                        # ax.imshow(img, cmap=cmap)
                     else:
                         ax.imshow(img, cmap=cmap)
                     if labels is not None: ax.set_title(labels[i])
@@ -2118,6 +2217,121 @@ class Clustimage():
 
         """
         return import_example(data=data, url=url, sep=sep, verbose=get_logger())
+
+    def move_to_dir(self, target_labels=None, targetdir=None):
+        """Move to target directory based on cluster labels.
+
+        All files that are marked as being "double" are moved. The first image in the array is untouched.
+
+        Parameters
+        ----------
+        pathnames : list of str
+        targetdir : target directory to move the files.
+            r'c:/temp/'
+            None: Creates a subfolder in the current directory of the first image in the list.
+
+        """
+        if target_labels is None:
+            logger.info('Automatically create folder names based on the cluster labels, such as [group_0] etc.')
+            target_labels = {label: f'group_{label}' for label in np.unique(self.results['labels'])}
+
+        for key in target_labels:
+            # Get cluster labels
+            loc = self.results['labels'] == key
+            if np.sum(loc) > 0:
+                # Make plot
+                self.plot(labels=key)
+                # Get pathnames
+                pathnames = self.results['pathnames'][loc]
+                # Move the directory
+                targetdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
+                # Ask user what to do.
+                print(f'> [{len(pathnames)}] Files from [cluster {key}] are moved to [{targetdir}]')
+                userinput = input('> Press <enter> to continue and q to quit.')
+                if userinput=='q':
+                    break
+                else:
+                    move_files(pathnames, targetdir)
+            else:
+                logger.error(f"Label [{key}] does not exist. Valid cluster labels are: cl.results['labels']")
+
+
+#%%
+def move_files(pathnames, targetdir):
+    # Create targetdir
+    movedir, dirname, filename, ext = create_targetdir(pathnames[0], targetdir)
+
+    # Move all others
+    for i, file in enumerate(pathnames[1:]):
+        if os.path.isfile(file):
+            logger.info(f'Move> {file} -> {movedir}')
+            # Original filename
+            _, filename1, ext1 = seperate_path(os.path.split(file)[1])
+            try:
+                shutil.move(file, os.path.join(movedir, filename1 + ext1))
+            except:
+                logger.error(f'Error moving file: {file}')
+        else:
+            logger.info(f'File not found> {file}')
+
+
+def create_targetdir(pathname, targetdir=None):
+    """Create directory.
+
+    Parameters
+    ----------
+    pathname : str
+        Absolute path location of the image of interest.
+    targetdir : str
+        Target directory.
+
+    Returns
+    -------
+    movedir : str
+        Absolute path to directory.
+    dirname : str
+        Absolute path to directory.
+    filename : str
+        Name of the file.
+    ext : str
+        Extension.
+
+    """
+    dirname, filename, ext = seperate_path(pathname)
+    # Set the targetdir
+    if targetdir is None:
+        movedir = os.path.join(dirname, 'undouble')
+    else:
+        movedir = targetdir
+
+    if not os.path.isdir(movedir):
+        logger.debug('Create dir: <%s>' %(movedir))
+        os.makedirs(movedir, exist_ok=True)
+    # Return
+    return movedir, dirname, filename, ext
+
+
+def seperate_path(pathname):
+    """Seperate path.
+
+    Parameters
+    ----------
+    pathnames : list of str
+        pathnames to the images.
+
+    Returns
+    -------
+    dirname : str
+        directory path.
+    filename : str
+        filename.
+    ext
+        Extension.
+
+    """
+    dirname, filename = os.path.split(pathname)
+    filename, ext = os.path.splitext(filename)
+    return dirname, filename, ext.lower()
 
 
 # %% Store images to disk
@@ -2483,7 +2697,7 @@ def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
         bl_found = np.isin(os.path.split(root)[1], black_list)
         if (black_list is None) or (not bl_found):
             for iext in ext:
-                for filename in fnmatch.filter(filenames, '*.' +iext):
+                for filename in fnmatch.filter(filenames, '*.' + iext):
                     getfiles.append(os.path.join(root, filename))
         else:
             logger.info('Excluded: <%s>' %(root))
@@ -2578,6 +2792,102 @@ def url2disk(urls, save_dir):
 
     """
     return dz.url2disk(urls, save_dir)
+
+
+#%% Find the indices of consecutive 1s separated by 0s
+def cluster_on_datetime(df_datetime, timeframe='4H', min_clust=2, window_length=5):
+    # datetime=metadata_df['datetime'].copy()
+    from scipy.signal import savgol_filter
+    logger.info(f'Cluster on [datetime] using {timeframe} timeframe and smoothing window length of {window_length}')
+
+    # Step 1: Convert datetime column from string to datetime
+    df_datetime = pd.DataFrame(pd.to_datetime(df_datetime, format='%Y:%m:%d %H:%M:%S'))
+    df_datetime = df_datetime.sort_values(by='datetime')
+
+    # Create a new column for the hour
+    df_datetime['hour'] = df_datetime['datetime'].dt.floor(timeframe)  # Rounds down to the nearest hour
+
+    # Count the number of events per timeframe
+    # events_per_hour = df_datetime.groupby('hour').size().reset_index(name='event_count')
+
+    # Step 2: Set datetime as index and resample the data by hour, counting the photos
+    datetime_proc = df_datetime.set_index('hour')
+    # Resample and count the number of events per timeframe
+    metadata_df_hourly = datetime_proc.resample(timeframe).size()
+
+    # Step 3: Apply a 2nd-degree polynomial fit for smoothing (Savitzky-Golay filter)
+    window_length = np.minimum(metadata_df_hourly.shape[0], window_length)
+    metadata_df_hourly_smoothed = savgol_filter(metadata_df_hourly, window_length=window_length, polyorder=2)
+    metadata_df_hourly_smoothed[metadata_df_hourly_smoothed < 0] = 0
+
+    groups = []
+    current_group = []
+    for i, val in enumerate(metadata_df_hourly_smoothed):
+        if val > 0:
+            current_group.append(i)
+        elif current_group:  # If we encounter a 0 and the current cluster is not empty
+            groups.append(current_group)
+            current_group = []
+    # Add the last cluster if it exists
+    if current_group:
+        groups.append(current_group)
+
+    # Set default clusterlabels where cluster 0 is the "rest" group.
+    cluster_labels = np.zeros(len(df_datetime.values))
+    df_datetime = df_datetime.sort_index()
+    counter = 1
+
+    for group in groups:
+        timestart = metadata_df_hourly.index[group].min()
+        timestop = metadata_df_hourly.index[group].max()
+        # datetime_in_range = metadata_df_hourly.loc[timestart:timestop].index
+        loc = (df_datetime['datetime'] >= timestart) & (df_datetime['datetime'] <= timestop)
+
+        if sum(loc) >= min_clust:
+            cluster_labels[loc] = counter
+            counter = counter + 1
+
+    return cluster_labels.astype(int)
+
+
+#%%
+def cluster_on_latlon(latlon, radius_meters=500):
+    """Clusters images based on GPS coordinates within a given radius.
+
+    Parameters:
+    - metadata_df: DataFrame containing at least 'filename', 'lat', and 'lon' columns.
+    - radius_meters: The clustering radius in meters.
+
+    Returns:
+    - cluster_labels: A vector of cluster labels corresponding to each image.
+    - map_display: A folium map displaying the clusters.
+
+    """
+    # Clusterlabels
+    cluster_labels = np.zeros(latlon.shape[0]).astype(int)
+
+    # Catch rows with lat/lon
+    loc = np.logical_and(~latlon['lat'].isna(), ~latlon['lon'].isna())
+
+    # Only keep the rows with latlon
+    latlon = latlon[loc]
+
+    # Extract coordinates
+    coordinates = latlon[['lat', 'lon']].values
+
+    # Convert radius from meters to kilometers (DBSCAN uses km for Haversine distances)
+    radius_km = radius_meters / 1000
+
+    # Perform DBSCAN clustering using haversine distance. DBSCAN requires the input coordinates in radians for haversine metric
+    coords_radians = np.radians(coordinates)
+    db = DBSCAN(eps=radius_km / 6371, min_samples=1, metric='haversine')
+    labels = db.fit_predict(coords_radians)
+
+    # Set clusterlabels
+    cluster_labels[loc] = labels
+
+    # Return
+    return cluster_labels
 
 
 # %%
