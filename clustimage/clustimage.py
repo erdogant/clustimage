@@ -114,7 +114,7 @@ class Clustimage():
         Parameters to initialize the pca model.
     params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
         Parameters to extract hog features.
-    params_exif : dict, default: {'timeframe':'4H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False}
+    params_exif : dict, default: {'timeframe':'6H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False}
         Parameters to proces exif information. Note that 'exif_location' derives the location based on lat/lon coordinates and the request rate per photo limited to 1 sec to prevent time-outs.
     verbose : int, (default: 'info')
         Print progress to screen. The default is 20.
@@ -189,7 +189,7 @@ class Clustimage():
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
-                 params_exif={'timeframe': '4H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False},
+                 params_exif={'timeframe': '6H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False},
                  verbose='info'):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
@@ -246,7 +246,7 @@ class Clustimage():
         params_hog = {**hog_defaults, **params_hog}
         self.params_hog = params_hog
         # EXIF parameters
-        exif_defaults = {'timeframe': '4H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False}
+        exif_defaults = {'timeframe': '6H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False}
         params_exif = {**exif_defaults, **params_exif}
         self.params_exif = params_exif
         # Set the logger
@@ -2817,7 +2817,7 @@ def url2disk(urls, save_dir):
 
 
 #%% Find the indices of consecutive 1s separated by 0s
-def cluster_on_datetime(df_datetime, timeframe='4H', min_clust=2, window_length=5):
+def cluster_on_datetime(df_datetime, timeframe='6H', min_clust=2, window_length=5):
     # datetime=metadata_df['datetime'].copy()
     from scipy.signal import savgol_filter
     logger.info(f'Cluster on [datetime] using {timeframe} timeframe and smoothing window length of {window_length}')
