@@ -38,8 +38,8 @@ import random
 import imagehash
 from PIL import Image
 
-import clustimage.exif as exif
-# import exif as exif
+# import clustimage.exif as exif
+import exif as exif
 import webbrowser
 
 # Support for Apple HEIC images
@@ -67,7 +67,7 @@ class Clustimage():
     The following 4 steps are taken:
 
     * Step 1. Pre-processing.
-        Images are imported with specific extention (['png','tiff','jpg']),
+        Images are imported with specific extention (['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic']),
         Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
         Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
     * Step 2. Feature-extraction.
@@ -88,7 +88,6 @@ class Clustimage():
             * 'hog' : hog features extraced
             * 'pca-hog' : PCA extracted features from the HOG desriptor
             * 'exif': Use photo exif data to cluster photos on datetime  (set params_exif)
-            * 'location': Use photo exif data to cluster photos on lon/lat coordinates (set params_exif)
             hashmethod : str (default: 'ahash')
             * 'ahash': Average hash
             * 'phash': Perceptual hash
@@ -108,14 +107,17 @@ class Clustimage():
         Rescale images. This is required because the feature-space need to be the same across samples.
     dirpath : str, (default: 'clustimage')
         Directory to write images. The default is the system tempdirectory.
-    ext : list, (default: ['png','tiff','jpg'])
+    ext : list, (default: ['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic'])
         Images with the file extentions are used.
     params_pca : dict, default: {'n_components':50, 'detect_outliers':None}
         Parameters to initialize the pca model.
     params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
         Parameters to extract hog features.
     params_exif : dict, default: {'timeframe':'6H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False}
-        Parameters to proces exif information. Note that 'exif_location' derives the location based on lat/lon coordinates and the request rate per photo limited to 1 sec to prevent time-outs.
+        Parameters to proces exif information. 
+        - 'radius_meters': The radius that is used to cluster the images when using metric='datetime'
+        - 'window_length': Instead of making a hard cut on timeframe range, this smooting factor enables to to capture some images that are just outside the timeframe range. Works only for metric='latlon_radius'
+        - 'exif_location': This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates.
     verbose : int, (default: 'info')
         Print progress to screen. The default is 20.
         60: None, 40: error, 30: warning, 20: info, 10: debug
@@ -185,7 +187,7 @@ class Clustimage():
                  dim_face=(64, 64),
                  dirpath=None,
                  store_to_disk=True,
-                 ext=['png', 'tiff', 'jpg', 'jpeg'],
+                 ext=['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic'],
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
@@ -195,13 +197,7 @@ class Clustimage():
         # Clean readily fitted models to ensure correct results
         self.clean_init()
 
-        # Load Heic library if required
-        # if np.isin('.heic', ext):
-        #     from pillow_heif import register_heif_opener
-        #     # Register HEIF opener for Pillow
-        #     register_heif_opener()
-
-        if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog', 'exif', 'location'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
+        if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog', 'exif'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         # Check method types
         if (np.any(np.isin(method, ['hog', 'pca-hog']))) and ~grayscale:
             logger.warning('Parameter grayscale is set to True because you are using method="%s"' %(method))
@@ -290,6 +286,8 @@ class Clustimage():
                 * 'mahalanobis'
                 * 'seuclidean'
                 * 'sqeuclidean'
+                * 'datetime': Use photo exif data to cluster photos on datetime (set params_exif)
+                * 'latlon': Use photo exif data to cluster photos on lon/lat coordinates (set params_exif)
         linkage : str, (default: 'ward')
             Linkage type for the clustering.
                 * 'ward'
@@ -371,7 +369,7 @@ class Clustimage():
         >>>
 
         """
-        if self.params['method']=='exif' and not np.isin(metric, ['datetime', 'location']):
+        if self.params['method']=='exif' and not np.isin(metric, ['datetime', 'latlon']):
             logger.error('metric should be either "datetime" or "location" when using method="exif"')
             return None
 
@@ -421,6 +419,8 @@ class Clustimage():
                 * 'mahalanobis'
                 * 'seuclidean'
                 * 'sqeuclidean'
+                * 'datetime': Use photo exif data to cluster photos on datetime (set params_exif)
+                * 'latlon': Use photo exif data to cluster photos on lon/lat coordinates (set params_exif)
         linkage : str, (default: 'ward')
             Linkage type for the clustering.
                 * 'ward'
@@ -484,7 +484,7 @@ class Clustimage():
             # Cluster based on the datetime events from the images
             cluster, linkage, evaluate = None, None, None
             labels = cluster_on_datetime(self.results['feat']['datetime'], timeframe=self.params_exif['timeframe'], min_clust=min_clust, window_length=self.params_exif['window_length'])
-        elif self.params['method']=='exif' and metric=='location':
+        elif self.params['method']=='exif' and metric=='latlon':
             # Cluster based on the location from the images
             cluster, linkage, evaluate = 'dbscan', None, None
             labels = cluster_on_latlon(self.results['xycoord'], radius_meters=self.params_exif['radius_meters'])
@@ -977,7 +977,7 @@ class Clustimage():
         The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
         This requires that each of the input needs to be processed in its own manner but each should return the same structure to make it compatible across all functions.
         The following steps are used for the import:
-            1. Images are imported with specific extention (['png','tiff','jpg']).
+            1. Images are imported with specific extention (['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic']).
             2. Each input image can then be grayscaled. Setting the grayscale parameter to True can be especially usefull when clustering faces.
             3. Final step in pre-processing is resizing all images in the same dimension such as (128,128). Note that if an array-like dataset [Samples x Features] is given as input, setting these dimensions are required to restore the image in case of plotting.
             4. Images are saved to disk in case a array-like input is given.
@@ -1803,6 +1803,8 @@ class Clustimage():
                 logger.warning('Run .fit_transform() or .cluster() to colour based on the samples on the cluster labels.')
             else:
                 title = (self.params['embedding'] + ' plot. Samples are coloured on the cluster labels (%s dimensional).' %(self.params['cluster_space']))
+        else:
+            title = args_scatter.get('title')
 
         # Add colors
         colours = colourmap.fromlist(labels, cmap=cmap, verbose=get_logger())
@@ -2521,7 +2523,10 @@ def _imread(filepath, colorscale=1):
     img = np.asarray(img)
 
     # Remove alpha channel if existent
+    # len(img.shape) == 3: This checks if the image is a color image (3D array) with channels (height, width, channels).
+    # img.shape[2] == 4: This ensures the image has 4 channels (typically RGBA, where the 4th channel is the alpha channel).
     if len(img.shape) == 3 and img.shape[2] == 4:
+        # slices the array to retain only the first 3 channels (R, G, B) and drops the 4th channel (alpha).
         img = img[:, :, : 3]
 
     # Restore to RGB colors
@@ -2537,40 +2542,6 @@ def _imread(filepath, colorscale=1):
     #     logger.warning('File does not exists: %s', filepath)
     # plt.imshow(img, cmap=plt.get_cmap('gray'), vmin=0, vmax=1)
     return cv2.cvtColor(img, colorscale)
-
-# %% Read image
-# def _imread_old(filepath, colorscale=1):
-#     """Read image from filepath using colour-scaling.
-
-#     Parameters
-#     ----------
-#     filepath : str
-#         path to file.
-#     colorscale : int, default: 1 (gray)
-#         colour-scaling from opencv.
-#         * 0: cv2.IMREAD_GRAYSCALE
-#         * 1: cv2.IMREAD_COLOR
-#         * 8: cv2.COLOR_GRAY2RGB
-
-#     Returns
-#     -------
-#     img : numpy array
-#         raw rgb or gray image.
-
-#     """
-#     img=None
-#     # if os.path.isfile(filepath):
-#     # Read the image
-#     img = cv2.imread(filepath, colorscale)
-
-#     # In case of rgb images: make gray images compatible with RGB
-#     if ((colorscale!=0) and (colorscale!=6)) and (len(img.shape)<3):
-#         img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-#     # else:
-#     #     logger.warning('File does not exists: %s', filepath)
-
-#     return img
-
 
 # %%
 def get_logger():
@@ -2672,14 +2643,14 @@ def import_example(data='flowers', url=None, sep=',', verbose='info'):
 
 
 # %% Recursively list files from directory
-def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None, recursive=True):
+def listdir(dirpath, ext=['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic'], black_list=None, recursive=True):
     """Collect recursive images from path.
 
     Parameters
     ----------
     dirpath : str
         Path to directory; "/tmp" or "c://temp/"
-    ext : list, default: ['png','tiff','jpg']
+    ext : list, default: ['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic']
         extentions to collect form directories.
     black_list : list, (default: ['undouble'])
         Exclude directory with all subdirectories from processing.
