@@ -117,6 +117,106 @@ Here it can be clearly seen that the HOG image is a matrix of 8x8 vectors that i
 If an increase of HOG features is desired, you can either increasing the image dimensions (eg 256,256) or decrease the pixels per cell (eg 8,8).
 
 
+EXIF
+''''''''''
+
+EXIF (Exchangeable Image File Format) metadata is embedded in most image files and contains valuable information such as timestamps, GPS coordinates, and camera settings.
+This data can be utilized for clustering images, especially based on datetime and lat/lon data. Below, we explain how to achieve this, step by step.
+
+There are two metric where EXIF metadata is used for clustering:
+
+    * 'latlon': Use photo exif data to cluster photos on lon/lat coordinates
+    * 'datetime': Use photo exif data to cluster photos on datetime
+
+Each approach can be tuned by a few parameters that can be set using ``params_exif``.
+
+``params_exif: dict, default: {'timeframe':'6H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False}``
+
+        * 'radius_meters': The radius that is used to cluster the images when using metric='datetime'
+        * 'window_length': Instead of making a hard cut on timeframe range, this smooting factor enables to to capture some images that are just outside the timeframe range. Works only for metric='latlon_radius'
+        * 'exif_location': This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates and is not used in the clustering. This information is only used in the plot.
+
+
+Clustering by Datetime
+***********************
+Clustering images by datetime can help organize or analyze images captured within specific time intervals, such as during an event or over consecutive hours or days.
+For each image, the EXIF datetime creation date is extracted when possible. If the information could not be found in the EXIF data, the file timestamp will be used instead. However, the latter can cause that the modified time is used instead of creation time depending on the operating system.
+
+
+.. code:: python
+
+    from clustimage import Clustimage
+    
+    # Init
+    cl = Clustimage(method='exif',
+                    params_exif = {'timeframe':'6H', 'window_length':5, 'exif_location': False},
+                    ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
+                    verbose='info')
+
+    # Path to your images or photos
+    dir_path = r'c:/temp/'
+    
+    # Run the model to find Clusters of photos within the same timeframe
+    # blacklist does block the images in the "undouble" directory
+    # recursive will search for images in also all subdirectories
+    results = cl.fit_transform(dir_path, metric='datetime', min_clust=3, black_list=['undouble'], recursive=True)
+
+    # Show the cluster labels.
+    # Note that cluster 0 is the "rest" group
+    print(cl.results['labels'])
+    
+    # Make plot but exclude cluster 0 (rest group).
+    # Only create a plot when the cluster contains 4 or more images.
+    cl.plot(blacklist=[0], min_clust=4)
+    
+    # plot on Map
+    # polygon: See the lines in which order the photos were created
+    # thumbnail_size: size of the thumbnail when hovering over the image
+    # cluster_icons: automatically groups icons when zooming in/out. When enabled, the exact lat/lon is not used but an approximate.
+    # save_path: Store path. When not used, it will be stored in the temp directory
+    cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polygon=True, save_path=os.path.join(dir_path, 'map.html'))
+    
+
+Clustering by Latlon
+***********************
+
+Geographic data embedded in EXIF metadata allows images to be clustered by their GPS coordinates, enabling grouping by physical proximity (e.g., taken in the same city, park, or venue).
+This approach extract GPS latitude and longitude Coordinates from EXIF Metadata and then clusters using ``DBSCAN`` (can not be changed).
+
+.. code:: python
+
+    from clustimage import Clustimage
+    
+    # Init
+    cl = Clustimage(method='exif',
+                    params_exif = {radius_meters': 1000, 'exif_location': False},
+                    ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
+                    verbose='info')
+
+    # Path to your images or photos
+    dir_path = r'c:/temp/'
+    
+    # Run the model to find Clusters of photos within the same lat/lon with a radius of 1000 meters
+    # blacklist does block the images in the "undouble" directory
+    # recursive will search for images in also all subdirectories
+    results = cl.fit_transform(dir_path, metric='latlon', min_clust=3, black_list=['undouble'], recursive=True)
+
+    # Show the cluster labels.
+    # Note that cluster 0 is the "rest" group
+    print(cl.results['labels'])
+    
+    # Make plot but exclude cluster 0 (rest group).
+    # Only create a plot when the cluster contains 4 or more images.
+    cl.plot(blacklist=[0], min_clust=4)
+    
+    # plot on Map
+    # polygon: Disable the lines in which order the photos were created because it will likely not make sense here.
+    # thumbnail_size: size of the thumbnail when hovering over the image
+    # cluster_icons: automatically groups icons when zooming in/out. When enabled, the exact lat/lon is not used but an approximate.
+    # save_path: Store path. When not used, it will be stored in the temp directory
+    cl.plot_map(cluster_icons=True, open_in_browser=True, thumbnail_size=400, polygon=False, save_path=os.path.join(dir_path, 'map.html'))
+    
+
 
 .. _pca: https://github.com/erdogant/pca
 
