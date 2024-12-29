@@ -2706,7 +2706,6 @@ def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None, recursive=True
     if recursive:
         # Recursive directory traversal
         for root, _, filenames in os.walk(dirpath):
-            print(root)
             # Check if the (sub)directory is blacklisted
             bl_found = np.isin(os.path.split(root)[1], black_list)
             if (black_list is None) or (not bl_found):
