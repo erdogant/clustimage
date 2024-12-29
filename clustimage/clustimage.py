@@ -254,7 +254,7 @@ class Clustimage():
         # This value is set to True when the find functionality (cl.find) is used to make sure specified subroutines are used.
         self.find_func = False
 
-    def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high', black_list=None):
+    def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high', black_list=None, recursive=True):
         """Group samples into clusters that are similar in their feature space.
 
         The fit_transform function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
@@ -310,6 +310,8 @@ class Clustimage():
         black_list : list, (default: None)
             Exclude directory with all subdirectories from processing.
             * example: ['undouble']
+        recursive : bool, optional
+            Whether to scan subdirectories recursively. Default is True.
 
         Returns
         -------
@@ -372,10 +374,11 @@ class Clustimage():
         if self.params['method']=='exif' and not np.isin(metric, ['datetime', 'location']):
             logger.error('metric should be either "datetime" or "location" when using method="exif"')
             return None
+
         # Cleaning
         self.clean_init()
         # Check whether in is dir, list of files or array-like
-        _ = self.import_data(X, black_list=black_list)
+        _ = self.import_data(X, black_list=black_list, recursive=recursive)
         # Extract features using method
         _ = self.extract_feat(self.results)
         # Embedding
@@ -968,7 +971,7 @@ class Clustimage():
         # Return
         return self.pca.results['PC'].values
 
-    def import_data(self, Xraw, flatten=True, black_list=None):
+    def import_data(self, Xraw, flatten=True, black_list=None, recursive=True):
         """Import images and return in an consistent manner.
 
         The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
@@ -993,6 +996,8 @@ class Clustimage():
             Flatten the processed NxMxC array to a 1D-vector
         black_list : list, (default: None)
             Exclude directory with all subdirectories from processing.
+        recursive : bool, optional
+            Whether to scan subdirectories recursively. Default is True.
 
         Returns
         -------
@@ -1010,7 +1015,7 @@ class Clustimage():
         # Check whether input is directory, list or array-like
         # 1. Collect images from directory
         if isinstance(Xraw, str) and os.path.isdir(Xraw):
-            Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list)
+            Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list, recursive=recursive)
 
         # In case of method datetime or location, we only need the pathnames for now.
         if self.params['method']=='exif':
@@ -2059,7 +2064,7 @@ class Clustimage():
                         else:
                             ncol=ncols
                         dirname = exif.get_dir_names(getfiles)
-                        self._make_subplots(imgs, ncol, cmap, figsize, (f"{len(getfiles)} images in cluster {str(label)} - Directory: {dirname}"))
+                        self._make_subplots(imgs, ncol, cmap, figsize, (f"Cluster {str(label)} - {len(getfiles)} - Directory name: {dirname}"))
 
                         # Make hog plots
                         if show_hog and (self.params['method']=='hog'):
@@ -2248,8 +2253,9 @@ class Clustimage():
                 # Move the directory
                 targetdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
                 # Ask user what to do.
-                print(f'> [{len(pathnames)}] Files from [cluster {key}] are moved to [{targetdir}]')
-                userinput = input('> Press <enter> to continue and q to quit.')
+                logger.info('---------------------------------------------------------------')
+                logger.info(f'[Cluster {key}]> Move [{len(pathnames)}] images to <{targetdir}>?')
+                userinput = input('[clustimage] >Press <enter> to continue and q to quit.')
                 if userinput=='q':
                     break
                 else:
@@ -2666,7 +2672,7 @@ def import_example(data='flowers', url=None, sep=',', verbose='info'):
 
 
 # %% Recursively list files from directory
-def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
+def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None, recursive=True):
     """Collect recursive images from path.
 
     Parameters
@@ -2677,6 +2683,8 @@ def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
         extentions to collect form directories.
     black_list : list, (default: ['undouble'])
         Exclude directory with all subdirectories from processing.
+    recursive : bool, (default: True)
+        Walk recursively trhough all subdirectories
 
     Returns
     -------
@@ -2694,16 +2702,29 @@ def listdir(dirpath, ext=['png', 'tiff', 'jpg'], black_list=None):
     if not os.path.isdir(dirpath): raise Exception(print('Error: The directory can not be found: %s.' %dirpath))
 
     getfiles = []
-    for root, _, filenames in os.walk(dirpath):
-        # Check if the (sub)directory is black listed
-        bl_found = np.isin(os.path.split(root)[1], black_list)
-        if (black_list is None) or (not bl_found):
-            for iext in ext:
-                for filename in fnmatch.filter(filenames, '*.' + iext):
-                    getfiles.append(os.path.join(root, filename))
-        else:
-            logger.info('Excluded: <%s>' %(root))
-    logger.info(f'[{len(getfiles)}] Images are recursively collected from path: [{dirpath}]')
+
+    if recursive:
+        # Recursive directory traversal
+        for root, _, filenames in os.walk(dirpath):
+            print(root)
+            # Check if the (sub)directory is blacklisted
+            bl_found = np.isin(os.path.split(root)[1], black_list)
+            if (black_list is None) or (not bl_found):
+                for iext in ext:
+                    for filename in fnmatch.filter(filenames, '*.' + iext):
+                        getfiles.append(os.path.join(root, filename))
+            else:
+                logger.info(f'Excluded directory: <{root}>')
+    else:
+        # Non-recursive: scan only the top-level directory
+        _, _, filenames = next(os.walk(dirpath))
+        for iext in ext:
+            for filename in fnmatch.filter(filenames, '*.' + iext):
+                getfiles.append(os.path.join(dirpath, filename))
+
+    logger.info(f'[{len(getfiles)}] Images are collected from path <{dirpath}>')
+
+    # Return
     return getfiles
 
 
