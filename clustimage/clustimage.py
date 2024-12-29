@@ -1976,7 +1976,7 @@ class Clustimage():
         else:
             logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
-    def plot_map(self, cluster_icons=None, polygon=None, thumbnail_size=400, blacklist=[0], save_path=None, showfig=True):
+    def plot_map(self, cluster_icons=None, polygon=None, thumbnail_size=400, blacklist=[0], save_path=None, open_in_browser=True):
         if self.params['method']!='exif':
             logger.info('The plot_map() function requires to use the exif method. <return>')
             return None
@@ -2002,7 +2002,7 @@ class Clustimage():
 
         # Save map
         m.save(save_path)
-        if showfig:
+        if open_in_browser:
             webbrowser.open(save_path)
 
         logger.info(f'Output: {save_path}')
