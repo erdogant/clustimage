@@ -648,6 +648,17 @@ First perform the desired clustering approach and with the following steps it al
     cl.move_to_dir(target_labels=target_labels)
 
 
+Plotting
+''''''''''''''''''''''''''''''''''
+clustimage has various plotting functionalities. 
+
+    * plot: plots images in the clusters
+    * plot_faces : plots the faces.
+    * plot_find: Plot the input image together with the predicted images.
+    * plot_unique: plot the unique images.
+    * dendrogram: Plot Dendrogram.
+    * plot_map: plots the images on map. Requires to use method="exif"
+
 
 .. _clusteval: https://github.com/erdogant/clusteval
 
