@@ -10,6 +10,7 @@ The are 5 core functionalities of ``clustimage`` that allows to preprocess the i
     * cluster()
     * find()
     * unique()
+    * move_to_dir()
 
 Fit and transform
 ^^^^^^^^^^^^^^^^^^^^
@@ -65,6 +66,8 @@ There are different options the extract features from the image as lised below. 
     * 'whash-db4': Daubechies wavelet hash
     * 'colorhash': HSV color hash
     * 'crop-resistant': Crop-resistant hash
+    * 'datetime': datetime are extracted using EXIF metadata
+    * 'latlon': lat/lon coordinates are extracted using EXIF metadata
     * None : No feature extraction
 
 .. code:: python
@@ -615,6 +618,35 @@ Selection on the cluster labels
 
 	# Select xy-coordinates for cluster 0
 	cl.results['xycoord'][Iloc]
+
+
+Move files based on clusterlabels
+''''''''''''''''''''''''''''''''''
+The ``move_to_dir`` function moves files physically files into subdirectories based on cluster labels.
+First perform the desired clustering approach and with the following steps it allows you to organize the images by physically moving them into subdirectories.
+
+.. code:: python
+
+    # Show the cluster labels
+    print(cl.results['labels'])
+
+    # Step 1. Use the plot function to determine what event the cluster of photos represents.
+    # Do not plot cluster 0 (rest group), and only plot when a cluster contain 3 or more images.
+    cl.plot(blacklist=[0], min_clust=3)
+    
+    # 2. Create a dict that specifies the cluster number with its folder names.
+    # The first column is the cluster label and the second string is the destinated subfolder name.
+    # Look at the clusters and specify the subdirectories. In my case, cluster 1 are holiday photos, cluster 2 are various photos and cluster 6 are screenshots.
+    # All images that are not in the clusters, will remain untouched.
+    target_labels = {
+        1: 'holiday photos',
+        2: 'various',
+        6: 'screenshots',
+    }
+    
+    # 3. Move the photos to the specified directories using the cluster labels.
+    cl.move_to_dir(target_labels=target_labels)
+
 
 
 .. _clusteval: https://github.com/erdogant/clusteval

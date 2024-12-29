@@ -1,22 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Core functionalities &mdash; clustimage clustimage documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=88d6c118"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,9 +35,6 @@
           <a href="index.html" class="icon icon-home">
             clustimage
           </a>
-              <div class="version">
-                1.5.18
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -91,11 +88,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#selection-on-the-cluster-labels">Selection on the cluster labels</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#move-files-based-on-clusterlabels">Move files based on clusterlabels</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html">PCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#hog">HOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#exif">EXIF</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
@@ -170,7 +169,7 @@
   <p>This section describes the core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code>.
 Many of the functionalities are written in a generic manner which allows to be used in various applications.</p>
 <section id="core-functionalities">
-<h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this heading"></a></h1>
+<h1>Core functionalities<a class="headerlink" href="#core-functionalities" title="Link to this heading"></a></h1>
 <p>The are 5 core functionalities of <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> that allows to preprocess the input images, robustly determines the optimal number of clusters, and then optimize the clusters if desired.</p>
 <blockquote>
 <div><ul class="simple">
@@ -179,10 +178,11 @@ Many of the functionalities are written in a generic manner which allows to be u
 <li><p>cluster()</p></li>
 <li><p>find()</p></li>
 <li><p>unique()</p></li>
+<li><p>move_to_dir()</p></li>
 </ul>
 </div></blockquote>
 <section id="fit-and-transform">
-<h2>Fit and transform<a class="headerlink" href="#fit-and-transform" title="Permalink to this heading"></a></h2>
+<h2>Fit and transform<a class="headerlink" href="#fit-and-transform" title="Link to this heading"></a></h2>
 <p>The <em>fit_transform</em> function allows to detect natural groups or clusters of images. It works using a multi-step proces of pre-processing, extracting the features, and evaluating the optimal number of clusters across the feature space.
 The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 Based on the clustering results, the unique images are also gathered.</p>
@@ -198,7 +198,7 @@ Based on the clustering results, the unique images are also gathered.</p>
 </div></blockquote>
 </section>
 <section id="import-data">
-<h2>import_data<a class="headerlink" href="#import-data" title="Permalink to this heading"></a></h2>
+<h2>import_data<a class="headerlink" href="#import-data" title="Link to this heading"></a></h2>
 <p>The input for the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.import_data" title="clustimage.clustimage.Clustimage.import_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.import_data()</span></code></a> can have multiple forms; path to directory, list of strings and and array-like input.
 The following steps are used for which the parameters needs to be set during initialization:</p>
 <blockquote>
@@ -222,7 +222,7 @@ The following steps are used for which the parameters needs to be set during ini
 </div>
 </section>
 <section id="extract-feat">
-<h2>extract_feat<a class="headerlink" href="#extract-feat" title="Permalink to this heading"></a></h2>
+<h2>extract_feat<a class="headerlink" href="#extract-feat" title="Link to this heading"></a></h2>
 <p>Extracting of features is performed in the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_feat" title="clustimage.clustimage.Clustimage.extract_feat"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_feat()</span></code></a> function.
 There are different options the extract features from the image as lised below. Note that these settings needs to be set during initialization.</p>
 <blockquote>
@@ -237,6 +237,8 @@ There are different options the extract features from the image as lised below. 
 <li><p>‘whash-db4’: Daubechies wavelet hash</p></li>
 <li><p>‘colorhash’: HSV color hash</p></li>
 <li><p>‘crop-resistant’: Crop-resistant hash</p></li>
+<li><p>‘datetime’: datetime are extracted using EXIF metadata</p></li>
+<li><p>‘latlon’: lat/lon coordinates are extracted using EXIF metadata</p></li>
 <li><p>None : No feature extraction</p></li>
 </ul>
 </div></blockquote>
@@ -255,7 +257,7 @@ There are different options the extract features from the image as lised below. 
 </div>
 </section>
 <section id="embedding">
-<h2>embedding<a class="headerlink" href="#embedding" title="Permalink to this heading"></a></h2>
+<h2>embedding<a class="headerlink" href="#embedding" title="Link to this heading"></a></h2>
 <p>The embedding is performed using tSNE in the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.embedding" title="clustimage.clustimage.Clustimage.embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.embedding()</span></code></a> function.
 The coordinates are used for vizualiation purposes only but if desired. However, when setting the <code class="docutils literal notranslate"><span class="pre">cluster_space</span></code> parameter to ‘low’ in the <code class="docutils literal notranslate"><span class="pre">cluster</span></code> function, the clustering will be performed in the low-dimensional tSNE space.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize</span>
@@ -275,7 +277,7 @@ The coordinates are used for vizualiation purposes only but if desired. However,
 </div>
 </section>
 <section id="cluster">
-<h2>cluster<a class="headerlink" href="#cluster" title="Permalink to this heading"></a></h2>
+<h2>cluster<a class="headerlink" href="#cluster" title="Link to this heading"></a></h2>
 <p>The <em>cluster</em> function is build on <a class="reference external" href="https://github.com/erdogant/clusteval">clusteval</a>, which is a python package that provides various evalution methods for unsupervised cluster validation.
 The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 This function can be run after the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
@@ -300,14 +302,14 @@ Besides changing evaluation methods and metrics, it is also possible to cluster 
 <p>More examples can also be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a></p>
 </section>
 <section id="extract-faces">
-<h2>extract_faces<a class="headerlink" href="#extract-faces" title="Permalink to this heading"></a></h2>
+<h2>extract_faces<a class="headerlink" href="#extract-faces" title="Link to this heading"></a></h2>
 <p>To cluster faces on images, we first need to detect, and extract the faces from the images.
 The <em>extract_faces</em> function does this task.
 Faces and eyes are detected using <code class="docutils literal notranslate"><span class="pre">haarcascade_frontalface_default.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">haarcascade_eye.xml</span></code> in <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code>.</p>
 <p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_faces" title="clustimage.clustimage.Clustimage.extract_faces"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_faces()</span></code></a></p>
 </section>
 <section id="find">
-<h2>find<a class="headerlink" href="#find" title="Permalink to this heading"></a></h2>
+<h2>find<a class="headerlink" href="#find" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">find</span></code> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.find" title="clustimage.clustimage.Clustimage.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.find()</span></code></a> allows to find images that are similar to that of the input image.
 Finding images can be performed in two manners:</p>
 <blockquote>
@@ -368,7 +370,7 @@ Note that the metric can be changed in this function but this may lead to confus
 </pre></div>
 </div>
 <table class="docutils align-center" id="id1">
-<caption><span class="caption-text">Find results for digits.</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Find results for digits.</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figCF1" src="_images/find_digit.png" /></p></td>
 <td><p><img alt="figCF2" src="_images/find_in_pca.png" /></p></td>
@@ -403,7 +405,7 @@ Note that the metric can be changed in this function but this may lead to confus
 </pre></div>
 </div>
 <table class="docutils align-center" id="id2">
-<caption><span class="caption-text">Find results for the flower using pathname as input.</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Find results for the flower using pathname as input.</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figCF5" src="_images/find_flowers.png" /></p></td>
 <td><p><img alt="figCF6" src="_images/find_flowers_scatter.png" /></p></td>
@@ -413,7 +415,7 @@ Note that the metric can be changed in this function but this may lead to confus
 <p>Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.find" title="clustimage.clustimage.Clustimage.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.find()</span></code></a></p>
 </section>
 <section id="unique">
-<h2>unique<a class="headerlink" href="#unique" title="Permalink to this heading"></a></h2>
+<h2>unique<a class="headerlink" href="#unique" title="Link to this heading"></a></h2>
 <p>The unique images can be computed using the unique <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.unique" title="clustimage.clustimage.Clustimage.unique"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.unique()</span></code></a> and are detected by first computing the center of the cluster, and then taking the image closest to the center.
 Lets demonstrate this by example and the digits dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
@@ -440,7 +442,7 @@ Lets demonstrate this by example and the digits dataset.</p>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id3">
-<caption><span class="caption-text">Left: the unique detected digits in the center of eacht cluster. Right: the averaged image per cluster.</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Left: the unique detected digits in the center of eacht cluster. Right: the averaged image per cluster.</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figCF7" src="_images/digits_unique1.png" /></p></td>
 <td><p><img alt="figCF8" src="_images/digits_unique2.png" /></p></td>
@@ -450,7 +452,7 @@ Lets demonstrate this by example and the digits dataset.</p>
 </section>
 </section>
 <section id="preprocessing">
-<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this heading"></a></h1>
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading"></a></h1>
 <p>The preprocessing step is the function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.imread" title="clustimage.clustimage.Clustimage.imread"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imread()</span></code></a>, and contains 3 functions to handle the import, scaling and resizing of images.
 This function requires the full path to the image for which the first step is reading the images and colour scaling it based on the input parameter <code class="docutils literal notranslate"><span class="pre">grayscale</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">grayscale</span></code> is set to <em>True</em>, the <code class="docutils literal notranslate"><span class="pre">cv2.COLOR_GRAY2RGB</span></code> setting from <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> is used.</p>
@@ -493,7 +495,7 @@ If <code class="docutils literal notranslate"><span class="pre">grayscale</span>
 </pre></div>
 </div>
 <table class="docutils align-center" id="id4">
-<caption><span class="caption-text">Left is orignal input figure and right is after preprocessing</span><a class="headerlink" href="#id4" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Left is orignal input figure and right is after preprocessing</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figP1" src="_images/flower_original.png" /></p></td>
 <td><p><img alt="figP2" src="_images/flower_example1.png" /></p></td>
@@ -501,7 +503,7 @@ If <code class="docutils literal notranslate"><span class="pre">grayscale</span>
 </tbody>
 </table>
 <section id="imscale">
-<h2>imscale<a class="headerlink" href="#imscale" title="Permalink to this heading"></a></h2>
+<h2>imscale<a class="headerlink" href="#imscale" title="Link to this heading"></a></h2>
 <p>The <em>imscale</em> function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.imscale()</span></code> is only applicable for 2D-arrays (images).
 Scaling data is an import pre-processing step to make sure all data is ranged between the minimum and maximum range.</p>
 <p>The images are scaled between [0-255] by the following equation:</p>
@@ -510,13 +512,13 @@ Scaling data is an import pre-processing step to make sure all data is ranged be
 </div></blockquote>
 </section>
 <section id="imresize">
-<h2>imresize<a class="headerlink" href="#imresize" title="Permalink to this heading"></a></h2>
+<h2>imresize<a class="headerlink" href="#imresize" title="Link to this heading"></a></h2>
 <p>The <em>imresize</em> function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.imresize" title="clustimage.clustimage.imresize"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.imresize()</span></code></a> resizes the images into 128x128 pixels (default) or to an user-defined size.
 The function depends on the functionality of <code class="docutils literal notranslate"><span class="pre">python-opencv</span></code> with the interpolation: <code class="docutils literal notranslate"><span class="pre">interpolation=cv2.INTER_AREA</span></code>.</p>
 </section>
 </section>
 <section id="output">
-<h1>Output<a class="headerlink" href="#output" title="Permalink to this heading"></a></h1>
+<h1>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h1>
 <p>The results obtained from the <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.fit_transform" title="clustimage.clustimage.Clustimage.fit_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.fit_transform()</span></code></a> or <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.cluster" title="clustimage.clustimage.Clustimage.cluster"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.cluster()</span></code></a> is a dictionary containing the following keys:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>*<span class="w">  </span>img<span class="w">       </span>:<span class="w"> </span>Image<span class="w"> </span>vector<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>preprocessed<span class="w"> </span>images.
 *<span class="w">  </span>feat<span class="w">      </span>:<span class="w"> </span>Extracted<span class="w"> </span>feature.
@@ -570,10 +572,10 @@ The function depends on the functionality of <code class="docutils literal notra
 </div>
 </section>
 <section id="generic-functions">
-<h1>Generic functions<a class="headerlink" href="#generic-functions" title="Permalink to this heading"></a></h1>
+<h1>Generic functions<a class="headerlink" href="#generic-functions" title="Link to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">clustimage</span></code> contains various generic functionalities that are internally used but may be usefull too in other applications.</p>
 <section id="wget">
-<h2>wget<a class="headerlink" href="#wget" title="Permalink to this heading"></a></h2>
+<h2>wget<a class="headerlink" href="#wget" title="Link to this heading"></a></h2>
 <p>Download files from the internet and store on disk.
 Examples can be found here: <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.wget()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
@@ -584,7 +586,7 @@ Examples can be found here: <code class="xref py py-func docutils literal notran
 </div>
 </section>
 <section id="unzip">
-<h2>unzip<a class="headerlink" href="#unzip" title="Permalink to this heading"></a></h2>
+<h2>unzip<a class="headerlink" href="#unzip" title="Link to this heading"></a></h2>
 <p>Unzip files into a destination directory.
 Examples can be found here: <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.unzip()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
@@ -595,7 +597,7 @@ Examples can be found here: <code class="xref py py-func docutils literal notran
 </div>
 </section>
 <section id="listdir">
-<h2>listdir<a class="headerlink" href="#listdir" title="Permalink to this heading"></a></h2>
+<h2>listdir<a class="headerlink" href="#listdir" title="Link to this heading"></a></h2>
 <p>Recusively list the files in the directory.
 Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.listdir" title="clustimage.clustimage.listdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.listdir()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
@@ -607,7 +609,7 @@ Examples can be found here: <a class="reference internal" href="clustimage.clust
 </div>
 </section>
 <section id="set-logger">
-<h2>set_logger<a class="headerlink" href="#set-logger" title="Permalink to this heading"></a></h2>
+<h2>set_logger<a class="headerlink" href="#set-logger" title="Link to this heading"></a></h2>
 <p>Change status of the logger.
 Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.set_logger" title="clustimage.clustimage.set_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.set_logger()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Change to verbosity message of warnings and higher</span>
@@ -616,16 +618,16 @@ Examples can be found here: <a class="reference internal" href="clustimage.clust
 </div>
 </section>
 <section id="extract-hog">
-<h2>extract_hog<a class="headerlink" href="#extract-hog" title="Permalink to this heading"></a></h2>
+<h2>extract_hog<a class="headerlink" href="#extract-hog" title="Link to this heading"></a></h2>
 <p>Histogram of Oriented Gradients (HOG), is a feature descriptor that is often used to extract features from image data.
 Examples: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.extract_hog" title="clustimage.clustimage.Clustimage.extract_hog"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.extract_hog()</span></code></a> More detailed explanation can be found in the <strong>Feature Extraction</strong> - <strong>HOG</strong> section.</p>
 </section>
 </section>
 <section id="merge-expand-clusters">
-<h1>Merge/ Expand Clusters<a class="headerlink" href="#merge-expand-clusters" title="Permalink to this heading"></a></h1>
+<h1>Merge/ Expand Clusters<a class="headerlink" href="#merge-expand-clusters" title="Link to this heading"></a></h1>
 <p>The number of clusters are optimized using the clusteval library. However, when desired it is also possible to manually merge of expand the number of clusters.</p>
 <section id="optimized-clusters">
-<h2>Optimized Clusters<a class="headerlink" href="#optimized-clusters" title="Permalink to this heading"></a></h2>
+<h2>Optimized Clusters<a class="headerlink" href="#optimized-clusters" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
@@ -648,7 +650,7 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </pre></div>
 </div>
 <table class="docutils align-center" id="id5">
-<caption><span class="caption-text">Scatterplot and dendrogram of the optimized number of clusters.</span><a class="headerlink" href="#id5" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Scatterplot and dendrogram of the optimized number of clusters.</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figP3" src="_images/scatter_optimized.png" /></p></td>
 <td><p><img alt="figP4" src="_images/dendrogram_optimized.png" /></p></td>
@@ -657,7 +659,7 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </table>
 </section>
 <section id="force-to-k-clusters">
-<h2>Force to K clusters<a class="headerlink" href="#force-to-k-clusters" title="Permalink to this heading"></a></h2>
+<h2>Force to K clusters<a class="headerlink" href="#force-to-k-clusters" title="Link to this heading"></a></h2>
 <p>Let’s merge some of the clusters and set it to 5 clusters.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set to 5 clusters</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">min_clust</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_clust</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -673,7 +675,7 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </pre></div>
 </div>
 <table class="docutils align-center" id="id6">
-<caption><span class="caption-text">Scatterplot and dendrogram when we force to 5 clusters.</span><a class="headerlink" href="#id6" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Scatterplot and dendrogram when we force to 5 clusters.</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figP5" src="_images/scatter_five.png" /></p></td>
 <td><p><img alt="figP6" src="_images/dendrogram_five.png" /></p></td>
@@ -682,7 +684,7 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </table>
 </section>
 <section id="set-clusters-by-dendrogram-threshold">
-<h2>Set clusters by dendrogram threshold<a class="headerlink" href="#set-clusters-by-dendrogram-threshold" title="Permalink to this heading"></a></h2>
+<h2>Set clusters by dendrogram threshold<a class="headerlink" href="#set-clusters-by-dendrogram-threshold" title="Link to this heading"></a></h2>
 <p>Another manner to change the number of cluster is by specifying the height of the dendrogram (setting a threshold point or cut-off). The number of clusters is automatically derived from that point.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Look at the dendrogram y-axis and specify the height to merge clusters</span>
 <span class="n">dendro_results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">max_d</span><span class="o">=</span><span class="mi">60000</span><span class="p">)</span>
@@ -696,7 +698,7 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </pre></div>
 </div>
 <table class="docutils align-center" id="id7">
-<caption><span class="caption-text">Scatterplot and dendrogram where the number of clusters is defined by the dendrogram cut-off point.</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">Scatterplot and dendrogram where the number of clusters is defined by the dendrogram cut-off point.</span><a class="headerlink" href="#id7" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figP7" src="_images/scatter_three.png" /></p></td>
 <td><p><img alt="figP8" src="_images/dendrogram_three.png" /></p></td>
@@ -705,7 +707,7 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </table>
 </section>
 <section id="selection-on-the-cluster-labels">
-<h2>Selection on the cluster labels<a class="headerlink" href="#selection-on-the-cluster-labels" title="Permalink to this heading"></a></h2>
+<h2>Selection on the cluster labels<a class="headerlink" href="#selection-on-the-cluster-labels" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># All results are stored in cl.results</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 <span class="p">[</span><span class="s1">&#39;img&#39;</span><span class="p">,</span> <span class="s1">&#39;feat&#39;</span><span class="p">,</span> <span class="s1">&#39;xycoord&#39;</span><span class="p">,</span> <span class="s1">&#39;pathnames&#39;</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;filenames&#39;</span><span class="p">,</span> <span class="s1">&#39;predict&#39;</span><span class="p">]</span>
@@ -726,6 +728,33 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="move-files-based-on-clusterlabels">
+<h1>Move files based on clusterlabels<a class="headerlink" href="#move-files-based-on-clusterlabels" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">move_to_dir</span></code> function moves files physically files into subdirectories based on cluster labels.
+First perform the desired clustering approach and with the following steps it allows you to organize the images by physically moving them into subdirectories.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show the cluster labels</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
+
+<span class="c1"># Step 1. Use the plot function to determine what event the cluster of photos represents.</span>
+<span class="c1"># Do not plot cluster 0 (rest group), and only plot when a cluster contain 3 or more images.</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">blacklist</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># 2. Create a dict that specifies the cluster number with its folder names.</span>
+<span class="c1"># The first column is the cluster label and the second string is the destinated subfolder name.</span>
+<span class="c1"># Look at the clusters and specify the subdirectories. In my case, cluster 1 are holiday photos, cluster 2 are various photos and cluster 6 are screenshots.</span>
+<span class="c1"># All images that are not in the clusters, will remain untouched.</span>
+<span class="n">target_labels</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;holiday photos&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;various&#39;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;screenshots&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># 3. Move the photos to the specified directories using the cluster labels.</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">move_to_dir</span><span class="p">(</span><span class="n">target_labels</span><span class="o">=</span><span class="n">target_labels</span><span class="p">)</span>
+</pre></div>
+</div>
 <hr>
 <center>
         <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
@@ -734,7 +763,6 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
         <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
 </center>
 <hr></section>
-</section>
 
 
            </div>

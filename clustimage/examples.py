@@ -3,20 +3,32 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %%
+from clustimage import Clustimage
+
+cl = Clustimage()
+
+# load example with flowers
+pathnames = cl.import_example(data='flowers')
+
+results = cl.fit_transform(pathnames)
+cl.scatter(args_scatter={'title':'test title' })
+
+
 # %% Cluster on date/time from photo exif data
 from clustimage import Clustimage
 import os
 
 cl = Clustimage(method='exif',
                 params_exif = {'timeframe':'6H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False},
-                ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"],
+                ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
                 verbose='info')
 
 # All paths
-dir_path = r'c:/temp/'
+dir_path = r'\\NAS_SYNOLOGY\Photo\2024\Vluchten'
 
 # Run the model to find the clusters based on datetime method
-# results = cl.fit_transform(dir_path, metric='location', min_clust=3)
+# results = cl.fit_transform(dir_path, metric='latlon', min_clust=3)
 results = cl.fit_transform(dir_path, metric='datetime', min_clust=3, black_list=['undouble'], recursive=True)
 
 # Show the cluster labels
@@ -434,6 +446,7 @@ from clustimage import Clustimage
 
 # Init
 cl = Clustimage(method='pca')
+
 # load example with flowers
 pathnames = cl.import_example(data='flowers')
 

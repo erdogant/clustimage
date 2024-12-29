@@ -28,9 +28,13 @@ import fnmatch
 import cv2
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
+
 from scipy.spatial import distance
+from scipy.signal import savgol_filter
+
 from skimage.feature import hog
 from skimage import exposure
+
 import tempfile
 import uuid
 import shutil
@@ -2228,16 +2232,29 @@ class Clustimage():
         return import_example(data=data, url=url, sep=sep, verbose=get_logger())
 
     def move_to_dir(self, target_labels=None, targetdir=None):
-        """Move to target directory based on cluster labels.
-
-        All files that are marked as being "double" are moved. The first image in the array is untouched.
+        """Move image files into directories based on cluster labels.
 
         Parameters
         ----------
-        pathnames : list of str
-        targetdir : target directory to move the files.
-            r'c:/temp/'
-            None: Creates a subfolder in the current directory of the first image in the list.
+        target_labels : dict, optional
+            A dictionary where keys are cluster labels, and values are the target folder names.
+            If None, folders are automatically generated with names such as "group_<label>".
+        targetdir : str, optional
+            The base directory where the images will be moved. If None, the images will be moved
+            to the parent directory of their current location.
+
+        Notes
+        -----
+        - If `target_labels` is not provided, the function will automatically generate folder names based on the cluster labels, e.g., `group_0`, `group_1`, etc.
+        - The method will move image files associated with each cluster into the corresponding folder.
+        - Before moving files, the user is prompted to confirm the action for each cluster.
+        - The function assumes that `self.results` contains the necessary data, including 'labels' (cluster labels) and 'pathnames' (file paths of the images).
+
+        Examples
+        --------
+        >>> # Assuming `self.results` contains a 'labels' and 'pathnames' column
+        >>> self.move_to_dir(target_labels={0: 'screenshots', 1: 'various'}, 2: 'holiday break'})
+        >>> # Images from cluster 0 will be moved to "group_0" and images from cluster 1 to "group_1"
 
         """
         if target_labels is None:
@@ -2789,8 +2806,45 @@ def url2disk(urls, save_dir):
 
 #%% Find the indices of consecutive 1s separated by 0s
 def cluster_on_datetime(df_datetime, timeframe='6H', min_clust=2, window_length=5):
-    # datetime=metadata_df['datetime'].copy()
-    from scipy.signal import savgol_filter
+    """Cluster datetime events based on temporal proximity using smoothing and grouping.
+
+    Parameters
+    ----------
+    df_datetime : pandas.Series
+        A pandas Series containing datetime strings in the format '%Y:%m:%d %H:%M:%S'.
+    timeframe : str, optional
+        The timeframe for resampling and grouping, by default '6H' (6-hour intervals).
+        Acceptable values are Pandas-compatible frequency strings (e.g., 'H', 'D', 'W').
+    min_clust : int, optional
+        The minimum number of events required for a cluster to be valid, by default 2.
+    window_length : int, optional
+        The window length for the Savitzky-Golay filter used for smoothing. 
+        The window length is automatically capped to the number of resampled timeframes, by default 5.
+
+    Returns
+    -------
+    numpy.ndarray
+        An array of cluster labels for each datetime in `df_datetime`. 
+        Cluster labels are integers where 0 represents "no cluster" or "rest group."
+
+    Notes
+    -----
+    - This function uses the Savitzky-Golay filter for smoothing temporal counts of events.
+    - Clusters are formed by grouping consecutive resampled intervals with non-zero smoothed counts.
+    - The function sorts the input Series and ensures proper resampling and grouping.
+    - Ensure that the input `df_datetime` contains valid datetime strings that can be converted using 
+      `pd.to_datetime`.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> df = pd.Series(['2023:12:01 12:00:00', '2023:12:01 13:00:00', '2023:12:01 18:00:00',
+    ...                 '2023:12:02 09:00:00', '2023:12:02 10:00:00'])
+    >>> cluster_labels = cluster_on_datetime(df, timeframe='6H', min_clust=2, window_length=3)
+    >>> cluster_labels
+    array([1, 1, 0, 2, 2])
+
+    """
     logger.info(f'Cluster on [datetime] using {timeframe} timeframe and smoothing window length of {window_length}')
 
     # Step 1: Convert datetime column from string to datetime
@@ -2845,15 +2899,41 @@ def cluster_on_datetime(df_datetime, timeframe='6H', min_clust=2, window_length=
 
 #%%
 def cluster_on_latlon(latlon, radius_meters=500):
-    """Clusters images based on GPS coordinates within a given radius.
+    """Cluster geolocation data points based on proximity using Haversine distance.
 
-    Parameters:
-    - metadata_df: DataFrame containing at least 'filename', 'lat', and 'lon' columns.
-    - radius_meters: The clustering radius in meters.
+    Parameters
+    ----------
+    latlon : pandas.DataFrame
+        A DataFrame containing 'lat' (latitude) and 'lon' (longitude) columns.
+        Rows with missing values in either 'lat' or 'lon' are ignored.
+    radius_meters : float, optional
+        The radius (in meters) within which points are grouped into a single cluster. 
+        Default is 500 meters.
 
-    Returns:
-    - cluster_labels: A vector of cluster labels corresponding to each image.
-    - map_display: A folium map displaying the clusters.
+    Returns
+    -------
+    numpy.ndarray
+        An array of cluster labels for each row in the input `latlon` DataFrame.
+        Rows without valid latitude or longitude will have a label of 0.
+
+    Notes
+    -----
+    - The function uses the DBSCAN algorithm with the Haversine metric for clustering.
+    - Input coordinates are converted to radians as required by the Haversine distance computation.
+    - The radius is converted from meters to kilometers, as the Haversine metric operates in kilometers.
+    - DBSCAN assigns cluster labels starting from 0 for noise points; however, this implementation ensures rows 
+      without valid coordinates are also labeled as 0.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> latlon = pd.DataFrame({
+    ...     'lat': [52.5200, 52.5201, 52.5300, 48.8566, 48.8567],
+    ...     'lon': [13.4050, 13.4051, 13.4060, 2.3522, 2.3523]
+    ... })
+    >>> cluster_labels = cluster_on_latlon(latlon, radius_meters=500)
+    >>> cluster_labels
+    array([1, 1, 2, 3, 3])
 
     """
     # Clusterlabels

@@ -34,6 +34,7 @@ A schematic overview is as following:
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.
     * 3. Finds higly similar images for a given input image.
+    * 4. Cluster on datetime or latlon coordinates when using photos.
 
 ``clustimage`` is fun because:
 
@@ -41,8 +42,9 @@ A schematic overview is as following:
     * It can group any set of images.
     * It can return only the unique() images.
     * it can find highly similar images given an input image.
+    * it can map photos on an interactive map with thumbnails and clusterlabels so that you easily structure your photos.
     * It provided many plots to improve understanding of the feature-space and sample-sample relationships
-    * It is build on core statistics, such as PCA, HOG and many more, and therefore it does not has a dependency block.
+    * It is build on core statistics, such as PCA, HOG, EXIF data and many more, and therefore it does not has a dependency block.
     * It works out of the box.
 
 

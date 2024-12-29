@@ -1,22 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PCA &mdash; clustimage clustimage documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=88d6c118"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,9 +35,6 @@
           <a href="index.html" class="icon icon-home">
             clustimage
           </a>
-              <div class="version">
-                1.5.18
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -64,11 +61,17 @@
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#output">Output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#generic-functions">Generic functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#merge-expand-clusters">Merge/ Expand Clusters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_functions.html#move-files-based-on-clusterlabels">Move files based on clusterlabels</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#hog">HOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#exif">EXIF</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clustering-by-datetime">Clustering by Datetime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustering-by-latlon">Clustering by Latlon</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
@@ -141,7 +144,7 @@
            <div itemprop="articleBody">
              
   <section id="pca">
-<h1>PCA<a class="headerlink" href="#pca" title="Permalink to this heading"></a></h1>
+<h1>PCA<a class="headerlink" href="#pca" title="Link to this heading"></a></h1>
 <p>Principal component analysis (PCA) is a feature extraction approach for which we can leverage on the first few principal components and ignoring the rest.
 In <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> the <a class="reference external" href="https://github.com/erdogant/pca">pca</a> library utilized to extract the first 50 (default) components.
 The use of PC’s for clustering is usefull in applications with among others faces, where so called eigenfaces are computed.
@@ -169,7 +172,7 @@ The eigenface is a low-dimensional representation of face images. It is shown th
 </div>
 </section>
 <section id="hog">
-<h1>HOG<a class="headerlink" href="#hog" title="Permalink to this heading"></a></h1>
+<h1>HOG<a class="headerlink" href="#hog" title="Link to this heading"></a></h1>
 <p>Histogram of Oriented Gradients (HOG), is a feature descriptor that is often used to extract features from image data.
 In general, it is a simplified representation of the image that contains only the most important information about the image.
 The HOG feature descriptor counts the occurrences of gradient orientation in localized portions of an image. It is widely used in computer vision tasks for object detection.</p>
@@ -238,7 +241,7 @@ For example, if the use-case is to group faces or cars, HOG-features can do a gr
 </pre></div>
 </div>
 <table class="docutils align-center" id="id2">
-<caption><span class="caption-text">HOG example containing 8x8 vectors</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<caption><span class="caption-text">HOG example containing 8x8 vectors</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figF1" src="_images/hog_example.png" /></p></td>
 </tr>
@@ -246,6 +249,100 @@ For example, if the use-case is to group faces or cars, HOG-features can do a gr
 </table>
 <p>Here it can be clearly seen that the HOG image is a matrix of 8x8 vectors that is derived by because of the input image (128,128) devided by the pixels per cell (16,16). Thus 128/16=8 rows and columns in this case.
 If an increase of HOG features is desired, you can either increasing the image dimensions (eg 256,256) or decrease the pixels per cell (eg 8,8).</p>
+</section>
+<section id="exif">
+<h1>EXIF<a class="headerlink" href="#exif" title="Link to this heading"></a></h1>
+<p>EXIF (Exchangeable Image File Format) metadata is embedded in most image files and contains valuable information such as timestamps, GPS coordinates, and camera settings.
+This data can be utilized for clustering images, especially based on datetime and lat/lon data. Below, we explain how to achieve this, step by step.</p>
+<p>There are two metric where EXIF metadata is used for clustering:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘latlon’: Use photo exif data to cluster photos on lon/lat coordinates</p></li>
+<li><p>‘datetime’: Use photo exif data to cluster photos on datetime</p></li>
+</ul>
+</div></blockquote>
+<p>Each approach can be tuned by a few parameters that can be set using <code class="docutils literal notranslate"><span class="pre">params_exif</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">params_exif:</span> <span class="pre">dict,</span> <span class="pre">default:</span> <span class="pre">{'timeframe':'6H',</span> <span class="pre">'window_length':5,</span> <span class="pre">'radius_meters':</span> <span class="pre">1000,</span> <span class="pre">'exif_location':</span> <span class="pre">False}</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘radius_meters’: The radius that is used to cluster the images when using metric=’datetime’</p></li>
+<li><p>‘window_length’: Instead of making a hard cut on timeframe range, this smooting factor enables to to capture some images that are just outside the timeframe range. Works only for metric=’latlon_radius’</p></li>
+<li><p>‘exif_location’: This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates and is not used in the clustering. This information is only used in the plot.</p></li>
+</ul>
+</div></blockquote>
+<section id="clustering-by-datetime">
+<h2>Clustering by Datetime<a class="headerlink" href="#clustering-by-datetime" title="Link to this heading"></a></h2>
+<p>Clustering images by datetime can help organize or analyze images captured within specific time intervals, such as during an event or over consecutive hours or days.
+For each image, the EXIF datetime creation date is extracted when possible. If the information could not be found in the EXIF data, the file timestamp will be used instead. However, the latter can cause that the modified time is used instead of creation time depending on the operating system.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+
+<span class="c1"># Init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;exif&#39;</span><span class="p">,</span>
+                <span class="n">params_exif</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;timeframe&#39;</span><span class="p">:</span><span class="s1">&#39;6H&#39;</span><span class="p">,</span> <span class="s1">&#39;window_length&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;exif_location&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;cr2&quot;</span><span class="p">,</span> <span class="s2">&quot;nef&quot;</span><span class="p">,</span> <span class="s2">&quot;heic&quot;</span><span class="p">,</span> <span class="s2">&quot;sr2&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">],</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
+
+<span class="c1"># Path to your images or photos</span>
+<span class="n">dir_path</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;c:/temp/&#39;</span>
+
+<span class="c1"># Run the model to find Clusters of photos within the same timeframe</span>
+<span class="c1"># blacklist does block the images in the &quot;undouble&quot; directory</span>
+<span class="c1"># recursive will search for images in also all subdirectories</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">black_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;undouble&#39;</span><span class="p">],</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Show the cluster labels.</span>
+<span class="c1"># Note that cluster 0 is the &quot;rest&quot; group</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
+
+<span class="c1"># Make plot but exclude cluster 0 (rest group).</span>
+<span class="c1"># Only create a plot when the cluster contains 4 or more images.</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">blacklist</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># plot on Map</span>
+<span class="c1"># polygon: See the lines in which order the photos were created</span>
+<span class="c1"># thumbnail_size: size of the thumbnail when hovering over the image</span>
+<span class="c1"># cluster_icons: automatically groups icons when zooming in/out. When enabled, the exact lat/lon is not used but an approximate.</span>
+<span class="c1"># save_path: Store path. When not used, it will be stored in the temp directory</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot_map</span><span class="p">(</span><span class="n">cluster_icons</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">open_in_browser</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">thumbnail_size</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s1">&#39;map.html&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="clustering-by-latlon">
+<h2>Clustering by Latlon<a class="headerlink" href="#clustering-by-latlon" title="Link to this heading"></a></h2>
+<p>Geographic data embedded in EXIF metadata allows images to be clustered by their GPS coordinates, enabling grouping by physical proximity (e.g., taken in the same city, park, or venue).
+This approach extract GPS latitude and longitude Coordinates from EXIF Metadata and then clusters using <code class="docutils literal notranslate"><span class="pre">DBSCAN</span></code> (can not be changed).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+
+<span class="c1"># Init</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;exif&#39;</span><span class="p">,</span>
+                <span class="n">params_exif</span> <span class="o">=</span> <span class="p">{</span><span class="n">radius_meters</span><span class="s1">&#39;: 1000, &#39;</span><span class="n">exif_location</span><span class="s1">&#39;: False},</span>
+                <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;cr2&quot;</span><span class="p">,</span> <span class="s2">&quot;nef&quot;</span><span class="p">,</span> <span class="s2">&quot;heic&quot;</span><span class="p">,</span> <span class="s2">&quot;sr2&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">],</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
+
+<span class="c1"># Path to your images or photos</span>
+<span class="n">dir_path</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;c:/temp/&#39;</span>
+
+<span class="c1"># Run the model to find Clusters of photos within the same lat/lon with a radius of 1000 meters</span>
+<span class="c1"># blacklist does block the images in the &quot;undouble&quot; directory</span>
+<span class="c1"># recursive will search for images in also all subdirectories</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;latlon&#39;</span><span class="p">,</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">black_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;undouble&#39;</span><span class="p">],</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Show the cluster labels.</span>
+<span class="c1"># Note that cluster 0 is the &quot;rest&quot; group</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
+
+<span class="c1"># Make plot but exclude cluster 0 (rest group).</span>
+<span class="c1"># Only create a plot when the cluster contains 4 or more images.</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">blacklist</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># plot on Map</span>
+<span class="c1"># polygon: Disable the lines in which order the photos were created because it will likely not make sense here.</span>
+<span class="c1"># thumbnail_size: size of the thumbnail when hovering over the image</span>
+<span class="c1"># cluster_icons: automatically groups icons when zooming in/out. When enabled, the exact lat/lon is not used but an approximate.</span>
+<span class="c1"># save_path: Store path. When not used, it will be stored in the temp directory</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot_map</span><span class="p">(</span><span class="n">cluster_icons</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">open_in_browser</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">thumbnail_size</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">polygon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s1">&#39;map.html&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
 <hr>
 <center>
         <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
@@ -254,6 +351,7 @@ If an increase of HOG features is desired, you can either increasing the image d
         <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
 </center>
 <hr></section>
+</section>
 
 
            </div>

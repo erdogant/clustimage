@@ -1,22 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; clustimage clustimage documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=88d6c118"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,9 +35,6 @@
           <a href="index.html" class="icon icon-home">
             clustimage
           </a>
-              <div class="version">
-                1.5.18
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -74,11 +71,13 @@
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#output">Output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#generic-functions">Generic functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_functions.html#merge-expand-clusters">Merge/ Expand Clusters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core_functions.html#move-files-based-on-clusterlabels">Move files based on clusterlabels</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Feature Extraction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html">PCA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#hog">HOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Feature%20Extraction.html#exif">EXIF</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Cluster Evaluation</span></p>
 <ul>
@@ -151,9 +150,9 @@
            <div itemprop="articleBody">
              
   <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
 <section id="create-environment">
-<h2>Create environment<a class="headerlink" href="#create-environment" title="Permalink to this heading"></a></h2>
+<h2>Create environment<a class="headerlink" href="#create-environment" title="Link to this heading"></a></h2>
 <p>If desired, install <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> from an isolated Python environment using conda:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">env_clustimage</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.8</span>
 <span class="n">conda</span> <span class="n">activate</span> <span class="n">env_clustimage</span>
@@ -161,7 +160,7 @@
 </div>
 </section>
 <section id="pypi">
-<h2>Pypi<a class="headerlink" href="#pypi" title="Permalink to this heading"></a></h2>
+<h2>Pypi<a class="headerlink" href="#pypi" title="Link to this heading"></a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>from<span class="w"> </span>Pypi:
 <span class="go">pip install clustimage</span>
 
@@ -171,7 +170,7 @@
 </div>
 </section>
 <section id="github-source">
-<h2>Github source<a class="headerlink" href="#github-source" title="Permalink to this heading"></a></h2>
+<h2>Github source<a class="headerlink" href="#github-source" title="Link to this heading"></a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>directly<span class="w"> </span>from<span class="w"> </span>github
 <span class="go">pip install git+https://github.com/erdogant/clustimage</span>
 </pre></div>
@@ -179,9 +178,9 @@
 </section>
 </section>
 <section id="uninstalling">
-<h1>Uninstalling<a class="headerlink" href="#uninstalling" title="Permalink to this heading"></a></h1>
+<h1>Uninstalling<a class="headerlink" href="#uninstalling" title="Link to this heading"></a></h1>
 <section id="remove-environment">
-<h2>Remove environment<a class="headerlink" href="#remove-environment" title="Permalink to this heading"></a></h2>
+<h2>Remove environment<a class="headerlink" href="#remove-environment" title="Link to this heading"></a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>List<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>active<span class="w"> </span>environments.<span class="w"> </span>clustimage<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>listed.
 <span class="go">conda env list</span>
 
@@ -194,7 +193,7 @@
 </div>
 </section>
 <section id="remove-installation">
-<h2>Remove installation<a class="headerlink" href="#remove-installation" title="Permalink to this heading"></a></h2>
+<h2>Remove installation<a class="headerlink" href="#remove-installation" title="Link to this heading"></a></h2>
 <p>Note that the removal of the environment will also remove the <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> installation.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>from<span class="w"> </span>Pypi:
 <span class="go">pip uninstall clustimage</span>
@@ -202,7 +201,7 @@
 </div>
 </section>
 <section id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h2>
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h2>
 <p>A quick example how to learn a model on a given dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
 <span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
