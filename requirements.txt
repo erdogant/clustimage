@@ -1,8 +1,8 @@
-datazets>="0.1.7"
-clusteval>="2.1.5"
-colourmap>="1.1.16""
-scatterd>="1.3.6"
-pca>="2.0.4"
+datazets>=0.1.7
+clusteval>=2.1.5
+colourmap>=1.1.16
+scatterd>=1.3.6
+pca>=2.0.4
 distfit
 numpy
 pandas
