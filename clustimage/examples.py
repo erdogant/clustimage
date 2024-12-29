@@ -3,6 +3,54 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %% Cluster on date/time from photo exif data
+from clustimage import Clustimage
+import os
+
+cl = Clustimage(method='exif',
+                params_exif = {'timeframe':'6H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False},
+                ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"],
+                verbose='info')
+
+# All paths
+dir_path = r'c:/temp/'
+
+# Run the model to find the clusters based on datetime method
+# results = cl.fit_transform(dir_path, metric='location', min_clust=3)
+results = cl.fit_transform(dir_path, metric='datetime', min_clust=3, black_list=['undouble'], recursive=True)
+
+# Show the cluster labels
+# print(cl.results['labels'])
+
+# Make plot but exclude cluster 0, and only show when there are 4 or more photos in the group.
+# cl.plot(blacklist=[0], min_clust=4)
+
+# plot on map
+cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polygon=True, save_path=os.path.join(dir_path, 'map.html'))
+# cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=None, polygon=True, save_path=os.path.join(dir_path, 'map1.html'))
+# cl.plot_map(open_in_browser=True, save_path=r'c:/temp/map.html', thumbnail_size=None)
+# cl.plot_map(cluster_icons=True, open_in_browser=True, save_path=r'c:/temp/map1.html')
+# cl.plot_map(cluster_icons=False, open_in_browser=True, save_path=r'c:/temp/map2.html')
+# cl.plot_map(cluster_icons=True, polygon=False, open_in_browser=True, save_path=r'c:/temp/map3.html')
+
+
+#%% Moving files based on cluster labels
+
+# 1. Use the plot function to determine what event the cluster of photos represents.
+cl.plot(blacklist=[0], min_clust=3)
+
+# 2. Create a dict that specifies the cluster number with its folder names.
+# The first column is the cluster label and the second string is the destinated subfolder name.
+target_labels = {
+    1: 'Examen uitreiking',
+    2: 'Ben rondvlucht',
+    3: 'Rondvlucht',
+    4: 'Cockpit',
+}
+
+# 3. Move the photos to the specified directories using the cluster labels.
+cl.move_to_dir(target_labels=target_labels)
+
 # %% import from disk
 from clustimage import Clustimage
 
