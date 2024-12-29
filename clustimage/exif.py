@@ -27,13 +27,13 @@ except ImportError:
 
 try:
     from geopy.geocoders import Nominatim
+    from geopy.distance import geodesic
 except ImportError:
     raise ImportError(
         "The 'geopy' library is not installed. Please install it using the following command:\n"
         "pip install geopy")
 
 try:
-    from geopy.distance import geodesic
     import folium
     from folium.plugins import MarkerCluster
 except ImportError:
@@ -41,8 +41,9 @@ except ImportError:
         "The 'folium' library is not installed. Please install it using the following command:\n"
         "pip install folium")
 
+
 # %% Extract Metadata using Exif information from the photos
-def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"], logger=None):
+def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "tif", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"], logger=None):
     """Extract latitude, longitude, and other metadata from a list of image files.
 
     This function processes image files to extract GPS coordinates, device information,
@@ -284,8 +285,8 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
     clusterlabels : array-like
         Cluster labels for the points in `metadata_df`.
     metric : str
-        - 'location'
-        - 'datetime'
+        - 'datetime': Use photo exif data to cluster photos on datetime (set params_exif)
+        - 'latlon': Use photo exif data to cluster photos on lon/lat coordinates (set params_exif)
     cluster_icons : bool, optional
         Whether to add individual markers to a MarkerCluster. Default is True.
     polygon : bool, optional
@@ -465,12 +466,12 @@ def set_params(cluster_icons, polygon, metric):
     # Automatically set the best parameters
     if cluster_icons is None and metric=='datetime':
         cluster_icons=False
-    elif cluster_icons is None and metric=='location':
+    elif cluster_icons is None and metric=='latlon':
         cluster_icons=True
 
     if polygon is None and metric=='datetime':
         polygon=True
-    elif polygon is None and metric=='location':
+    elif polygon is None and metric=='latlon':
         polygon=False
 
     return cluster_icons, polygon
