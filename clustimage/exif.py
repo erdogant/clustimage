@@ -18,9 +18,31 @@ import os
 import time
 from datetime import datetime as dt
 
+try:
+    import piexif
+except ImportError:
+    raise ImportError(
+        "The 'piexif' library is not installed. Please install it using the following command:\n"
+        "pip install piexif")
+
+try:
+    from geopy.geocoders import Nominatim
+except ImportError:
+    raise ImportError(
+        "The 'geopy' library is not installed. Please install it using the following command:\n"
+        "pip install geopy")
+
+try:
+    from geopy.distance import geodesic
+    import folium
+    from folium.plugins import MarkerCluster
+except ImportError:
+    raise ImportError(
+        "The 'folium' library is not installed. Please install it using the following command:\n"
+        "pip install folium")
 
 # %% Extract Metadata using Exif information from the photos
-def extract_from_image(pathnames, ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"], logger=None):
+def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"], logger=None):
     """Extract latitude, longitude, and other metadata from a list of image files.
 
     This function processes image files to extract GPS coordinates, device information,
@@ -78,18 +100,11 @@ def extract_from_image(pathnames, ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif
     2  image3.png  48.8566   2.3522     35.0    ...
 
     """
-    try:
-        import piexif
-    except ImportError:
-        raise ImportError(
-            "The 'piexif' library is not installed. Please install it using the following command:\n"
-            "pip install piexif")
-
     metadata_list = []
     for pathname in tqdm(pathnames, disable=disable_tqdm(logger), desc='[clustimage]'):
         # Check extension
         file_ext = pathname.lower().split('.')[-1]
-        if np.isin(file_ext, ext):
+        if np.isin(file_ext, ext_allowed):
             # Extract filename
             filename = os.path.split(pathname)[-1]
             # Open the image
@@ -115,6 +130,7 @@ def extract_from_image(pathnames, ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif
             except:
                 gps_altitude_ref, gps_altitude, gps_latitude_decimal, gps_longitude_decimal = None, None, None, None
 
+            # Extract metadata
             try:
                 make = exif_data['0th'][piexif.ImageIFD.Make].decode('utf-8')
                 device = exif_data['0th'][piexif.ImageIFD.Model].decode('utf-8')
@@ -122,22 +138,15 @@ def extract_from_image(pathnames, ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif
             except:
                 make, device, software = None, None, None
 
-            try:
-                datetime = exif_data['0th'][piexif.ImageIFD.DateTime].decode('utf-8')
-                date_time_original = exif_data['Exif'][piexif.ExifIFD.DateTimeOriginal].decode('utf-8')
-            except:
-                # Get the file's last modification time (or creation time)
-                timestamp = os.path.getmtime(pathname)  # or use getctime() for creation time
-                # Convert the timestamp to a readable datetime format
-                datetime = dt.fromtimestamp(timestamp).strftime('%Y:%m:%d %H:%M:%S')
-                date_time_original = None
+            # Extract datetime
+            datetime_created, datetime_modified = get_file_times(exif_data, pathname)
 
             # Create metadata for the photo
             metadata = {
                 'filenames': filename,
                 'pathnames': pathname,
-                'datetime': datetime,
-                'date_time_original': date_time_original,
+                'datetime': datetime_created,
+                'datetime_modified': datetime_modified,
                 'exif_location': '',
                 'lat': gps_latitude_decimal,
                 'lon': gps_longitude_decimal,
@@ -183,6 +192,31 @@ def extract_from_image(pathnames, ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif
     return metadata_list
 
 
+def get_file_times(exif_data, pathname):
+    try:
+        datetime_created = exif_data['0th'][piexif.ImageIFD.DateTime].decode('utf-8')
+        datetime_modified = exif_data['Exif'][piexif.ExifIFD.DateTimeOriginal].decode('utf-8')
+    except:
+        # Get the file's last modification time (or creation time)
+        stat_info = os.stat(pathname)
+        datetime_modified = dt.fromtimestamp(stat_info.st_mtime).strftime('%Y:%m:%d %H:%M:%S')
+
+        # Creation time is different in OS.
+        if os.name == "nt":
+            # Windows: st_ctime is the file creation time
+            datetime_created = dt.fromtimestamp(stat_info.st_ctime).strftime('%Y:%m:%d %H:%M:%S')
+        else:
+            # Unix/Linux/macOS
+            if hasattr(stat_info, 'st_birthtime'):
+                # macOS: st_birthtime contains creation time
+                datetime_created = dt.fromtimestamp(stat_info.st_birthtime).strftime('%Y:%m:%d %H:%M:%S')
+            else:
+                # Unix/Linux: No reliable creation time from os.stat()
+                datetime_created = datetime_modified
+
+    return datetime_created, datetime_modified
+
+
 def gps_to_decimal(coord, ref):
     """Convert GPS coordinates to decimal degrees.
 
@@ -208,14 +242,6 @@ def location(Xfeat, logger):
     For Nominatim, the rate limit is usually 1 request per second.
 
     """
-    # Get location information
-    try:
-        from geopy.geocoders import Nominatim
-    except ImportError:
-        raise ImportError(
-            "The 'geopy' library is not installed. Please install it using the following command:\n"
-            "pip install geopy")
-
     # Get the exif location
     Xfeat_new = []
     logger.info('Extraction location information from lat/lon coordinates.')
@@ -241,7 +267,7 @@ def location(Xfeat, logger):
 
 
 #%%
-def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=True, thumbnail_size=400, blacklist=[0]):
+def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=True, thumbnail_size=400, blacklist=[0], logger=None):
     """Plots a map using Folium to visualize clusters, with options to add markers and polygons for each cluster.
 
     Parameters
@@ -306,16 +332,6 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
     - The map includes a full-screen button and layer control for better visualization.
 
     """
-    # Get location information
-    try:
-        from geopy.distance import geodesic
-        import folium
-        from folium.plugins import MarkerCluster
-    except ImportError:
-        raise ImportError(
-            "The 'folium' library is not installed. Please install it using the following command:\n"
-            "pip install folium")
-
     # Set parameters is None
     cluster_icons, polygon = set_params(cluster_icons, polygon, metric)
 
@@ -323,7 +339,10 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
     metadata_df['clusterlabels'] = clusterlabels
 
     # Remove all images without lat/lon
+    img_total = metadata_df.shape[0]
     metadata_df = metadata_df.dropna(subset=['lat', 'lon'], how='all')
+    img_subset = metadata_df.shape[0]
+    logger.info(f'{img_subset} out of {img_total} images contain lat/lon coordinates and will be used on the map.')
 
     # Assign cluster colors and labels
     metadata_df['cluster_color'] = get_colors(metadata_df['clusterlabels'])
@@ -350,9 +369,10 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
 
         # Get datetime range from the photos.
         dt_range = create_datetime_string(cluster_data['datetime'])
+        dirnames = get_dir_names(cluster_data['pathnames'])
 
         # Create a combined feature group for markers and polygons
-        if not cluster_icons: combined_group = folium.FeatureGroup(name=f"Cluster {int(cluster_id)} - {dt_range}")
+        if not cluster_icons: combined_group = folium.FeatureGroup(name=f"Cluster {int(cluster_id)} - {dirnames} - {dt_range}")
         cluster_groups[cluster_id] = combined_group
 
         # Add markers to the feature group
@@ -375,7 +395,7 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
             popup_content = f"""
                 <div>
                     <p>
-                        Cluster: {int(row['clusterlabels'])}, n={cluster_data.shape[0]} <br>
+                        Cluster: {int(row['clusterlabels'])}, {cluster_data.shape[0]} photos <br>
                         Filename: {row['filenames']} <br>
                         Dirname: {dirname} <br>
                         Date/Time: {month_year} <br>
@@ -420,7 +440,7 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
     folium.LayerControl(collapsed=False).add_to(map_display)
     # Add the full screen button.
     folium.plugins.Fullscreen(
-        position="topright",
+        position="topleft",
         title="Open full-screen map",
         title_cancel="Close full-screen map",
         force_separate_button=True).add_to(map_display)
@@ -429,6 +449,18 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
 
 
 # %%
+def get_dir_names(pathnames):
+    # Concat all dirnames
+    dirnames = '/ '.join(np.unique(list(map(lambda x: os.path.basename(os.path.split(x)[0]), pathnames))))
+    # Make a clean cut
+    if len(dirnames)>25:
+        dirnames = '/'.join(dirnames.split('/')[0:2]) + '/ ...'
+    # If the string is still too long, cut it at 25 chars.
+    if len(dirnames)>25:
+        dirnames = dirnames[0:25] + '...'
+    # Return
+    return dirnames
+
 def set_params(cluster_icons, polygon, metric):
     # Automatically set the best parameters
     if cluster_icons is None and metric=='datetime':

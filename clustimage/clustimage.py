@@ -38,7 +38,8 @@ import random
 import imagehash
 from PIL import Image
 
-import clustimage.exif as exif
+# import clustimage.exif as exif
+import exif as exif
 import webbrowser
 
 # Support for Apple HEIC images
@@ -1204,7 +1205,7 @@ class Clustimage():
             # plt.hist(diff[np.triu_indices(diff.shape[0], k=1)], bins=50)
         elif self.params['method']=='exif':
             # Extract the metadata from the image files
-            Xfeat = exif.extract_from_image(self.results['pathnames'], ext=self.params['ext'], logger=logger)
+            Xfeat = exif.extract_from_image(self.results['pathnames'], ext_allowed=self.params['ext'], logger=logger)
             # Extract exif location information.
             if self.params_exif['exif_location']:
                 Xfeat = exif.location(Xfeat, logger)
@@ -1988,7 +1989,7 @@ class Clustimage():
 
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')
-        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, thumbnail_size=thumbnail_size, blacklist=blacklist)
+        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, thumbnail_size=thumbnail_size, blacklist=blacklist, logger=logger)
 
         # Save to disk
         if save_path is None:
@@ -2057,7 +2058,8 @@ class Clustimage():
                             ncol=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
                         else:
                             ncol=ncols
-                        self._make_subplots(imgs, ncol, cmap, figsize, ("Images in cluster %s" %(str(label))))
+                        dirname = exif.get_dir_names(getfiles)
+                        self._make_subplots(imgs, ncol, cmap, figsize, (f"{len(getfiles)} images in cluster {str(label)} - Directory: {dirname}"))
 
                         # Make hog plots
                         if show_hog and (self.params['method']=='hog'):
