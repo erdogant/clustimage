@@ -53,7 +53,6 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Read the unseen image. Note that the find functionality also performs exactly the same preprocessing steps as for the clustering.
         assert cl.find(pathnames[0:2], k=0, alpha=0.05)
 
-
     def test_embedding(self):
         cl = Clustimage(method='pca')
         # Import flowers example
@@ -129,7 +128,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Cluster
         results = cl.fit_transform(X)
         assert np.all(np.isin([*cl.results.keys()], ['img', 'feat', 'xycoord', 'pathnames', 'filenames', 'labels', 'url']))
-        
+
     def test_fit_transform(self):
         # Example data
         cl = Clustimage()
