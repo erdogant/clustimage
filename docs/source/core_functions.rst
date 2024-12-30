@@ -660,8 +660,5 @@ clustimage has various plotting functionalities.
     * plot_map: plots the images on map. Requires to use method="exif"
 
 
-.. _clusteval: https://github.com/erdogant/clusteval
-
-
 
 .. include:: add_bottom.add

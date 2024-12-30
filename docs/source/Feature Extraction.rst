@@ -218,8 +218,5 @@ This approach extract GPS latitude and longitude Coordinates from EXIF Metadata 
     
 
 
-.. _pca: https://github.com/erdogant/pca
-
-
 
 .. include:: add_bottom.add
