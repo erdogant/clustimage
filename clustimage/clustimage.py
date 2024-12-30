@@ -30,7 +30,6 @@ import matplotlib.pyplot as plt
 from matplotlib import offsetbox
 
 from scipy.spatial import distance
-from scipy.signal import savgol_filter
 
 from skimage.feature import hog
 from skimage import exposure
@@ -42,8 +41,8 @@ import random
 import imagehash
 from PIL import Image
 
-import clustimage.exif as exif
-# import exif as exif
+# import clustimage.exif as exif
+import exif as exif
 import webbrowser
 
 # Support for Apple HEIC images
@@ -117,10 +116,11 @@ class Clustimage():
         Parameters to initialize the pca model.
     params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
         Parameters to extract hog features.
-    params_exif : dict, default: {'timeframe':'6H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False}
-        Parameters to proces exif information. 
+    params_exif : dict, default: {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False}
+        Parameters to proces exif information.
+        - 'timeframe': Timeframe in hours that a photo is grouped together.
         - 'radius_meters': The radius that is used to cluster the images when using metric='datetime'
-        - 'window_length': Instead of making a hard cut on timeframe range, this smooting factor enables to to capture some images that are just outside the timeframe range. Works only for metric='latlon_radius'
+        - 'min_samples': Minimun number of samples per cluster
         - 'exif_location': This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates.
     verbose : int, (default: 'info')
         Print progress to screen. The default is 20.
@@ -195,7 +195,7 @@ class Clustimage():
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
-                 params_exif={'timeframe': '6H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False},
+                 params_exif={'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
                  verbose='info'):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
@@ -246,7 +246,7 @@ class Clustimage():
         params_hog = {**hog_defaults, **params_hog}
         self.params_hog = params_hog
         # EXIF parameters
-        exif_defaults = {'timeframe': '6H', 'window_length': 5, 'radius_meters': 1000, 'exif_location': False}
+        exif_defaults = {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False}
         params_exif = {**exif_defaults, **params_exif}
         self.params_exif = params_exif
         # Set the logger
@@ -487,11 +487,12 @@ class Clustimage():
         if self.params['method']=='exif' and metric=='datetime':
             # Cluster based on the datetime events from the images
             cluster, linkage, evaluate = None, None, None
-            labels = cluster_on_datetime(self.results['feat']['datetime'], timeframe=self.params_exif['timeframe'], min_clust=min_clust, window_length=self.params_exif['window_length'])
+            # labels = cluster_on_datetime(self.results['feat']['datetime'], timeframe=self.params_exif['timeframe'], min_samples=min_clust, window_length=5)
+            labels = cluster_datetimes(self.results['feat']['datetime'], eps_hours=self.params_exif['timeframe'], min_samples=min_clust, metric='euclidean')
         elif self.params['method']=='exif' and metric=='latlon':
             # Cluster based on the location from the images
             cluster, linkage, evaluate = 'dbscan', None, None
-            labels = cluster_on_latlon(self.results['xycoord'], radius_meters=self.params_exif['radius_meters'])
+            labels = cluster_latlon(self.results['xycoord'], radius_meters=self.params_exif['radius_meters'], min_samples=self.params_exif['min_samples'])
         else:
             if cluster_space=='low':
                 feat = self.results['xycoord']
@@ -1982,7 +1983,74 @@ class Clustimage():
         else:
             logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
-    def plot_map(self, cluster_icons=None, polygon=None, thumbnail_size=400, blacklist=None, save_path=None, open_in_browser=True):
+    def plot_map(self, cluster_icons=None, polygon=None, thumbnail_size=400, blacklist_polygon=[-1], clutter_threshold=1e-4, save_path=None, open_in_browser=True):
+        """Plot a map with clustered images using their EXIF metadata.
+
+        This function generates an interactive map using folium, where images are plotted
+        based on their geographic coordinates extracted from EXIF data. Images are rescaled 
+        to thumbnails for display. The function supports saving the map as an HTML file and
+        optionally opening it in a web browser.
+
+        Parameters
+        ----------
+        cluster_icons : bool, optional
+            Cluster icons on the map.
+            - None: automaticaly set the boolean based on metric
+            - True: Cluster icons when zooming. Note that the location is not exact anymore.
+            - False: Do not cluster icons and show the exact location on the map.
+        polygon : bool, optional
+            Create a line through the list of geographic points defining a polygon to overlay on the map.
+            - None: automaticaly set the boolean based on metric
+            - True: Create polygon line
+            - False: Do not create polygon line
+        thumbnail_size : int, optional
+            The size of the thumbnails (in pixels) to display on the map. Default is `400`.
+        blacklist_polygon : list, optional
+            Shows the polygon line for all clusters except the blacklisted ones.
+            [-1]: Default as these are the rest or noise images from DBSCAN.
+        clutter_threshold: float: 1e-4
+            The maximum distance below which points are considered overlapping. So this will prevent that icons are exactly on top of each other.
+        save_path : str, optional
+            The file path (including filename) where the map will be saved as an HTML file.
+            If `None`, the map is saved in a temporary directory. Default is `None`.
+        open_in_browser : bool, optional
+            True: automatically opens the generated map in the default web browser.
+            False: Do not open in browser automatically.
+
+        Returns
+        -------
+        tuple
+            A tuple containing:
+            - `m` (folium.Map): The generated folium map object.
+            - `save_path` (str): The file path where the map was saved.
+
+        Notes
+        -----
+        - This function requires the `exif` method to be used in the `params`. If another method is used, 
+          the function will log an error and return `None`.
+        - The `save_path` must include both the directory and filename. If only the directory is provided 
+          or the directory does not exist, an error is logged, and the function returns `None`.
+
+        Examples
+        --------
+        >>> cl = Clustimage(method='exif',
+                        params_exif = {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
+                        ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
+                        verbose='info')
+        >>> #
+        >>> # Fit and transform
+        >>> results = cl.fit_transform(r'c:/temp/', metric='datetime', recursive=True)
+        >>> #
+        >>> # Plot
+        >>> cl.plot_map(
+        ...     cluster_icons=False,
+        ...     polygon=True,
+        ...     thumbnail_size=300,
+        ...     save_path="C:/temp/map.html",
+        ...     open_in_browser=True
+        ... )
+
+        """
         if self.params['method']!='exif':
             logger.info('The plot_map() function requires to use the exif method. <return>')
             return None
@@ -2000,7 +2068,7 @@ class Clustimage():
 
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')
-        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, thumbnail_size=thumbnail_size, blacklist=blacklist, logger=logger)
+        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, thumbnail_size=thumbnail_size, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, logger=logger)
 
         # Save to disk
         if save_path is None:
@@ -2014,7 +2082,7 @@ class Clustimage():
         logger.info(f'Output: {save_path}')
         return m, save_path
 
-    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=1, figsize=(15, 10), blacklist=None):
+    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=2, figsize=(15, 10), blacklist=None):
         """Plot the results.
 
         Parameters
@@ -2028,9 +2096,14 @@ class Clustimage():
         show_hog : bool, (default: False)
             Plot the hog features next to the input image.
         min_clust : int, (default: 1)
-            Plots are created for clusters with > min_clust samples
+            Plots are created for clusters with >= min_clust samples
         figsize : tuple, (default: (15, 10).
             Size of the figure (height,width).
+        blacklist: list
+            None: Show all cluster labels
+            [-2]: do not show the samples without lat/lon coordinates (when using exif method)
+            [-1]: do not show the samples that fall outside the clusters (noise or rest-group in DBSCAN, when using exif method)
+            [-2, -1]: do not show multiple clusters.
 
         Returns
         -------
@@ -2805,100 +2878,155 @@ def url2disk(urls, save_dir):
 
 
 #%% Find the indices of consecutive 1s separated by 0s
-def cluster_on_datetime(df_datetime, timeframe='6H', min_clust=2, window_length=5):
-    """Cluster datetime events based on temporal proximity using smoothing and grouping.
+# def cluster_on_datetime(df_datetime, timeframe=6, min_samples=2, window_length=5):
+#     """Cluster datetime events based on temporal proximity using smoothing and grouping.
 
-    Parameters
-    ----------
-    df_datetime : pandas.Series
-        A pandas Series containing datetime strings in the format '%Y:%m:%d %H:%M:%S'.
-    timeframe : str, optional
-        The timeframe for resampling and grouping, by default '6H' (6-hour intervals).
-        Acceptable values are Pandas-compatible frequency strings (e.g., 'H', 'D', 'W').
-    min_clust : int, optional
-        The minimum number of events required for a cluster to be valid, by default 2.
-    window_length : int, optional
-        The window length for the Savitzky-Golay filter used for smoothing. 
-        The window length is automatically capped to the number of resampled timeframes, by default 5.
+#     Parameters
+#     ----------
+#     df_datetime : pandas.Series
+#         A pandas Series containing datetime strings in the format '%Y:%m:%d %H:%M:%S'.
+#     timeframe : str, optional
+#         The timeframe for resampling and grouping, by default 6 (6-hour intervals).
+#         Acceptable values are Pandas-compatible frequency strings (e.g., 'H', 'D', 'W').
+#     min_samples : int, optional
+#         The minimum number of events required for a cluster to be valid, by default 2.
+#     window_length : int, optional
+#         The window length for the Savitzky-Golay filter used for smoothing. 
+#         The window length is automatically capped to the number of resampled timeframes, by default 5.
 
-    Returns
-    -------
-    numpy.ndarray
-        An array of cluster labels for each datetime in `df_datetime`. 
-        Cluster labels are integers where 0 represents "no cluster" or "rest group."
+#     Returns
+#     -------
+#     numpy.ndarray
+#         An array of cluster labels for each datetime in `df_datetime`. 
+#         Cluster labels are integers where 0 represents "no cluster" or "rest group."
 
-    Notes
-    -----
-    - This function uses the Savitzky-Golay filter for smoothing temporal counts of events.
-    - Clusters are formed by grouping consecutive resampled intervals with non-zero smoothed counts.
-    - The function sorts the input Series and ensures proper resampling and grouping.
-    - Ensure that the input `df_datetime` contains valid datetime strings that can be converted using 
-      `pd.to_datetime`.
+#     Notes
+#     -----
+#     - This function uses the Savitzky-Golay filter for smoothing temporal counts of events.
+#     - Clusters are formed by grouping consecutive resampled intervals with non-zero smoothed counts.
+#     - The function sorts the input Series and ensures proper resampling and grouping.
+#     - Ensure that the input `df_datetime` contains valid datetime strings that can be converted using 
+#       `pd.to_datetime`.
+
+#     Examples
+#     --------
+#     >>> import pandas as pd
+#     >>> df = pd.Series(['2023:12:01 12:00:00', '2023:12:01 13:00:00', '2023:12:01 18:00:00',
+#     ...                 '2023:12:02 09:00:00', '2023:12:02 10:00:00'])
+#     >>> cluster_labels = cluster_on_datetime(df, timeframe=6, min_samples=2, window_length=3)
+#     >>> cluster_labels
+#     array([1, 1, 0, 2, 2])
+
+#     """
+#     from scipy.signal import savgol_filter
+
+#     timeframe = str(timeframe)+'H'
+#     logger.info(f'Cluster on [datetime] using {timeframe} timeframe and smoothing window length of {window_length}')
+
+#     # Step 1: Convert datetime column from string to datetime
+#     df_datetime = pd.DataFrame(pd.to_datetime(df_datetime, format='%Y:%m:%d %H:%M:%S'))
+#     df_datetime = df_datetime.sort_values(by='datetime')
+
+#     # Create a new column for the hour
+#     df_datetime['hour'] = df_datetime['datetime'].dt.floor(timeframe)  # Rounds down to the nearest hour
+
+#     # Count the number of events per timeframe
+#     # events_per_hour = df_datetime.groupby('hour').size().reset_index(name='event_count')
+
+#     # Step 2: Set datetime as index and resample the data by hour, counting the photos
+#     datetime_proc = df_datetime.set_index('hour')
+#     # Resample and count the number of events per timeframe
+#     metadata_df_hourly = datetime_proc.resample(timeframe).size()
+
+#     # Step 3: Apply a 2nd-degree polynomial fit for smoothing (Savitzky-Golay filter)
+#     window_length = np.minimum(metadata_df_hourly.shape[0], window_length)
+#     metadata_df_hourly_smoothed = savgol_filter(metadata_df_hourly, window_length=window_length, polyorder=2)
+#     metadata_df_hourly_smoothed[metadata_df_hourly_smoothed < 0] = 0
+
+#     groups = []
+#     current_group = []
+#     for i, val in enumerate(metadata_df_hourly_smoothed):
+#         if val > 0:
+#             current_group.append(i)
+#         elif current_group:  # If we encounter a 0 and the current cluster is not empty
+#             groups.append(current_group)
+#             current_group = []
+#     # Add the last cluster if it exists
+#     if current_group:
+#         groups.append(current_group)
+
+#     # Set default clusterlabels where cluster 0 is the "rest" group.
+#     cluster_labels = np.zeros(len(df_datetime.values))
+#     df_datetime = df_datetime.sort_index()
+#     counter = 1
+
+#     for group in groups:
+#         timestart = metadata_df_hourly.index[group].min()
+#         timestop = metadata_df_hourly.index[group].max()
+#         # datetime_in_range = metadata_df_hourly.loc[timestart:timestop].index
+#         loc = (df_datetime['datetime'] >= timestart) & (df_datetime['datetime'] <= timestop)
+
+#         if sum(loc) >= min_samples:
+#             cluster_labels[loc] = counter
+#             counter = counter + 1
+
+#     return cluster_labels.astype(int)
+
+
+def cluster_datetimes(df, eps_hours=1, min_samples=2, metric='euclidean'):
+    """
+    Clusters datetime values in a DataFrame using a time-based window with DBSCAN.
+    The time window is given in hours.
+
+    Parameters:
+        df (pd.DataFrame): Input DataFrame containing the datetime column.
+        datetime_column (str): The name of the column containing datetime values.
+        eps_hours (float): The maximum time gap (in hours) to consider points in the same cluster.
+        min_samples (int): The minimum number of samples in a neighborhood to form a cluster.
+
+    Returns:
+        pd.DataFrame: DataFrame with an added column for cluster labels.
 
     Examples
     --------
-    >>> import pandas as pd
-    >>> df = pd.Series(['2023:12:01 12:00:00', '2023:12:01 13:00:00', '2023:12:01 18:00:00',
-    ...                 '2023:12:02 09:00:00', '2023:12:02 10:00:00'])
-    >>> cluster_labels = cluster_on_datetime(df, timeframe='6H', min_clust=2, window_length=3)
-    >>> cluster_labels
-    array([1, 1, 0, 2, 2])
+    # Example usage:
+    data = {
+        "datetime": [
+            "2024:02:16 19:35:38", "2023:12:17 13:54:10", "2023:12:17 11:27:52",
+            "2023:12:17 11:40:22", "2023:12:16 20:11:36", "2024:02:16 19:37:00",
+            "2024:02:16 19:37:34", "2024:02:16 19:36:52", "2024:02:16 19:37:34",
+            "2024:02:16 19:37:16"
+        ]
+    }
+    df = pd.DataFrame(data)
+
+    # Cluster with a 1-hour window and minimum of 2 samples per cluster
+    clustered_df = cluster_datetimes(df, "datetime", eps_hours=1, min_samples=2)
+    print(clustered_df)
 
     """
-    logger.info(f'Cluster on [datetime] using {timeframe} timeframe and smoothing window length of {window_length}')
+    logger.info('Cluster on datetime using DBSCAN..')
+    # Ensure datetime_column is in datetime format
+    df = pd.DataFrame(pd.to_datetime(df, format="%Y:%m:%d %H:%M:%S"))
 
-    # Step 1: Convert datetime column from string to datetime
-    df_datetime = pd.DataFrame(pd.to_datetime(df_datetime, format='%Y:%m:%d %H:%M:%S'))
-    df_datetime = df_datetime.sort_values(by='datetime')
+    # Convert datetime to Unix timestamp (seconds since epoch)
+    timestamps = df['datetime'].astype(np.int64) // 10**9
 
-    # Create a new column for the hour
-    df_datetime['hour'] = df_datetime['datetime'].dt.floor(timeframe)  # Rounds down to the nearest hour
+    # Convert eps_hours to seconds (DBSCAN works with seconds)
+    eps_seconds = eps_hours * 3600  # 1 hour = 3600 seconds
 
-    # Count the number of events per timeframe
-    # events_per_hour = df_datetime.groupby('hour').size().reset_index(name='event_count')
+    # Reshape for DBSCAN input
+    timestamps = timestamps.values.reshape(-1, 1)
 
-    # Step 2: Set datetime as index and resample the data by hour, counting the photos
-    datetime_proc = df_datetime.set_index('hour')
-    # Resample and count the number of events per timeframe
-    metadata_df_hourly = datetime_proc.resample(timeframe).size()
+    # Apply DBSCAN
+    db = DBSCAN(eps=eps_seconds, min_samples=min_samples, metric=metric)
+    cluster_labels = db.fit_predict(timestamps)
 
-    # Step 3: Apply a 2nd-degree polynomial fit for smoothing (Savitzky-Golay filter)
-    window_length = np.minimum(metadata_df_hourly.shape[0], window_length)
-    metadata_df_hourly_smoothed = savgol_filter(metadata_df_hourly, window_length=window_length, polyorder=2)
-    metadata_df_hourly_smoothed[metadata_df_hourly_smoothed < 0] = 0
-
-    groups = []
-    current_group = []
-    for i, val in enumerate(metadata_df_hourly_smoothed):
-        if val > 0:
-            current_group.append(i)
-        elif current_group:  # If we encounter a 0 and the current cluster is not empty
-            groups.append(current_group)
-            current_group = []
-    # Add the last cluster if it exists
-    if current_group:
-        groups.append(current_group)
-
-    # Set default clusterlabels where cluster 0 is the "rest" group.
-    cluster_labels = np.zeros(len(df_datetime.values))
-    df_datetime = df_datetime.sort_index()
-    counter = 1
-
-    for group in groups:
-        timestart = metadata_df_hourly.index[group].min()
-        timestop = metadata_df_hourly.index[group].max()
-        # datetime_in_range = metadata_df_hourly.loc[timestart:timestop].index
-        loc = (df_datetime['datetime'] >= timestart) & (df_datetime['datetime'] <= timestop)
-
-        if sum(loc) >= min_clust:
-            cluster_labels[loc] = counter
-            counter = counter + 1
-
-    return cluster_labels.astype(int)
+    return cluster_labels
 
 
 #%%
-def cluster_on_latlon(latlon, radius_meters=500):
+def cluster_latlon(latlon, radius_meters=1000, min_samples=2):
     """Cluster geolocation data points based on proximity using Haversine distance.
 
     Parameters
@@ -2908,7 +3036,7 @@ def cluster_on_latlon(latlon, radius_meters=500):
         Rows with missing values in either 'lat' or 'lon' are ignored.
     radius_meters : float, optional
         The radius (in meters) within which points are grouped into a single cluster. 
-        Default is 500 meters.
+        Default is 1000 meters.
 
     Returns
     -------
@@ -2921,8 +3049,7 @@ def cluster_on_latlon(latlon, radius_meters=500):
     - The function uses the DBSCAN algorithm with the Haversine metric for clustering.
     - Input coordinates are converted to radians as required by the Haversine distance computation.
     - The radius is converted from meters to kilometers, as the Haversine metric operates in kilometers.
-    - DBSCAN assigns cluster labels starting from 0 for noise points; however, this implementation ensures rows 
-      without valid coordinates are also labeled as 0.
+    - DBSCAN assigns cluster labels starting from -1 for noise points. This implementation labels rows without valid coordinates as -2.
 
     Examples
     --------
@@ -2931,13 +3058,13 @@ def cluster_on_latlon(latlon, radius_meters=500):
     ...     'lat': [52.5200, 52.5201, 52.5300, 48.8566, 48.8567],
     ...     'lon': [13.4050, 13.4051, 13.4060, 2.3522, 2.3523]
     ... })
-    >>> cluster_labels = cluster_on_latlon(latlon, radius_meters=500)
+    >>> cluster_labels = cluster_latlon(latlon, radius_meters=500)
     >>> cluster_labels
     array([1, 1, 2, 3, 3])
 
     """
     # Clusterlabels
-    cluster_labels = np.zeros(latlon.shape[0]).astype(int)
+    cluster_labels = np.ones(latlon.shape[0]).astype(int) * -2
 
     # Catch rows with lat/lon
     loc = np.logical_and(~latlon['lat'].isna(), ~latlon['lon'].isna())
@@ -2953,7 +3080,7 @@ def cluster_on_latlon(latlon, radius_meters=500):
 
     # Perform DBSCAN clustering using haversine distance. DBSCAN requires the input coordinates in radians for haversine metric
     coords_radians = np.radians(coordinates)
-    db = DBSCAN(eps=radius_km / 6371, min_samples=1, metric='haversine')
+    db = DBSCAN(eps=radius_km / 6371, min_samples=min_samples, metric='haversine')
     labels = db.fit_predict(coords_radians)
 
     # Set clusterlabels
