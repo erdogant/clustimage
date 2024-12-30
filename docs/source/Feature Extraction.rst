@@ -130,10 +130,10 @@ There are two metric where EXIF metadata is used for clustering:
 
 Each approach can be tuned by a few parameters that can be set using ``params_exif``.
 
-``params_exif: dict, default: {'timeframe':'6H', 'window_length':5, 'radius_meters': 1000, 'exif_location': False}``
+``params_exif: dict, default: {'timeframe': 6, 'radius_meters': 1000, 'exif_location': False}``
 
+        * 'timeframe': The timeframe in hours that is used to group the images.
         * 'radius_meters': The radius that is used to cluster the images when using metric='datetime'
-        * 'window_length': Instead of making a hard cut on timeframe range, this smooting factor enables to to capture some images that are just outside the timeframe range. Works only for metric='latlon_radius'
         * 'exif_location': This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates and is not used in the clustering. This information is only used in the plot.
 
 
@@ -149,7 +149,7 @@ For each image, the EXIF datetime creation date is extracted when possible. If t
     
     # Init
     cl = Clustimage(method='exif',
-                    params_exif = {'timeframe':'6H', 'window_length':5, 'exif_location': False},
+                    params_exif = {'timeframe': 6, 'min_samples': 2, 'exif_location': False},
                     ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
                     verbose='info')
 
@@ -189,7 +189,7 @@ This approach extract GPS latitude and longitude Coordinates from EXIF Metadata 
     
     # Init
     cl = Clustimage(method='exif',
-                    params_exif = {radius_meters': 1000, 'exif_location': False},
+                    params_exif = {radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
                     ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
                     verbose='info')
 
