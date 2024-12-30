@@ -580,9 +580,9 @@ def create_datetime_string(dt_strings):
     max_date = max(dt_obj)
 
     # Extract month names and years
-    start_month = min_date.strftime('%B')
+    start_month = min_date.strftime('%B').title().strip()
     start_year = min_date.year
-    end_month = max_date.strftime('%B')
+    end_month = max_date.strftime('%B').title().strip()
     end_year = max_date.year
 
     # Format the output
