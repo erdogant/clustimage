@@ -41,8 +41,8 @@ import random
 import imagehash
 from PIL import Image
 
-# import clustimage.exif as exif
-import exif as exif
+import clustimage.exif as exif
+# import exif as exif
 import webbrowser
 
 # Support for Apple HEIC images
