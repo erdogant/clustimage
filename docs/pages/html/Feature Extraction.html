@@ -147,7 +147,7 @@
   <section id="pca">
 <h1>PCA<a class="headerlink" href="#pca" title="Link to this heading"></a></h1>
 <p>Principal component analysis (PCA) is a feature extraction approach for which we can leverage on the first few principal components and ignoring the rest.
-In <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> the <a class="reference external" href="https://github.com/erdogant/pca">pca</a> library utilized to extract the first 50 (default) components.
+In <code class="docutils literal notranslate"><span class="pre">clustimage</span></code> the <a class="reference internal" href="#pca">pca</a> library utilized to extract the first 50 (default) components.
 The use of PC’s for clustering is usefull in applications with among others faces, where so called eigenfaces are computed.
 The eigenface is a low-dimensional representation of face images. It is shown that principal component analysis could be used on a collection of face images to form a set of basis features.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize with pca and 50 PCs</span>
@@ -241,8 +241,8 @@ For example, if the use-case is to group faces or cars, HOG-features can do a gr
 <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HOG&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils align-center" id="id2">
-<caption><span class="caption-text">HOG example containing 8x8 vectors</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<table class="docutils align-center" id="id1">
+<caption><span class="caption-text">HOG example containing 8x8 vectors</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
 <tbody>
 <tr class="row-odd"><td><p><img alt="figF1" src="_images/hog_example.png" /></p></td>
 </tr>
@@ -263,11 +263,11 @@ This data can be utilized for clustering images, especially based on datetime an
 </ul>
 </div></blockquote>
 <p>Each approach can be tuned by a few parameters that can be set using <code class="docutils literal notranslate"><span class="pre">params_exif</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">params_exif:</span> <span class="pre">dict,</span> <span class="pre">default:</span> <span class="pre">{'timeframe':'6H',</span> <span class="pre">'window_length':5,</span> <span class="pre">'radius_meters':</span> <span class="pre">1000,</span> <span class="pre">'exif_location':</span> <span class="pre">False}</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">params_exif:</span> <span class="pre">dict,</span> <span class="pre">default:</span> <span class="pre">{'timeframe':</span> <span class="pre">6,</span> <span class="pre">'radius_meters':</span> <span class="pre">1000,</span> <span class="pre">'exif_location':</span> <span class="pre">False}</span></code></p>
 <blockquote>
 <div><ul class="simple">
+<li><p>‘timeframe’: The timeframe in hours that is used to group the images.</p></li>
 <li><p>‘radius_meters’: The radius that is used to cluster the images when using metric=’datetime’</p></li>
-<li><p>‘window_length’: Instead of making a hard cut on timeframe range, this smooting factor enables to to capture some images that are just outside the timeframe range. Works only for metric=’latlon_radius’</p></li>
 <li><p>‘exif_location’: This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates and is not used in the clustering. This information is only used in the plot.</p></li>
 </ul>
 </div></blockquote>
@@ -279,7 +279,7 @@ For each image, the EXIF datetime creation date is extracted when possible. If t
 
 <span class="c1"># Init</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;exif&#39;</span><span class="p">,</span>
-                <span class="n">params_exif</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;timeframe&#39;</span><span class="p">:</span><span class="s1">&#39;6H&#39;</span><span class="p">,</span> <span class="s1">&#39;window_length&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;exif_location&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="n">params_exif</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;timeframe&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;min_samples&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;exif_location&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
                 <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;cr2&quot;</span><span class="p">,</span> <span class="s2">&quot;nef&quot;</span><span class="p">,</span> <span class="s2">&quot;heic&quot;</span><span class="p">,</span> <span class="s2">&quot;sr2&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">],</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
@@ -316,7 +316,7 @@ This approach extract GPS latitude and longitude Coordinates from EXIF Metadata 
 
 <span class="c1"># Init</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;exif&#39;</span><span class="p">,</span>
-                <span class="n">params_exif</span> <span class="o">=</span> <span class="p">{</span><span class="n">radius_meters</span><span class="s1">&#39;: 1000, &#39;</span><span class="n">exif_location</span><span class="s1">&#39;: False},</span>
+                <span class="n">params_exif</span> <span class="o">=</span> <span class="p">{</span><span class="n">radius_meters</span><span class="s1">&#39;: 1000, &#39;</span><span class="n">min_samples</span><span class="s1">&#39;: 2, &#39;</span><span class="n">exif_location</span><span class="s1">&#39;: False},</span>
                 <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;cr2&quot;</span><span class="p">,</span> <span class="s2">&quot;nef&quot;</span><span class="p">,</span> <span class="s2">&quot;heic&quot;</span><span class="p">,</span> <span class="s2">&quot;sr2&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">],</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 

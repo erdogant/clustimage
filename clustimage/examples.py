@@ -8,12 +8,14 @@ from clustimage import Clustimage
 import os
 
 cl = Clustimage(method='exif',
-                params_exif = {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
+                params_exif = {'timeframe': 8, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
                 ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
                 verbose='info')
 
 # All paths
 # dir_path = r'c:/temp/'
+# dir_path = r'\\NAS_SYNOLOGY\Photo\2023\vluchten'
+dir_path = r'\\NAS_SYNOLOGY\Photo\2024\motor weekend'
 
 # Run the model to find the clusters based on datetime method
 # results = cl.fit_transform(dir_path, metric='latlon', black_list=['undouble'], recursive=True)

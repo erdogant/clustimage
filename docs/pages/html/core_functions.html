@@ -279,7 +279,7 @@ The coordinates are used for vizualiation purposes only but if desired. However,
 </section>
 <section id="cluster">
 <h2>cluster<a class="headerlink" href="#cluster" title="Link to this heading"></a></h2>
-<p>The <em>cluster</em> function is build on <a class="reference external" href="https://github.com/erdogant/clusteval">clusteval</a>, which is a python package that provides various evalution methods for unsupervised cluster validation.
+<p>The <em>cluster</em> function is build on <a href="#id8"><span class="problematic" id="id9">`clusteval`_</span></a>, which is a python package that provides various evalution methods for unsupervised cluster validation.
 The optimal number of clusters are determined using well known methods such as <em>silhouette, dbindex, and derivatives</em> in combination with clustering methods, such as <em>agglomerative, kmeans, dbscan and hdbscan</em>.
 This function can be run after the <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code> function to solely optimize the clustering results or try-out different evaluation approaches without repeately performing all the steps of preprocessing.
 Besides changing evaluation methods and metrics, it is also possible to cluster on the low-embedded feature space. This can be done setting the parameter <code class="docutils literal notranslate"><span class="pre">cluster_space='low'</span></code>.</p>

@@ -271,9 +271,5 @@ More examples
    
 
 
-.. _clusteval: https://github.com/erdogant/clusteval
-
-
-
 
 .. include:: add_bottom.add
