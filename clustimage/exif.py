@@ -378,31 +378,28 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
         cluster_data = metadata_df[metadata_df['clusterlabels'] == cluster_id]
         # Sort on datetime for the correct polygons
         cluster_data = cluster_data.sort_values(by='datetime').reset_index(drop=True)
+        # Add a bit noise in case latlon imgs are on top of each other.
+        cluster_data = add_noise_to_close_points(cluster_data, clutter_threshold=clutter_threshold, logger=logger)
 
         # Get datetime range from the photos.
         dt_range = create_datetime_string(cluster_data['datetime'])
         dirnames = get_dir_names(cluster_data['pathnames'])
 
         # Create a combined feature group for markers and polygons
-        if not cluster_icons: combined_group = folium.FeatureGroup(name=f"Cluster {int(cluster_id)} - {dirnames} - {dt_range}")
+        if not cluster_icons: combined_group = folium.FeatureGroup(name=f"Cluster {int(cluster_id)} ({cluster_data.shape[0]} imgs) - {dirnames} - {dt_range}")
         cluster_groups[cluster_id] = combined_group
 
         # Add markers to the feature group
         for _, row in cluster_data.iterrows():
             dt_obj = dt.strptime(row['datetime'], '%Y:%m:%d %H:%M:%S')
-            month_year = str(dt_obj.year) + ' ' + dt_obj.strftime('%B') + ' - ' + str(dt_obj.hour) + ':' + str(dt_obj.minute)
+            # month_year = str(dt_obj.year) + ' ' + dt_obj.strftime('%B') + ' - ' + str(dt_obj.hour) + ':' + str(dt_obj.minute)
+            month_year = f"{dt_obj.year} {dt_obj.strftime('%B')} - {dt_obj.hour}:{dt_obj.strftime('%M')} ({dt_obj.strftime('%A')})"
             dirname = os.path.basename(os.path.split(row['pathnames'])[0])
 
             # Generate thumbnail HTML
             thumbnail_base64 = ''
             if thumbnail_size is not None and thumbnail_size > 10:
                 thumbnail_base64 = create_thumbnail(row['pathnames'], max_size=thumbnail_size)
-
-            # Compute the total polygon length in km
-            # total_distance = 0.0
-            # points = cluster_data[['lat', 'lon']].values.tolist()
-            # for i in range(len(points) - 1):
-            #     total_distance += geodesic(points[i], points[i + 1]).km
 
             popup_content = f"""
                 <div>
@@ -424,7 +421,7 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
             ).add_to(combined_group)
 
         # Add Polygon
-        if polygon and (cluster_data.shape[0] > 2) and (not np.isin(cluster_id, blacklist)):
+        if polygon and (cluster_data.shape[0] > 2) and (not np.isin(cluster_id, blacklist_polygon)):
             # Add polygons for the cluster (if applicable)
             points = cluster_data[['lat', 'lon']].values.tolist()
 
@@ -459,6 +456,59 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
 
     return map_display
 
+
+# %%
+def add_noise_to_close_points(cluster_data, lat_col='lat', lon_col='lon', clutter_threshold=1e-4, noise_scale=1e-4, logger=None):
+    """
+    Adds small random noise to latitude and longitude points that are very close to each other,
+    to prevent overlaps on a folium map.
+
+    Parameters
+    ----------
+    cluster_data : pd.DataFrame
+        A DataFrame containing latitude and longitude columns.
+    lat_col : str, optional
+        The name of the latitude column. Default is 'lat'.
+    lon_col : str, optional
+        The name of the longitude column. Default is 'lon'.
+    clutter_threshold : float, optional
+        The maximum distance below which points are considered overlapping. Default is `1e-4`.
+    noise_scale : float, optional
+        The scale of the random noise to be added to the points. Default is `1e-4`.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame with adjusted latitude and longitude points to prevent overlaps.
+
+    Notes
+    -----
+    - The function assumes the DataFrame has numeric columns for latitude and longitude.
+    - The noise is small enough to avoid significant distortion but sufficient to separate overlapping points.
+
+    Examples
+    --------
+    >>> data = pd.DataFrame({'lat': [52.1, 52.1], 'lon': [5.1, 5.1]})
+    >>> adjusted_data = add_noise_to_close_points(data)
+    >>> print(adjusted_data)
+    """
+    # Convert lat/lon columns to numpy arrays
+    lat = cluster_data[lat_col].values
+    lon = cluster_data[lon_col].values
+
+    # Compute pairwise distances
+    for i in range(len(lat)):
+        for j in range(i + 1, len(lat)):
+            distance = np.sqrt((lat[i] - lat[j])**2 + (lon[i] - lon[j])**2)
+            if distance <= clutter_threshold:
+                # Add random noise to separate overlapping points
+                lat[j] += np.random.uniform(-noise_scale, noise_scale)
+                lon[j] += np.random.uniform(-noise_scale, noise_scale)
+
+    # Update the DataFrame with adjusted values
+    cluster_data[lat_col] = lat
+    cluster_data[lon_col] = lon
+    return cluster_data
 
 # %%
 def get_dir_names(pathnames):
