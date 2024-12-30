@@ -836,7 +836,7 @@ class Clustimage():
         min_nr_pixels = 8
 
         # Check file existence on disk
-        pathnames = np.array(pathnames)
+        if not isinstance(pathnames, np.ndarray): pathnames = np.array(pathnames)
         pathnames = pathnames[pathnames!=None]
         pathnames = list(pathnames[list(map(os.path.isfile, pathnames))])
         filenames = list(map(basename, pathnames))
@@ -1055,7 +1055,8 @@ class Clustimage():
             # Make sure that list in lists are flattend
             Xraw = np.hstack(Xraw)
             # Check whether url and store all url images to tempdir on disk.
-            Xraw = url2disk(Xraw, self.params['tempdir'])
+            # Xraw = url2disk(Xraw, self.params['tempdir'])
+            Xraw = dz.url2disk(Xraw, self.params['tempdir'])
             # Do not store in the object if the find functionality is used
             X = self.preprocessing(Xraw['pathnames'], grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten)
             # Add the url location
