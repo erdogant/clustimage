@@ -13,7 +13,7 @@ else:
 with open("README.md", "r", encoding="utf8") as fh:
     long_description = fh.read()
 setuptools.setup(
-     install_requires=['datazets>=0.1.7',
+     install_requires=['datazets>=1.0.0',
                        'scatterd>=1.3.6',
                        'ismember',
                        'pypickle',
