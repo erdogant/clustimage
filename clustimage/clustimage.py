@@ -2177,7 +2177,7 @@ class Clustimage():
         nrows = int(np.ceil(n /ncols))
         return nrows, ncols
 
-    def _make_subplots(self, imgs, ncols, cmap, figsize, title='', labels=None):
+    def _make_subplots(self, imgs, ncols, cmap, figsize, title='', labels=None, invert_colors=False):
         """Make subplots."""
         # Get appropriate dimension
         if self.params['grayscale']:
