@@ -229,10 +229,17 @@ def gps_to_decimal(coord, ref):
         float: The GPS coordinates in decimal degrees.
 
     """
-    decimal = coord[0][0] / coord[0][1] + coord[1][0] / \
-        (60 * coord[1][1]) + coord[2][0] / (3600 * coord[2][1])
-    if ref in ['S', 'W']:
+    # Convert EXIF tuple to float
+    degrees = coord[0][0] / coord[0][1]
+    minutes = coord[1][0] / coord[1][1]
+    seconds = coord[2][0] / coord[2][1]
+
+    # Convert to decimal degrees
+    decimal = degrees + (minutes / 60) + (seconds / 3600)
+
+    if ref in (b'S', 'S', b'W', 'W'):
         decimal *= -1
+
     return decimal
 
 
