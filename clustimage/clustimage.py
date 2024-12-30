@@ -2203,8 +2203,10 @@ class Clustimage():
                         img = img.reshape((dim[0], dim[1], dimlen))
                         img = img[:, :, : 3]
                     elif len(img.shape)==3:
-                        ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
-                        # ax.imshow(img, cmap=cmap)
+                        if invert_colors:
+                            ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
+                        else:
+                            ax.imshow(img, cmap=cmap)
                     else:
                         ax.imshow(img, cmap=cmap)
                     if labels is not None: ax.set_title(labels[i])
