@@ -1876,7 +1876,7 @@ class Clustimage():
         # Return
         return fig, ax
 
-    def plot_unique(self, cmap=None, img_mean=True, show_hog=False, figsize=(15, 10)):
+    def plot_unique(self, cmap=None, img_mean=True, show_hog=False, figsize=(15, 10), invert_colors=False):
         """Plot unique images.
 
         Parameters
@@ -1927,17 +1927,17 @@ class Clustimage():
                         hogtmp = exposure.rescale_intensity(self.results['feat'][idx, :].reshape(self.params['dim']), in_range=(0, 10))
                         imgshog.append(hogtmp)
 
-            self._make_subplots(imgs, None, cmap, figsize, title='Unique images ' + subtitle, labels=txtlabels)
+            self._make_subplots(imgs, None, cmap, figsize, title='Unique images ' + subtitle, labels=txtlabels, invert_colors=invert_colors)
 
             if show_hog and (self.params['method']=='hog'):
-                self._make_subplots(imgshog, None, 'binary', figsize, title='Unique HOG images ' +subtitle, labels=txtlabels)
+                self._make_subplots(imgshog, None, 'binary', figsize, title='Unique HOG images ' +subtitle, labels=txtlabels, invert_colors=invert_colors)
 
             # Restore verbose status
             set_logger(verbose=verbose)
         else:
             logger.warning('Plotting unique images is not possible. Hint: Try first to run: cl.unique()')
 
-    def plot_find(self, cmap=None, figsize=(15, 10)):
+    def plot_find(self, cmap=None, figsize=(15, 10), invert_colors=False):
         """Plot the input image together with the predicted images.
 
         Parameters
@@ -1983,7 +1983,7 @@ class Clustimage():
                             labels = ['Input'] + list(map(lambda x: 'k=' +x, np.arange(1, len(I_find) +1).astype(str)))
                         title = 'Find similar images for [%s].' %(input_txt)
                         # Make the subplot
-                        self._make_subplots(imgs, None, cmap, figsize, title=title, labels=labels)
+                        self._make_subplots(imgs, None, cmap, figsize, title=title, labels=labels, invert_colors=invert_colors)
                         logger.info('[%d] similar images detected for input image: [%s]' %(len(find_img), key))
                 except:
                     pass
@@ -2089,7 +2089,7 @@ class Clustimage():
         logger.info(f'Output: {save_path}')
         return m, save_path
 
-    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=2, figsize=(15, 10), blacklist=None):
+    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=2, figsize=(15, 10), blacklist=None, invert_colors=False):
         """Plot the results.
 
         Parameters
@@ -2203,22 +2203,34 @@ class Clustimage():
         fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
 
         if self.params['store_to_disk']:
-
             # Make the actual plots
             for i, ax in enumerate(axs.ravel()):
-                if i < len(imgs):
-                    img = imgs[i]
-                    if len(img.shape)==1:
-                        img = img.reshape((dim[0], dim[1], dimlen))
-                        img = img[:, :, : 3]
-                    elif len(img.shape)==3:
-                        if invert_colors:
-                            ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
+                try:
+                    if i < len(imgs):
+                        img = imgs[i]
+                        if len(img.shape)==1:
+                            img = img.reshape((dim[0], dim[1], dimlen))
+                            img = img[:, :, : 3]
+                        elif len(img.shape)==3:
+                            if invert_colors:
+                                ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
+                            else:
+                                ax.imshow(img, cmap=cmap)
                         else:
                             ax.imshow(img, cmap=cmap)
-                    else:
-                        ax.imshow(img, cmap=cmap)
-                    if labels is not None: ax.set_title(labels[i])
+                        if labels is not None: ax.set_title(labels[i])
+                except:
+                    # Create empty image
+                    border_thickness = 1  # Thickness of the black border
+                    white_img = np.ones((dim[0], dim[1], 3), dtype=np.uint8) * 255  # White background
+                    white_img[:border_thickness, :, :] = 0  # Top border
+                    white_img[-border_thickness:, :, :] = 0  # Bottom border
+                    white_img[:, :border_thickness, :] = 0  # Left border
+                    white_img[:, -border_thickness:, :] = 0  # Right border
+                    # Plot the image with border
+                    ax.imshow(white_img)
+                    ax.set_title("Unsupported format", fontsize=10)
+
                 ax.axis("off")
             _ = fig.suptitle(title, fontsize=16)
 
