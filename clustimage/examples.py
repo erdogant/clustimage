@@ -3,55 +3,115 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
-# %% Cluster on date/time from photo exif data
+#%% Workflow to clean your [personal] photo files
+# Suppose you have photos downloaded from whatsapp, your iphone and combined with the screenshots and selfies you have.
+# In addition, friends also took pictures, burst and shard them with your.
+# All imges are now in one folder, many are very similar and it has become a time consuming task to sort, remove and figure out which photos belong to the same event.
+# Luckily We can automate many of these tasks with the clustimage and undouble library.
+#
+# With the clustimage library we can group photos on date/time or on location. In my personal experience, clustering photos on date/time works the best because
+# when traveling, the location changes all the time. In addition, it also occurs that I come to the same place multiple times a year but these photos belong to different events.
+#
+# -------
+# Step 1: use clustimage and set the timeframe to 6 hours to make capture all events of one day but prevent grouping with the other day.
+# -------
+
+# Import library
 from clustimage import Clustimage
 import os
 
+# Working directory
+dir_path = r'\\NAS_SYNOLOGY\Photo\2024\various'
+# When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
+allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
+
+# Initialize for datetime.
 cl = Clustimage(method='exif',
-                params_exif = {'timeframe': 8, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
-                ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
+                params_exif = {'timeframe': 6, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
+                ext=allowed_ext,
                 verbose='info')
 
-# All paths
-# dir_path = r'c:/temp/'
-# dir_path = r'\\NAS_SYNOLOGY\Photo\2023\vluchten'
-dir_path = r'\\NAS_SYNOLOGY\Photo\2024\motor weekend'
-
-# Run the model to find the clusters based on datetime method
-# results = cl.fit_transform(dir_path, metric='latlon', black_list=['undouble'], recursive=True)
+# Run the model to find the clusters based on datetime method. Use metric='latlon' in case location is more important than time.
 results = cl.fit_transform(dir_path, metric='datetime', black_list=['undouble'], recursive=True)
 
 # Show the cluster labels
-# print(cl.results['labels'])
+print(cl.results['labels'])
 
+# Show filenames from cluster 1
+cl.results['pathnames'][cl.results['labels']==5]
+# Plot only files in cluster 1
+cl.plot(labels=1, blacklist=[-2, -1], min_clust=3, invert_colors=True)
+
+# -------
+# Step 2: Use the plot function to determine what event the cluster of photos represents.
+# -------
 # Make plot but exclude cluster 0, and only show when there are 4 or more photos in the group.
-# cl.plot(blacklist=[-2, -1], min_clust=3)
+cl.plot(blacklist=[-2, -1], min_clust=3, invert_colors=True)
 
-# plot on map
-# cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=300, polygon=True)
+# -------
+# Step 3: Visualize photos on on map
+# -------
+# Now we have map where the photos are grouped together in clustere that we can visually inspect.
 cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polygon=True, save_path=os.path.join(dir_path, 'map.html'))
-# cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=None, polygon=True, save_path=os.path.join(dir_path, 'map1.html'))
-# cl.plot_map(open_in_browser=True, save_path=r'c:/temp/map.html', thumbnail_size=None)
-# cl.plot_map(cluster_icons=True, open_in_browser=True, save_path=r'c:/temp/map1.html')
-# cl.plot_map(cluster_icons=False, open_in_browser=True, save_path=r'c:/temp/map2.html')
-# cl.plot_map(cluster_icons=True, polygon=False, open_in_browser=True, save_path=r'c:/temp/map3.html')
 
+# -------
+# Step 4: We can now easily re-organize our disk using the move functionality.
+# -------
+# We need to create a dictionary where we can define for each cluster number a subfolder name like this:
+# The first column is the cluster label and the second string is the destinated subfolder name. All files in the cluster will be moved to the subfolder.
 
-#%% Moving files based on cluster labels
-
-# 1. Use the plot function to determine what event the cluster of photos represents.
-# cl.plot(blacklist=[-1], min_clust=3)
-
-# 2. Create a dict that specifies the cluster number with its folder names.
-# The first column is the cluster label and the second string is the destinated subfolder name.
 target_labels = {
-    0: 'Park',
-    1: 'Rodelen',
-    2: 'Glasblazen',
+    8: 'Winterbergen',
+    7: 'Winterbergen',
+    25: 'Musical',
+    15: 'Sportdag',
+    21: 'Schoolplein',
+    13: 'Nachtstrand',
+    1: 'Concert',
+    28: 'Feest',
+    2: 'Delft',
+    9: 'Delft',
+    3: 'Huis en Tuin',
+    5: 'Huis en Tuin',
+    11: 'Huis en Tuin',
+    12: 'Huis en Tuin',
+    14: 'Huis en Tuin',
+    18: 'Huis en Tuin',
+    22: 'Huis en Tuin',
+    24: 'Huis en Tuin',
+    26: 'Huis en Tuin',
 }
 
-# 3. Move the photos to the specified directories using the cluster labels.
-cl.move_to_dir(target_labels=target_labels)
+# Run the script to physically move the photos to the specified directories using the cluster labels.
+cl.move_to_dir(target_labels=target_labels, ext_allowed=['mp4'])
+
+# -------
+# Step 6: Undouble.
+# -------
+# At this point we still may have many photos that are similar or are part of a photo-burst.
+# We can undouble the photos using the undouble library.
+
+# Load library
+from undouble import Undouble
+
+# Init with default settings
+model = Undouble(grayscale=False, method='phash', hash_size=8, ext=allowed_ext)
+
+# Import the re-structured data-folder
+model.import_data(dir_path)
+
+# Compute image-hash to determine which photos are very alike.
+model.compute_hash()
+
+# Find images with image-hash <= threshold. When using threshold=0, only exactly the same photos are detected.
+model.group(threshold=10)
+
+# Plot the images
+model.plot()
+
+# Move the images
+model.move(gui=True)
+
 
 # %% import from disk
 from clustimage import Clustimage
