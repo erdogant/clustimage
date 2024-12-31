@@ -238,7 +238,7 @@ Final step in pre-processing is resizing all images in the same dimension such a
 <li><p>’pca’ : PCA feature extraction</p></li>
 <li><p>’hog’ : hog features extraced</p></li>
 <li><p>’pca-hog’ : PCA extracted features from the HOG desriptor</p></li>
-<li><p>’exif’: Use photo exif data to cluster photos on datetime  (set params_exif)</p></li>
+<li><p>’exif’: Use EXIF information from file to cluster on datetime (params_exif)</p></li>
 </ul>
 <p>hashmethod : str (default: ‘ahash’)
 * ‘ahash’: Average hash
@@ -1116,7 +1116,7 @@ img : array-like.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target_labels</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary where keys are cluster labels, and values are the target folder names.
-If None, folders are automatically generated with names such as “group_&lt;label&gt;”.</p></li>
+None: folders are automatically generated with names such as “group_&lt;label&gt;”.</p></li>
 <li><p><strong>targetdir</strong> (<em>str</em><em>, </em><em>optional</em>) – The base directory where the images will be moved. If None, the images will be moved
 to the parent directory of their current location.</p></li>
 </ul>
@@ -1139,7 +1139,7 @@ to the parent directory of their current location.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blacklist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blacklist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot" title="Link to this definition"></a></dt>
 <dd><p>Plot the results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1154,6 +1154,8 @@ to the parent directory of their current location.</p></li>
 [-2]: do not show the samples without lat/lon coordinates (when using exif method)
 [-1]: do not show the samples that fall outside the clusters (noise or rest-group in DBSCAN, when using exif method)
 [-2, -1]: do not show multiple clusters.</p></li>
+<li><p><strong>invert_colors</strong> (<em>Invert colors for the plot.</em>) – True: RGB-&gt; BGR
+False: Keep as is</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1190,7 +1192,7 @@ to the parent directory of their current location.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.plot_find">
-<span class="sig-name descname"><span class="pre">plot_find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot_find" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot_find" title="Link to this definition"></a></dt>
 <dd><p>Plot the input image together with the predicted images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1198,6 +1200,8 @@ to the parent directory of their current location.</p></li>
 <li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Colorscheme for the images.
 ‘gray’, ‘binary’,  None (uses rgb colorscheme)</p></li>
 <li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height,width).</p></li>
+<li><p><strong>invert_colors</strong> (<em>Invert colors for the plot.</em>) – True: RGB-&gt; BGR
+False: Keep as is</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1274,7 +1278,7 @@ or the directory does not exist, an error is logged, and the function returns <c
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.plot_unique">
-<span class="sig-name descname"><span class="pre">plot_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot_unique" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot_unique" title="Link to this definition"></a></dt>
 <dd><p>Plot unique images.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1284,6 +1288,8 @@ or the directory does not exist, an error is logged, and the function returns <c
 <li><p><strong>img_mean</strong> (<em>bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Plot the image mean.</p></li>
 <li><p><strong>show_hog</strong> (<em>bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Plot the hog features.</p></li>
 <li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height, width).</p></li>
+<li><p><strong>invert_colors</strong> (<em>Invert colors for the plot.</em>) – True: RGB-&gt; BGR
+False: Keep as is</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

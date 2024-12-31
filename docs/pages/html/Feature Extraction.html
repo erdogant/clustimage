@@ -258,8 +258,8 @@ This data can be utilized for clustering images, especially based on datetime an
 <p>There are two metric where EXIF metadata is used for clustering:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>‘latlon’: Use photo exif data to cluster photos on lon/lat coordinates</p></li>
-<li><p>‘datetime’: Use photo exif data to cluster photos on datetime</p></li>
+<li><p>‘latlon’: Cluster files on lon/lat coordinates.</p></li>
+<li><p>‘datetime’: Cluster files on date/time.</p></li>
 </ul>
 </div></blockquote>
 <p>Each approach can be tuned by a few parameters that can be set using <code class="docutils literal notranslate"><span class="pre">params_exif</span></code>.</p>
@@ -273,14 +273,17 @@ This data can be utilized for clustering images, especially based on datetime an
 </div></blockquote>
 <section id="clustering-by-datetime">
 <h2>Clustering by Datetime<a class="headerlink" href="#clustering-by-datetime" title="Link to this heading"></a></h2>
-<p>Clustering images by datetime can help organize or analyze images captured within specific time intervals, such as during an event or over consecutive hours or days.
-For each image, the EXIF datetime creation date is extracted when possible. If the information could not be found in the EXIF data, the file timestamp will be used instead. However, the latter can cause that the modified time is used instead of creation time depending on the operating system.</p>
+<p>Clustering files by datetime can help organize or analyze images captured within specific time intervals, such as during an event or over consecutive hours or days.
+For each file, the EXIF datetime creation date is extracted when possible. If the datetime information could not be found in the EXIF data, the file timestamp will be used instead.
+However, the latter can cause that the modified time is used instead of creation time depending on the operating system.
+The advantage of this approach is that it allows to cluster on more then only image files, all files are allowed such as .mp4, .mov or .txt etc files.
+This approach will therefore help you to easily organize your directory of images together with movies etc.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Init</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;exif&#39;</span><span class="p">,</span>
                 <span class="n">params_exif</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;timeframe&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;min_samples&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;exif_location&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
-                <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;cr2&quot;</span><span class="p">,</span> <span class="s2">&quot;nef&quot;</span><span class="p">,</span> <span class="s2">&quot;heic&quot;</span><span class="p">,</span> <span class="s2">&quot;sr2&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">],</span>
+                <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mp4&quot;</span><span class="p">,</span> <span class="s2">&quot;mov&quot;</span><span class="p">,</span> <span class="s2">&quot;jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;gif&quot;</span><span class="p">,</span> <span class="s2">&quot;webp&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;cr2&quot;</span><span class="p">,</span> <span class="s2">&quot;nef&quot;</span><span class="p">,</span> <span class="s2">&quot;heic&quot;</span><span class="p">,</span> <span class="s2">&quot;sr2&quot;</span><span class="p">,</span> <span class="s2">&quot;tif&quot;</span><span class="p">],</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
 
 <span class="c1"># Path to your images or photos</span>
