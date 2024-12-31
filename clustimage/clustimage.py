@@ -2336,13 +2336,10 @@ class Clustimage():
         ----------
         target_labels : dict, optional
             A dictionary where keys are cluster labels, and values are the target folder names.
-            If None, folders are automatically generated with names such as "group_<label>".
+            None: folders are automatically generated with names such as "group_<label>".
         targetdir : str, optional
             The base directory where the images will be moved. If None, the images will be moved
             to the parent directory of their current location.
-        ext_allowed: list
-            None: all extentions are allowed
-            ['mp4', 'heic']: Only move files with extension mp4 and heic
 
         Notes
         -----
