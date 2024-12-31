@@ -125,8 +125,8 @@ This data can be utilized for clustering images, especially based on datetime an
 
 There are two metric where EXIF metadata is used for clustering:
 
-    * 'latlon': Use photo exif data to cluster photos on lon/lat coordinates
-    * 'datetime': Use photo exif data to cluster photos on datetime
+    * 'latlon': Cluster files on lon/lat coordinates.
+    * 'datetime': Cluster files on date/time.
 
 Each approach can be tuned by a few parameters that can be set using ``params_exif``.
 
@@ -139,8 +139,11 @@ Each approach can be tuned by a few parameters that can be set using ``params_ex
 
 Clustering by Datetime
 ***********************
-Clustering images by datetime can help organize or analyze images captured within specific time intervals, such as during an event or over consecutive hours or days.
-For each image, the EXIF datetime creation date is extracted when possible. If the information could not be found in the EXIF data, the file timestamp will be used instead. However, the latter can cause that the modified time is used instead of creation time depending on the operating system.
+Clustering files by datetime can help organize or analyze images captured within specific time intervals, such as during an event or over consecutive hours or days.
+For each file, the EXIF datetime creation date is extracted when possible. If the datetime information could not be found in the EXIF data, the file timestamp will be used instead.
+However, the latter can cause that the modified time is used instead of creation time depending on the operating system.
+The advantage of this approach is that it allows to cluster on more then only image files, all files are allowed such as .mp4, .mov or .txt etc files.
+This approach will therefore help you to easily organize your directory of images together with movies etc.
 
 
 .. code:: python
@@ -150,7 +153,7 @@ For each image, the EXIF datetime creation date is extracted when possible. If t
     # Init
     cl = Clustimage(method='exif',
                     params_exif = {'timeframe': 6, 'min_samples': 2, 'exif_location': False},
-                    ext=["jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
+                    ext=["mp4", "mov", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
                     verbose='info')
 
     # Path to your images or photos
