@@ -108,8 +108,13 @@ def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "ti
         if np.isin(file_ext, ext_allowed):
             # Extract filename
             filename = os.path.split(pathname)[-1]
+
             # Open the image
-            img = Image.open(pathname)
+            try:
+                img = Image.open(pathname)
+            except:
+                pass
+                # logger.info(f'File can not be opened. Maybe mp4 or another format that is not supported: {pathname}')
 
             # Get exif data from image
             try:
@@ -146,6 +151,7 @@ def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "ti
             metadata = {
                 'filenames': filename,
                 'pathnames': pathname,
+                'ext': file_ext,
                 'datetime': datetime_created,
                 'datetime_modified': datetime_modified,
                 'exif_location': '',
@@ -188,7 +194,7 @@ def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "ti
             metadata_list.append(metadata)
 
     # Convert the metadata list to a pandas dataframe
-    logger.info(f'exif information is retrieved from {len(metadata)} out of {len(pathnames)} files')
+    logger.info(f'EXIF information is stored from {len(metadata)} out of {len(pathnames)} files')
     # Return
     return metadata_list
 
@@ -252,7 +258,7 @@ def location(Xfeat, logger):
     """
     # Get the exif location
     Xfeat_new = []
-    logger.info('Extraction location information from lat/lon coordinates.')
+    logger.info('Extract lat/lon coordinates.')
     # Initialize
     geolocator = Nominatim(user_agent="exif_location")
 
@@ -399,7 +405,7 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
             # Generate thumbnail HTML
             thumbnail_base64 = ''
             if thumbnail_size is not None and thumbnail_size > 10:
-                thumbnail_base64 = create_thumbnail(row['pathnames'], max_size=thumbnail_size)
+                thumbnail_base64 = create_thumbnail(row['pathnames'], max_size=thumbnail_size, logger=logger)
 
             popup_content = f"""
                 <div>
@@ -595,7 +601,7 @@ def create_datetime_string(dt_strings):
 
 
 # %% Function to create a thumbnail and encode it in base64
-def create_thumbnail(image_path, max_size=300):
+def create_thumbnail(image_path, max_size=300, logger=None):
     """Creates a thumbnail image from the provided image path and returns an HTML string containing the base64-encoded image.
 
     Parameters
@@ -658,8 +664,8 @@ def create_thumbnail(image_path, max_size=300):
             return f'<img src="data:image/jpeg;base64,{encoded}" width="{max_size[0]}" height="{max_size[1]}">'
 
     except Exception as e:
-        print(f"Error creating thumbnail for {image_path}: {e}")
-        return "Thumbnail not available"
+        logger.debug(f"File is not supported to create thumbnail: {image_path}: {e}")
+        return ''
 
 
 # %%

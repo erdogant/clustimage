@@ -2140,6 +2140,7 @@ class Clustimage():
             for label in tqdm(uilabels, disable=disable_tqdm(), desc='[clustimage]'):
                 idx = np.where(self.results['labels']==label)[0]
                 if len(idx)>=min_clust and not np.isin(label, blacklist):
+                    logger.info(f'Cluster {label}:  Plot [{len(idx)}] images')
                     # Collect the images
                     getfiles = np.array(self.results['pathnames'])[idx]
                     getfiles = getfiles[np.array(list(map(lambda x: os.path.isfile(x), getfiles)))]
@@ -2153,7 +2154,7 @@ class Clustimage():
                         else:
                             ncol=ncols
                         dirname = exif.get_dir_names(getfiles)
-                        self._make_subplots(imgs, ncol, cmap, figsize, (f"Cluster {str(label)} - {len(getfiles)} - Directory name: {dirname}"))
+                        self._make_subplots(imgs, ncol, cmap, figsize, (f"Cluster {str(label)}: {len(getfiles)} images, Directory: {dirname}"), invert_colors=invert_colors)
 
                         # Make hog plots
                         if show_hog and (self.params['method']=='hog'):
