@@ -90,7 +90,7 @@ class Clustimage():
             * 'pca' : PCA feature extraction
             * 'hog' : hog features extraced
             * 'pca-hog' : PCA extracted features from the HOG desriptor
-            * 'exif': Use photo exif data to cluster photos on datetime  (set params_exif)
+            * 'exif': Use EXIF information from file to cluster on datetime (params_exif)
             hashmethod : str (default: 'ahash')
             * 'ahash': Average hash
             * 'phash': Perceptual hash
@@ -1890,6 +1890,9 @@ class Clustimage():
             Plot the hog features.
         figsize : tuple, (default: (15, 10).
             Size of the figure (height, width).
+        invert_colors: Invert colors for the plot.
+            True: RGB-> BGR
+            False: Keep as is
 
         Returns
         -------
@@ -1944,6 +1947,9 @@ class Clustimage():
             'gray', 'binary',  None (uses rgb colorscheme)
         figsize : tuple, (default: (15, 10).
             Size of the figure (height,width).
+        invert_colors: Invert colors for the plot.
+            True: RGB-> BGR
+            False: Keep as is
 
         Returns
         -------
@@ -2105,6 +2111,9 @@ class Clustimage():
             [-2]: do not show the samples without lat/lon coordinates (when using exif method)
             [-1]: do not show the samples that fall outside the clusters (noise or rest-group in DBSCAN, when using exif method)
             [-2, -1]: do not show multiple clusters.
+        invert_colors: Invert colors for the plot.
+            True: RGB-> BGR
+            False: Keep as is
 
         Returns
         -------
@@ -2318,6 +2327,9 @@ class Clustimage():
         targetdir : str, optional
             The base directory where the images will be moved. If None, the images will be moved
             to the parent directory of their current location.
+        ext_allowed: list
+            None: all extentions are allowed
+            ['mp4', 'heic']: Only move files with extension mp4 and heic
 
         Notes
         -----
