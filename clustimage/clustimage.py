@@ -2329,7 +2329,7 @@ class Clustimage():
         """
         return import_example(data=data, url=url, sep=sep, verbose=get_logger())
 
-    def move_to_dir(self, target_labels=None, targetdir=None):
+    def move_to_dir(self, target_labels=None, targetdir=None, invert_colors=False):
         """Move image files into directories based on cluster labels.
 
         Parameters
@@ -2340,6 +2340,9 @@ class Clustimage():
         targetdir : str, optional
             The base directory where the images will be moved. If None, the images will be moved
             to the parent directory of their current location.
+        invert_colors: Invert colors for the plot.
+            True: RGB-> BGR
+            False: Keep as is
 
         Notes
         -----
@@ -2364,11 +2367,14 @@ class Clustimage():
             loc = self.results['labels'] == key
             if np.sum(loc) > 0:
                 # Make plot
-                self.plot(labels=key)
+                self.plot(labels=key, invert_colors=invert_colors)
                 # Get pathnames
                 pathnames = self.results['pathnames'][loc]
                 # Move the directory
-                targetdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
+                if targetdir is None:
+                    targetdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
+                else:
+                    targetdir = os.path.join(targetdir, target_labels.get(key))
                 # Ask user what to do.
                 logger.info('---------------------------------------------------------------')
                 logger.info(f'[Cluster {key}]> Move [{len(pathnames)}] images to <{targetdir}>?')
