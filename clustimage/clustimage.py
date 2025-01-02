@@ -1787,7 +1787,7 @@ class Clustimage():
         """
         if self.params['method']=='exif':
             logger.info('Use the plot_map() function to plot the exif lat/lon coordinates on a Map.')
-            return None
+            return None, None
 
         # Check status
         fig = None
