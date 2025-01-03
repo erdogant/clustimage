@@ -2340,6 +2340,7 @@ class Clustimage():
         targetdir : str, optional
             The base directory where the images will be moved. If None, the images will be moved
             to the parent directory of their current location.
+            * 'c:/temp/'
         user_input: bool, default: True
             True: The user should decide for each directory whether to proceed.
             False: All files are moved without questions.
@@ -2370,22 +2371,22 @@ class Clustimage():
                 pathnames = self.results['pathnames'][loc]
                 # Move the directory
                 if targetdir is None:
-                    targetdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
+                    exportdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
                 else:
-                    targetdir = os.path.join(targetdir, target_labels.get(key))
+                    exportdir = os.path.join(targetdir, target_labels.get(key))
                 # Ask user what to do.
                 if user_input:
                     # Make plot
                     # self.plot(labels=key, invert_colors=True)
                     logger.info('---------------------------------------------------------------')
-                    logger.info(f'[Cluster {key}]> Move [{len(pathnames)}] images to <{targetdir}>?')
+                    logger.info(f'[Cluster {key}]> Move [{len(pathnames)}] images to <{exportdir}>?')
                     userinput = input('[clustimage] >Press <enter> to continue and q to quit.')
-                    if userinput=='q':
+                    if userinput == 'q':
                         break
                     else:
-                        move_files(pathnames, targetdir)
+                        move_files(pathnames, exportdir)
                 else:
-                    move_files(pathnames, targetdir)
+                    move_files(pathnames, exportdir)
             else:
                 logger.error(f"Label [{key}] does not exist. Valid cluster labels are: cl.results['labels']")
 
