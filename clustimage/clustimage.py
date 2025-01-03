@@ -311,7 +311,7 @@ class Clustimage():
                 * 'low' : Input are the xycoordinates that are determined by "embedding". Thus either tSNE coordinates or the first two PCs or HOGH features.
         black_list : list, (default: None)
             Exclude directory with all subdirectories from processing.
-            * example: ['undouble']
+            * ['undouble']
         recursive : bool, optional
             Whether to scan subdirectories recursively. Default is True.
 
@@ -2434,7 +2434,7 @@ def create_targetdir(pathname, targetdir=None):
     dirname, filename, ext = seperate_path(pathname)
     # Set the targetdir
     if targetdir is None:
-        movedir = os.path.join(dirname, 'undouble')
+        movedir = os.path.join(dirname, 'clustimage')
     else:
         movedir = targetdir
 
@@ -2776,8 +2776,9 @@ def listdir(dirpath, ext=['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic'], black_li
         Path to directory; "/tmp" or "c://temp/"
     ext : list, default: ['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic']
         extentions to collect form directories.
-    black_list : list, (default: ['undouble'])
+    black_list : list, (default: None)
         Exclude directory with all subdirectories from processing.
+        * ['undouble']
     recursive : bool, (default: True)
         Walk recursively trhough all subdirectories
 
