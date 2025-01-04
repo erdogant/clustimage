@@ -1755,7 +1755,7 @@ class Clustimage():
             'fontcolor': [0, 0, 0],
             'xlabel': 'x-axis',
             'ylabel': 'y-axis',
-            'cmap': cmap,
+            'cmap': 'Set2',
             'density': False,
             'gradient': None,
             }
