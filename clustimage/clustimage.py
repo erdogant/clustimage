@@ -2333,7 +2333,7 @@ class Clustimage():
         """
         return import_example(data=data, url=url, sep=sep, verbose=get_logger())
 
-    def move_to_dir(self, target_labels=None, targetdir=None, user_input=True):
+    def move_to_dir(self, target_labels=None, targetdir=None, action='copy', user_input=True):
         """Move image files into directories based on cluster labels.
 
         Parameters
@@ -2345,6 +2345,9 @@ class Clustimage():
             The base directory where the images will be moved. If None, the images will be moved
             to the parent directory of their current location.
             * 'c:/temp/'
+        action : str, 'copy' default
+            * 'copy': copy files
+            * 'move': move files
         user_input: bool, default: True
             True: The user should decide for each directory whether to proceed.
             False: All files are moved without questions.
@@ -2388,17 +2391,19 @@ class Clustimage():
                     if userinput == 'q':
                         break
                     else:
-                        move_files(pathnames, exportdir)
+                        move_files(pathnames, exportdir, action=action)
                 else:
-                    move_files(pathnames, exportdir)
+                    move_files(pathnames, exportdir, action=action)
             else:
                 logger.error(f"Label [{key}] does not exist. Valid cluster labels are: cl.results['labels']")
 
 
 #%%
-def move_files(pathnames, targetdir):
+def move_files(pathnames, targetdir, action='copy'):
     # Create targetdir
     movedir, dirname, filename, ext = create_targetdir(pathnames[0], targetdir)
+    # Store function
+    shutil_action = shutil.move if action=='move' else shutil.copy
 
     # Move all others
     for i, file in enumerate(pathnames[1:]):
@@ -2407,7 +2412,7 @@ def move_files(pathnames, targetdir):
             # Original filename
             _, filename1, ext1 = seperate_path(os.path.split(file)[1])
             try:
-                shutil.move(file, os.path.join(movedir, filename1 + ext1))
+                shutil_action(file, os.path.join(movedir, filename1 + ext1))
             except:
                 logger.error(f'Error moving file: {file}')
         else:
