@@ -2406,17 +2406,17 @@ def move_files(pathnames, targetdir, action='move'):
     shutil_action = shutil.move if action=='move' else shutil.copy
 
     # Move all others
-    for i, file in enumerate(pathnames[1:]):
-        if os.path.isfile(file):
-            logger.info(f'Move> {file} -> {movedir}')
+    for filepath in pathnames:
+        if os.path.isfile(filepath):
+            logger.info(f'{action}> {filepath} -> {movedir}')
             # Original filename
-            _, filename1, ext1 = seperate_path(os.path.split(file)[1])
+            _, filename1, ext1 = seperate_path(os.path.split(filepath)[1])
             try:
-                shutil_action(file, os.path.join(movedir, filename1 + ext1))
+                shutil_action(filepath, os.path.join(movedir, filename1 + ext1))
             except:
-                logger.error(f'Error moving file: {file}')
+                logger.error(f'Error moving file: {filepath}')
         else:
-            logger.info(f'File not found> {file}')
+            logger.info(f'File not found> {filepath}')
 
 
 def create_targetdir(pathname, targetdir=None):
