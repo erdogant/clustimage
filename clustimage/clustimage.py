@@ -3105,6 +3105,10 @@ def cluster_latlon(latlon, radius_meters=1000, min_samples=2):
     # Catch rows with lat/lon
     loc = np.logical_and(~latlon['lat'].isna(), ~latlon['lon'].isna())
 
+    if np.sum(loc) <= 3:
+        logger.warning('Clustering not executed. It requires more then 3 samples with lat/lon coordinates.')
+        return cluster_labels
+
     # Only keep the rows with latlon
     latlon = latlon[loc]
 
