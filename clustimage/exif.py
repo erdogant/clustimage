@@ -392,7 +392,7 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
         dirnames = get_dir_names(cluster_data['pathnames'])
 
         # Create a combined feature group for markers and polygons
-        if not cluster_icons: combined_group = folium.FeatureGroup(name=f"Cluster {int(cluster_id)} ({cluster_data.shape[0]} imgs) - {dirnames} - {dt_range}")
+        if not cluster_icons: combined_group = folium.FeatureGroup(name=f"Cluster {cluster_id} ({cluster_data.shape[0]} imgs) - {dirnames} - {dt_range}")
         cluster_groups[cluster_id] = combined_group
 
         # Add markers to the feature group
@@ -410,7 +410,7 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
             popup_content = f"""
                 <div>
                     <p>
-                        Cluster: {int(row['clusterlabels'])}, {cluster_data.shape[0]} photos <br>
+                        Cluster: {row['clusterlabels']}, {cluster_data.shape[0]} photos <br>
                         Filename: {row['filenames']} <br>
                         Dirname: {dirname} <br>
                         Date/Time: {month_year} <br>
