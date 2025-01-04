@@ -632,7 +632,7 @@ First perform the desired clustering approach and with the following steps it al
 
     # Step 1. Use the plot function to determine what event the cluster of photos represents.
     # Do not plot cluster 0 (rest group), and only plot when a cluster contain 3 or more images.
-    cl.plot(blacklist=[0], min_clust=3)
+    cl.plot(blacklist=[0], min_samples=3)
     
     # 2. Create a dict that specifies the cluster number with its folder names.
     # The first column is the cluster label and the second string is the destinated subfolder name.

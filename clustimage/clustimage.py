@@ -2089,7 +2089,7 @@ class Clustimage():
         logger.info(f'Output: {save_path}')
         return m, save_path
 
-    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_clust=2, figsize=(15, 10), blacklist=None, invert_colors=False):
+    def plot(self, labels=None, show_hog=False, ncols=None, cmap=None, min_samples=2, figsize=(15, 10), blacklist=None, invert_colors=False):
         """Plot the results.
 
         Parameters
@@ -2102,8 +2102,8 @@ class Clustimage():
             'gray', 'binary',  None (uses rgb colorscheme)
         show_hog : bool, (default: False)
             Plot the hog features next to the input image.
-        min_clust : int, (default: 1)
-            Plots are created for clusters with >= min_clust samples
+        min_samples : int, (default: 1)
+            Plots are created for clusters with >= min_samples
         figsize : tuple, (default: (15, 10).
             Size of the figure (height,width).
         blacklist: list
@@ -2139,7 +2139,7 @@ class Clustimage():
             # Run over all labels.
             for label in tqdm(uilabels, disable=disable_tqdm(), desc='[clustimage]'):
                 idx = np.where(self.results['labels']==label)[0]
-                if len(idx)>=min_clust and not np.isin(label, blacklist):
+                if len(idx)>=min_samples and not np.isin(label, blacklist):
                     logger.info(f'Cluster {label}:  Plot [{len(idx)}] images')
                     # Collect the images
                     getfiles = np.array(self.results['pathnames'])[idx]
