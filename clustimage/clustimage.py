@@ -2060,18 +2060,22 @@ class Clustimage():
         """
         if self.params['method']!='exif':
             logger.info('The plot_map() function requires to use the exif method. <return>')
-            return None
+            return None, None
 
         # from clustimage.plot_map import plot_map
         if (save_path is not None):
             if os.path.isdir(save_path):
                 logger.error('Save path should also contain filename such as: "c:/temp/map.html" <return>.')
-                return None
+                return None, None
 
             dirpath = os.path.split(save_path)[0]
             if not os.path.isdir(dirpath):
                 logger.error('Save path directory does not exists <return>.')
-                return None
+                return None, None
+
+        if self.results.results['xycoord'][['lat', 'lon']].dropna().shape[0]:
+            logger.error('No lat/lon coordinates available <return>')
+            return None, None
 
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')
