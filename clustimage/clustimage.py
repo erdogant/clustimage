@@ -2073,7 +2073,7 @@ class Clustimage():
                 logger.error('Save path directory does not exists <return>.')
                 return None, None
 
-        if self.results.results['xycoord'][['lat', 'lon']].dropna().shape[0]:
+        if self.results['xycoord'][['lat', 'lon']].dropna().shape[0]==0:
             logger.error('No lat/lon coordinates available <return>')
             return None, None
 
