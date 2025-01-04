@@ -2333,7 +2333,7 @@ class Clustimage():
         """
         return import_example(data=data, url=url, sep=sep, verbose=get_logger())
 
-    def move_to_dir(self, target_labels=None, targetdir=None, action='copy', user_input=True):
+    def move_to_dir(self, target_labels=None, targetdir=None, action='move', user_input=True):
         """Move image files into directories based on cluster labels.
 
         Parameters
@@ -2399,7 +2399,7 @@ class Clustimage():
 
 
 #%%
-def move_files(pathnames, targetdir, action='copy'):
+def move_files(pathnames, targetdir, action='move'):
     # Create targetdir
     movedir, dirname, filename, ext = create_targetdir(pathnames[0], targetdir)
     # Store function
