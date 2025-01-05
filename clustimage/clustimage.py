@@ -2381,6 +2381,7 @@ class Clustimage():
                     exportdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
                 else:
                     exportdir = os.path.join(targetdir, target_labels.get(key))
+
                 # Ask user what to do.
                 if user_input:
                     # Make plot
@@ -2403,7 +2404,7 @@ def move_files(pathnames, targetdir, action='move'):
     # Create targetdir
     movedir, dirname, filename, ext = create_targetdir(pathnames[0], targetdir)
     # Store function
-    shutil_action = shutil.move if action=='move' else shutil.copy
+    shutil_action = shutil.move if action.lower()=='move' else shutil.copy
 
     # Move all others
     for filepath in pathnames:
