@@ -2333,21 +2333,24 @@ class Clustimage():
         """
         return import_example(data=data, url=url, sep=sep, verbose=get_logger())
 
-    def move_to_dir(self, target_labels=None, targetdir=None, action='move', user_input=True):
-        """Move image files into directories based on cluster labels.
+    def move_to_dir(self, target_labels=None, savedir=None, action='move', overwrite=False, user_input=True):
+        """Move or copy image files into directories based on cluster labels.
 
         Parameters
         ----------
         target_labels : dict, optional
             A dictionary where keys are cluster labels, and values are the target folder names.
             None: folders are automatically generated with names such as "group_<label>".
-        targetdir : str, optional
+        savedir : str, optional
             The base directory where the images will be moved. If None, the images will be moved
             to the parent directory of their current location.
             * 'c:/temp/'
         action : str, 'copy' default
             * 'copy': copy files
             * 'move': move files
+        overwrite : Bool, False default
+            * True: Overwrite files
+            * False: Do not overwrite files
         user_input: bool, default: True
             True: The user should decide for each directory whether to proceed.
             False: All files are moved without questions.
@@ -2377,10 +2380,10 @@ class Clustimage():
                 # Get pathnames
                 pathnames = self.results['pathnames'][loc]
                 # Move the directory
-                if targetdir is None:
+                if savedir is None:
                     exportdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
                 else:
-                    exportdir = os.path.join(targetdir, target_labels.get(key))
+                    exportdir = os.path.join(savedir, target_labels.get(key))
 
                 # Ask user what to do.
                 if user_input:
@@ -2392,19 +2395,24 @@ class Clustimage():
                     if userinput == 'q':
                         break
                     else:
-                        move_files(pathnames, exportdir, action=action)
+                        filepaths_status = move_files(pathnames, exportdir, action=action, overwrite=overwrite)
                 else:
-                    move_files(pathnames, exportdir, action=action)
+                    filepaths_status = move_files(pathnames, exportdir, action=action, overwrite=overwrite)
             else:
                 logger.error(f"Label [{key}] does not exist. Valid cluster labels are: cl.results['labels']")
 
+            # Return
+            return filepaths_status
+
 
 #%%
-def move_files(pathnames, targetdir, action='move'):
-    # Create targetdir
-    movedir, dirname, filename, ext = create_targetdir(pathnames[0], targetdir)
+def move_files(pathnames, savedir, action='move', overwrite=False):
+    # Create savedir
+    movedir, dirname, filename, ext = create_dir(pathnames[0], savedir)
     # Store function
     shutil_action = shutil.move if action.lower()=='move' else shutil.copy
+    # Store successes
+    filepaths_status = {}
 
     # Move all others
     for filepath in pathnames:
@@ -2412,22 +2420,31 @@ def move_files(pathnames, targetdir, action='move'):
             logger.info(f'{action}> {filepath} -> {movedir}')
             # Original filename
             _, filename1, ext1 = seperate_path(os.path.split(filepath)[1])
+            # New pathname
+            filepath_new = os.path.join(movedir, filename1 + ext1)
+            filepaths_status[filepath] = {'success': False, 'action': action, 'filepath': filepath_new}
             try:
-                shutil_action(filepath, os.path.join(movedir, filename1 + ext1))
+                if os.path.isfile(filepath_new) and overwrite:
+                    shutil_action(filepath, filepath_new)
+                    filepaths_status[filepath]['success'] = True
+                else:
+                    logger.warning('File already exists. Could not {action} {filename1} to {filepath}.')
             except:
-                logger.error(f'Error moving file: {filepath}')
+                logger.error(f'Unknown error occured moving file: {filepath}')
         else:
             logger.info(f'File not found> {filepath}')
+    # Return
+    return filepaths_status
 
 
-def create_targetdir(pathname, targetdir=None):
+def create_dir(pathname, savedir=None):
     """Create directory.
 
     Parameters
     ----------
     pathname : str
         Absolute path location of the image of interest.
-    targetdir : str
+    savedir : str
         Target directory.
 
     Returns
@@ -2443,11 +2460,11 @@ def create_targetdir(pathname, targetdir=None):
 
     """
     dirname, filename, ext = seperate_path(pathname)
-    # Set the targetdir
-    if targetdir is None:
+    # Set the savedir
+    if savedir is None:
         movedir = os.path.join(dirname, 'clustimage')
     else:
-        movedir = targetdir
+        movedir = savedir
 
     if not os.path.isdir(movedir):
         logger.debug('Create dir: <%s>' %(movedir))
