@@ -9,11 +9,12 @@ from clustimage.clustimage import (
     imresize,
     listdir,
     set_logger,
+    move_files,
     )
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.6.4'
+__version__ = '1.6.5'
 
 # module level doc-string
 __doc__ = """
