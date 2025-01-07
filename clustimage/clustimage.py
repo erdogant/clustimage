@@ -2343,8 +2343,8 @@ class Clustimage():
             None: folders are automatically generated with names such as "group_<label>".
         savedir : str, optional
             The base directory where the images will be moved. If None, the images will be moved
-            to the parent directory of their current location.
             * 'c:/temp/'
+            * None: to the parent directory of their current location.
         action : str, 'copy' default
             * 'copy': copy files
             * 'move': move files
@@ -2379,10 +2379,13 @@ class Clustimage():
             if np.sum(loc) > 0:
                 # Get pathnames
                 pathnames = self.results['pathnames'][loc]
+
                 # Move the directory
                 if savedir is None:
+                    # Create export dir  that is the base directory of the current image.
                     exportdir = os.path.join(os.path.split(pathnames[0])[0], target_labels.get(key))
                 else:
+                    # Export directory is based on the pre-defined user label per cluster catagory
                     exportdir = os.path.join(savedir, target_labels.get(key))
 
                 # Ask user what to do.
@@ -2401,12 +2404,30 @@ class Clustimage():
             else:
                 logger.error(f"Label [{key}] does not exist. Valid cluster labels are: cl.results['labels']")
 
-            # Return
-            return filepaths_status
+        # Return
+        return filepaths_status
 
 
 #%%
 def move_files(pathnames, savedir, action='move', overwrite=False):
+    """Move or copy image files into directories based on cluster labels.
+
+    Parameters
+    ----------
+    pathnames : list or numpy array
+        A list or numpy array with files that needs to be moved.
+        ['c:/temp/file.jpg', 'c:/file2.jpg']
+    savedir : str, optional
+        The base directory where the images will be moved. If None, the images will be moved
+        * 'c:/my_new_dir/'
+        * None: to the parent directory of their current location.
+    action : str, 'copy' default
+        * 'copy': copy files
+        * 'move': move files
+    overwrite : Bool, False default
+        * True: Overwrite files
+        * False: Do not overwrite files
+    """
     # Create savedir
     movedir, dirname, filename, ext = create_dir(pathnames[0], savedir)
     # Store function
@@ -2424,11 +2445,11 @@ def move_files(pathnames, savedir, action='move', overwrite=False):
             filepath_new = os.path.join(movedir, filename1 + ext1)
             filepaths_status[filepath] = {'success': False, 'action': action, 'filepath': filepath_new}
             try:
-                if os.path.isfile(filepath_new) and overwrite:
+                if not os.path.isfile(filepath_new) or overwrite:
                     shutil_action(filepath, filepath_new)
                     filepaths_status[filepath]['success'] = True
                 else:
-                    logger.warning('File already exists. Could not {action} {filename1} to {filepath}.')
+                    logger.warning(f'{filename1} already exists. Could not {action} to {filepath}.')
             except:
                 logger.error(f'Unknown error occured moving file: {filepath}')
         else:
