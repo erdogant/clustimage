@@ -2438,7 +2438,6 @@ def move_files(pathnames, savedir, action='move', overwrite=False):
     # Move all others
     for filepath in pathnames:
         if os.path.isfile(filepath):
-            logger.info(f'{action}> {filepath} -> {movedir}')
             # Original filename
             _, filename1, ext1 = seperate_path(os.path.split(filepath)[1])
             # New pathname
@@ -2448,10 +2447,11 @@ def move_files(pathnames, savedir, action='move', overwrite=False):
                 if not os.path.isfile(filepath_new) or overwrite:
                     shutil_action(filepath, filepath_new)
                     filepaths_status[filepath]['success'] = True
+                    logger.info(f'{action}> {filepath} -> {filepath_new}')
                 else:
-                    logger.warning(f'{filename1} already exists. Could not {action} to {filepath}.')
+                    logger.warning(f'{filename1} already exists. Could not {action} to {filepath_new}.')
             except:
-                logger.error(f'Unknown error occured moving file: {filepath}')
+                logger.error(f'Unknown error occured moving file: {filepath} to {filepath_new}')
         else:
             logger.info(f'File not found> {filepath}')
     # Return
