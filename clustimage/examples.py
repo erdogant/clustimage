@@ -3,6 +3,49 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+# %%
+# import pandas as pd
+# import numpy as np
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.cluster import DBSCAN
+# import matplotlib.pyplot as plt
+# from scatterd import scatterd
+
+# # Load dataset
+# # data = pd.read_csv("your_dataset.csv")
+# data = cl.results['feat'][['lat','lon','datetime']]
+
+# # Drop rows with NaN in lat and lon
+# data = data.dropna(subset=['lat', 'lon'])
+
+# # Transform datetime to useful features
+# data['datetime'] = pd.to_datetime(data['datetime'], format='%Y:%m:%d %H:%M:%S')
+# data['hour'] = data['datetime'].dt.hour
+# data['day_of_week'] = data['datetime'].dt.dayofweek
+# data['year'] = data['datetime'].dt.year
+# data['timestamp'] = data['datetime'].astype('int64') / 1e9  # Convert to seconds since epoch
+
+# # Select features for clustering
+# features = data[['lat', 'lon', 'timestamp']]  # Use 'hour' or 'timestamp' depending on granularity
+# # features = data[['lat', 'lon', 'hour', 'day_of_week', 'year']]  # Use 'hour' or 'timestamp' depending on granularity
+# scaler = StandardScaler()
+# scaled_features = scaler.fit_transform(features)
+
+# # DBSCAN clustering
+# db = DBSCAN(eps=0.5, min_samples=5).fit(scaled_features)
+# data['cluster'] = db.labels_
+# cl.results['labels'] = db.labels_
+
+# # Visualize clusters (latitude vs longitude)
+# scatterd(x=scaled_features[:,0], y=scaled_features[:,2], c=data['cluster'], cmap='viridis')
+# # plt.scatter(data['lat'], data['lon'], c=data['cluster'], cmap='viridis')
+# # plt.xlabel('Latitude')
+# # plt.ylabel('Longitude')
+# # plt.title('Clusters')
+# # plt.colorbar(label='Cluster ID')
+# # plt.show()
+
+
 #%% Workflow to clean your [personal] photo files
 # Suppose you have photos downloaded from whatsapp, your iphone and combined with the screenshots and selfies you have.
 # In addition, friends also took pictures, burst and shard them with your.
@@ -21,7 +64,8 @@ from clustimage import Clustimage
 import os
 
 # Working directory
-dir_path = r'\\NAS_SYNOLOGY\Photo\2024\various'
+# dir_path = r'\\NAS_SYNOLOGY\Photo\2024\Various'
+dir_path = r'd://temp/'
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
 
@@ -40,19 +84,19 @@ print(cl.results['labels'])
 # Show filenames from cluster 1
 cl.results['pathnames'][cl.results['labels']==5]
 # Plot only files in cluster 1
-cl.plot(labels=1, blacklist=[-2, -1], min_clust=3, invert_colors=True)
+cl.plot(labels=1, blacklist=[-2, -1], min_samples=3, invert_colors=True)
 
 # -------
 # Step 2: Use the plot function to determine what event the cluster of photos represents.
 # -------
 # Make plot but exclude cluster 0, and only show when there are 4 or more photos in the group.
-cl.plot(blacklist=[-2, -1], min_clust=3, invert_colors=True)
+cl.plot(blacklist=[-2, -1], min_samples=3, invert_colors=True)
 
 # -------
 # Step 3: Visualize photos on on map
 # -------
 # Now we have map where the photos are grouped together in clustere that we can visually inspect.
-cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polygon=True, save_path=os.path.join(dir_path, 'map.html'))
+cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polygon=True, save_path=os.path.join(dir_path, 'map_latlon.html'))
 
 # -------
 # Step 4: We can now easily re-organize our disk using the move functionality.
@@ -61,29 +105,12 @@ cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polyg
 # The first column is the cluster label and the second string is the destinated subfolder name. All files in the cluster will be moved to the subfolder.
 
 target_labels = {
-    8: 'Winterbergen',
-    7: 'Winterbergen',
-    25: 'Musical',
-    15: 'Sportdag',
-    21: 'Schoolplein',
-    13: 'Nachtstrand',
-    1: 'Concert',
-    28: 'Feest',
-    2: 'Delft',
-    9: 'Delft',
-    3: 'Huis en Tuin',
-    5: 'Huis en Tuin',
-    11: 'Huis en Tuin',
-    12: 'Huis en Tuin',
-    14: 'Huis en Tuin',
-    18: 'Huis en Tuin',
-    22: 'Huis en Tuin',
-    24: 'Huis en Tuin',
-    26: 'Huis en Tuin',
+    0: 'group 1',
+    -1: 'Rest groep',
 }
 
 # Run the script to physically move the photos to the specified directories using the cluster labels.
-cl.move_to_dir(target_labels=target_labels, ext_allowed=['mp4'])
+cl.move_to_dir(target_labels=target_labels, savedir=dir_path, user_input=False)
 
 # -------
 # Step 6: Undouble.
