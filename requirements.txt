@@ -11,9 +11,9 @@ scikit-learn
 matplotlib
 scikit-image
 scipy
-opencv-python
 pypickle
 imagehash
 pypickle
 ismember
 pillow-heif
+opencv-python-headless

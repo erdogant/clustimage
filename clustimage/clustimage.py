@@ -25,7 +25,6 @@ from sklearn.cluster import DBSCAN
 import os
 import logging
 import fnmatch
-import cv2
 import matplotlib.pyplot as plt
 from matplotlib import offsetbox
 
@@ -49,6 +48,14 @@ import webbrowser
 from pillow_heif import register_heif_opener
 # Register HEIF opener for Pillow
 register_heif_opener()
+
+try:
+    import cv2
+except ImportError:
+    raise ImportError(
+        "The 'opencv-python' library is not installed. Please install it using the following command:\n"
+        "pip install opencv-python")
+
 
 # Configure the logger
 logger = logging.getLogger('')
