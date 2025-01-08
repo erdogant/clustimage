@@ -54,7 +54,7 @@ try:
 except ImportError:
     raise ImportError(
         "The 'opencv-python' library is not installed. Please install it using the following command:\n"
-        "pip install opencv-python")
+        ">pip install opencv-python or the lightweight version: >pip install opencv-python-headless")
 
 
 # Configure the logger
