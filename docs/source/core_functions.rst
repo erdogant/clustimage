@@ -622,8 +622,8 @@ Selection on the cluster labels
 
 Move files based on clusterlabels
 ''''''''''''''''''''''''''''''''''
-The ``move_to_dir`` function moves files physically files into subdirectories based on cluster labels.
-First perform the desired clustering approach and with the following steps it allows you to organize the images by physically moving them into subdirectories.
+The ``move_to_dir`` function moves files physically files into subdirectories based on duplicates.
+First perform the desired undoubling approach and with the following steps it allows you to organize the images by physically moving them into subdirectories.
 
 .. code:: python
 
