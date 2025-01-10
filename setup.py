@@ -28,6 +28,7 @@ setuptools.setup(
                        'scikit-image',
                        'matplotlib',
                        'scipy',
+                       'piexif',
                        # 'opencv-python',
                        'opencv-python-headless',
                        'imagehash',
