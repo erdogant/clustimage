@@ -1,4 +1,6 @@
 piexif
 geopy
 folium
-opencv-python
+opencv-python-headless
+# opencv-python
+

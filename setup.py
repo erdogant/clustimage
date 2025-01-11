@@ -29,8 +29,6 @@ setuptools.setup(
                        'matplotlib',
                        'scipy',
                        'piexif',
-                       # 'opencv-python',
-                       'opencv-python-headless',
                        'imagehash',
                        'pillow-heif'],
      python_requires='>=3',

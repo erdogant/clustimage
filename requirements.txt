@@ -16,5 +16,4 @@ imagehash
 pypickle
 ismember
 pillow-heif
-opencv-python-headless
 piexif

@@ -53,8 +53,8 @@ try:
     import cv2
 except ImportError:
     raise ImportError(
-        "The 'opencv-python' library is not installed. Please install it using the following command:\n"
-        ">pip install opencv-python or the lightweight version: >pip install opencv-python-headless")
+        "The 'opencv-python' library is not installed. Please install it manually using the following command:\n"
+        ">pip install opencv-python or the lightweight version without GUI: >pip install opencv-python-headless")
 
 
 # Configure the logger
