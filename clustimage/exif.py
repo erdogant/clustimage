@@ -17,6 +17,7 @@ import numpy as np
 import os
 import time
 from datetime import datetime as dt
+import re
 
 try:
     import piexif
@@ -221,7 +222,31 @@ def get_file_times(exif_data, pathname):
                 # Unix/Linux: No reliable creation time from os.stat()
                 datetime_created = datetime_modified
 
+    # Fix any
+    datetime_created = fix_invalid_seconds(datetime_created)
+    datetime_modified = fix_invalid_seconds(datetime_modified)
+    # Return
     return datetime_created, datetime_modified
+
+
+# Function to fix invalid seconds
+def fix_invalid_seconds(datetime_str):
+    match = re.match(r'(\d{4}:\d{2}:\d{2} \d{2}:\d{2}:\d{2})', datetime_str)
+    if match:
+        # Extract seconds part
+        parts = datetime_str.split(':')
+        seconds = int(parts[-1])
+        if seconds > 59:
+            parts[-1] = '59'  # Replace invalid seconds with 59
+        return ':'.join(parts)
+    else:
+        # reformat into '%Y:%m:%d %H:%M:%S'
+        try:
+            # Attempt to parse and reformat into the correct format
+            parsed = dt.strptime(datetime_str, '%Y:%m:%d %H:%M:%S')
+            return parsed.strftime('%Y:%m:%d %H:%M:%S')
+        except ValueError:
+            return '1970:01:01 00:00:00'  # Return None for completely invalid formats
 
 
 def gps_to_decimal(coord, ref):

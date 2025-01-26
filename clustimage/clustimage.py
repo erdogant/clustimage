@@ -40,14 +40,15 @@ import random
 import imagehash
 from PIL import Image
 
-import clustimage.exif as exif
-# import exif as exif
 import webbrowser
 
 # Support for Apple HEIC images
 from pillow_heif import register_heif_opener
 # Register HEIF opener for Pillow
 register_heif_opener()
+
+import clustimage.exif as exif
+# import exif
 
 try:
     import cv2
@@ -494,8 +495,7 @@ class Clustimage():
         if self.params['method']=='exif' and metric=='datetime':
             # Cluster based on the datetime events from the images
             cluster, linkage, evaluate = None, None, None
-            # labels = cluster_on_datetime(self.results['feat']['datetime'], timeframe=self.params_exif['timeframe'], min_samples=min_clust, window_length=5)
-            labels = cluster_datetimes(self.results['feat']['datetime'], eps_hours=self.params_exif['timeframe'], min_samples=min_clust, metric='euclidean')
+            labels = cluster_datetimes(self.results['feat']['datetime'].values, eps_hours=self.params_exif['timeframe'], min_samples=min_clust, metric='euclidean', dt_format='%Y:%m:%d %H:%M:%S')
         elif self.params['method']=='exif' and metric=='latlon':
             # Cluster based on the location from the images
             cluster, linkage, evaluate = 'dbscan', None, None
@@ -3064,7 +3064,7 @@ def url2disk(urls, save_dir):
 #     return cluster_labels.astype(int)
 
 
-def cluster_datetimes(df, eps_hours=1, min_samples=2, metric='euclidean'):
+def cluster_datetimes(datetimes, eps_hours=1, min_samples=2, metric='euclidean', dt_format='%Y:%m:%d %H:%M:%S'):
     """
     Clusters datetime values in a DataFrame using a time-based window with DBSCAN.
     The time window is given in hours.
@@ -3074,6 +3074,7 @@ def cluster_datetimes(df, eps_hours=1, min_samples=2, metric='euclidean'):
         datetime_column (str): The name of the column containing datetime values.
         eps_hours (float): The maximum time gap (in hours) to consider points in the same cluster.
         min_samples (int): The minimum number of samples in a neighborhood to form a cluster.
+        dt_format: '%Y:%m:%d %H:%M:%S'
 
     Returns:
         pd.DataFrame: DataFrame with an added column for cluster labels.
@@ -3097,8 +3098,12 @@ def cluster_datetimes(df, eps_hours=1, min_samples=2, metric='euclidean'):
 
     """
     logger.info('Cluster on datetime using DBSCAN..')
+
+    # Create dataframe
+    df = pd.DataFrame(datetimes, columns=['datetime'])
+
     # Ensure datetime_column is in datetime format
-    df = pd.DataFrame(pd.to_datetime(df, format="%Y:%m:%d %H:%M:%S"))
+    df['datetime'] = pd.to_datetime(df['datetime'], format=dt_format, errors='coerce')
 
     # Convert datetime to Unix timestamp (seconds since epoch)
     timestamps = df['datetime'].astype(np.int64) // 10**9
