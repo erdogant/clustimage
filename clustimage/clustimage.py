@@ -237,9 +237,9 @@ class Clustimage():
         self.params['dim'] = dim
         self.params['dim_face'] = dim_face
 
-        self.params['dirpath'] = _set_tempdir(dirpath)
-        self.params['tempdir'] = _set_tempdir(None)
-        self.params['filepath'] = os.path.join(_set_tempdir(None), 'clustimage.pkl')
+        self.params['dirpath'] = _set_tempdir(dirpath, show_logger=True)
+        self.params['tempdir'] = _set_tempdir(None, show_logger=False)
+        self.params['filepath'] = os.path.join(_set_tempdir(None, show_logger=False), 'clustimage.pkl')
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
 
@@ -3191,7 +3191,7 @@ def cluster_latlon(latlon, radius_meters=1000, min_samples=2):
 
 
 # %%
-def _set_tempdir(dirpath):
+def _set_tempdir(dirpath, show_logger=True):
     # Set tempdirectory based on input string or path.
     try:
         # Check directory path
@@ -3205,13 +3205,13 @@ def _set_tempdir(dirpath):
         # Check existence dir and start clean by removing the directory.
         if not os.path.isdir(dirpath):
             # Create directory
-            logger.info('Creating directory: [%s]' %(dirpath))
+            if show_logger: logger.info('Creating directory: [%s]' %(dirpath))
             os.mkdir(dirpath)
     except:
         raise Exception(logger.error('[%s] does not exists or can not be created.', dirpath))
 
     dirpath = os.path.abspath(dirpath)
-    logger.info("filepath is set to [%s]" %(dirpath))
+    if show_logger: logger.info("filepath is set to [%s]" %(dirpath))
 
     return dirpath
 
