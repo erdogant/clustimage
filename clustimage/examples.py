@@ -69,7 +69,7 @@ from clustimage import Clustimage
 import os
 
 # Working directory
-dir_path = r'\\NAS_SYNOLOGY\Photo\2020\Bouwnummer_84'
+dir_path = r'\\NAS_SYNOLOGY\Photo\2017'
 # dir_path = r'd://temp/'
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
