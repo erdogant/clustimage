@@ -235,18 +235,27 @@ def fix_invalid_seconds(datetime_str):
     if match:
         # Extract seconds part
         parts = datetime_str.split(':')
-        seconds = int(parts[-1])
-        if seconds > 59:
-            parts[-1] = '59'  # Replace invalid seconds with 59
-        return ':'.join(parts)
+
+        if len(parts) == 5:
+            try:
+                seconds = float(parts[-1])  # Use float to handle decimals
+                if seconds > 59:
+                    parts[-1] = '59'  # Replace invalid seconds with 59
+                else:
+                    parts[-1] = str(int(round(seconds)))  # Round to nearest integer
+            except ValueError:
+                parts[-1] = '00'  # Fallback for invalid seconds
+            return ':'.join(parts)
+        else:
+            return '1970:01:01 00:00:00'  # Return default for completely invalid formats
     else:
-        # reformat into '%Y:%m:%d %H:%M:%S'
+        # Reformat into '%Y:%m:%d %H:%M:%S'
         try:
             # Attempt to parse and reformat into the correct format
             parsed = dt.strptime(datetime_str, '%Y:%m:%d %H:%M:%S')
             return parsed.strftime('%Y:%m:%d %H:%M:%S')
         except ValueError:
-            return '1970:01:01 00:00:00'  # Return None for completely invalid formats
+            return '1970:01:01 00:00:00'  # Return default for completely invalid formats
 
 
 def gps_to_decimal(coord, ref):
