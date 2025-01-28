@@ -384,6 +384,9 @@ class Clustimage():
         if self.params['method']=='exif' and not np.isin(metric, ['datetime', 'latlon']):
             logger.error('metric should be either "datetime" or "location" when using method="exif"')
             return None
+        if self.params['method']=='pca' and np.isin(metric, ['datetime', 'latlon']):
+            logger.error('metric can not be "datetime" or "location" when using method="pca"')
+            return None
 
         # Cleaning
         self.clean_init()
