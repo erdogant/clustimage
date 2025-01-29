@@ -3218,7 +3218,6 @@ def _set_tempdir(dirpath, show_logger=True):
 
     return dirpath
 
-
 # %% Main
 # if __name__ == "__main__":
 #     import clustimage as clustimage
