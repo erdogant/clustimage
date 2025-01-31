@@ -124,7 +124,7 @@ class Clustimage():
         Parameters to initialize the pca model.
     params_hog : dict, default: {'orientations':9, 'pixels_per_cell':(16,16), 'cells_per_block':(1,1)}
         Parameters to extract hog features.
-    params_exif : dict, default: {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False}
+    params_exif : dict, default: {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None}
         Parameters to proces exif information.
         - 'timeframe': Timeframe in hours that a photo is grouped together.
         - 'radius_meters': The radius that is used to cluster the images when using metric='datetime'
@@ -203,7 +203,7 @@ class Clustimage():
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
-                 params_exif={'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
+                 params_exif={'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None},
                  verbose='info'):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
@@ -254,7 +254,7 @@ class Clustimage():
         params_hog = {**hog_defaults, **params_hog}
         self.params_hog = params_hog
         # EXIF parameters
-        exif_defaults = {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False}
+        exif_defaults = {'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None}
         params_exif = {**exif_defaults, **params_exif}
         self.params_exif = params_exif
         # Set the logger
@@ -1226,7 +1226,10 @@ class Clustimage():
             # plt.hist(diff[np.triu_indices(diff.shape[0], k=1)], bins=50)
         elif self.params['method']=='exif':
             # Extract the metadata from the image files
-            Xfeat = exif.extract_from_image(self.results['pathnames'], ext_allowed=self.params['ext'], logger=logger)
+            if (self.params_exif['max_workers'] is not None) and self.params_exif['max_workers'] <= 1:
+                Xfeat = exif.extract_from_image(self.results['pathnames'], ext_allowed=self.params['ext'], logger=logger)
+            else:
+                Xfeat = exif.extract_from_image_parallel(self.results['pathnames'], ext_allowed=self.params['ext'], logger=logger, max_workers=self.params_exif['max_workers'])
             # Extract exif location information.
             if self.params_exif['exif_location']:
                 Xfeat = exif.location(Xfeat, logger)

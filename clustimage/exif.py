@@ -6,9 +6,8 @@
 # github      : https://github.com/erdogant/clustimage
 # Licence     : See licences
 # --------------------------------------------------
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
-
 from PIL import Image
 from io import BytesIO
 import base64
@@ -42,6 +41,86 @@ except ImportError:
         "The 'folium' library is not installed. Please install it using the following command:\n"
         "pip install folium")
 
+# %% Extract Metadata using Exif information from the photos
+def extract_metadata_from_single_image(pathname, ext_allowed):
+    """Extract EXIF metadata from a single image file."""
+    # Check extension
+    file_ext = pathname.lower().split('.')[-1]
+    if file_ext not in ext_allowed:
+        return None
+
+    # Extract filename
+    filename = os.path.split(pathname)[-1]
+
+    # Try loading EXIF data
+    try:
+        exif_data = piexif.load(pathname)
+    except:
+        return None
+
+    # Extract GPS latitude, longitude, and altitude data
+    try:
+        gps_latitude = exif_data['GPS'][piexif.GPSIFD.GPSLatitude]
+        gps_latitude_ref = exif_data['GPS'][piexif.GPSIFD.GPSLatitudeRef]
+        gps_longitude = exif_data['GPS'][piexif.GPSIFD.GPSLongitude]
+        gps_longitude_ref = exif_data['GPS'][piexif.GPSIFD.GPSLongitudeRef]
+        gps_altitude = exif_data['GPS'][piexif.GPSIFD.GPSAltitude]
+        gps_altitude_ref = exif_data['GPS'][piexif.GPSIFD.GPSAltitudeRef]
+        gps_latitude_decimal = gps_to_decimal(gps_latitude, gps_latitude_ref)
+        gps_longitude_decimal = gps_to_decimal(gps_longitude, gps_longitude_ref)
+    except:
+        gps_altitude_ref, gps_altitude, gps_latitude_decimal, gps_longitude_decimal = None, None, None, None
+
+    # Extract other metadata
+    try:
+        make = exif_data['0th'][piexif.ImageIFD.Make].decode('utf-8')
+        device = exif_data['0th'][piexif.ImageIFD.Model].decode('utf-8')
+        software = exif_data['0th'][piexif.ImageIFD.Software].decode('utf-8')
+    except:
+        make, device, software = None, None, None
+
+    # Extract datetime
+    datetime_created, datetime_modified = get_file_times(exif_data, pathname)
+
+    # Create metadata for the photo
+    metadata = {
+        'filenames': filename,
+        'pathnames': pathname,
+        'ext': file_ext,
+        'datetime': datetime_created,
+        'datetime_modified': datetime_modified,
+        'exif_location': '',
+        'lat': gps_latitude_decimal,
+        'lon': gps_longitude_decimal,
+        'altitude': gps_altitude,
+        'gps_altitude_ref': gps_altitude_ref,
+        'make': make,
+        'device': device,
+        'software': software,
+    }
+
+    return metadata
+
+def extract_from_image_parallel(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "tif", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"], logger=None, max_workers=None):
+    """Extract EXIF metadata from a list of image files using parallel processing."""
+    metadata_list = []
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit tasks for each image
+        futures = {
+            executor.submit(extract_metadata_from_single_image, pathname, ext_allowed): pathname
+            for pathname in pathnames
+        }
+
+        # Process completed futures
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                metadata_list.append(result)
+
+    if logger is not None:
+        logger.info(f'EXIF information is stored: {len(metadata_list)} out of {len(pathnames)} files')
+    return metadata_list
 
 # %% Extract Metadata using Exif information from the photos
 def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "tif", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2"], logger=None):
@@ -111,15 +190,16 @@ def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "ti
             filename = os.path.split(pathname)[-1]
 
             # Open the image
-            try:
-                img = Image.open(pathname)
-            except:
-                pass
+            # try:
+            #     img = Image.open(pathname)
+            # except:
+            #     pass
                 # logger.info(f'File can not be opened. Maybe mp4 or another format that is not supported: {pathname}')
 
             # Get exif data from image
             try:
-                exif_data = piexif.load(img.info["exif"])
+                # exif_data = piexif.load(img.info["exif"])
+                exif_data = piexif.load(pathname)
             except:
                 exif_data = {}
 
