@@ -77,37 +77,50 @@ allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp",
 cl = Clustimage(method='exif',
                 params_exif = {'timeframe': 6, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
                 ext=allowed_ext,
-                verbose='info')
+                verbose='info',
+                store_to_disk=True,
+                )
 
+# -------------------------------------------------------------------------------------------
 # Run the model to find the clusters based on datetime method. Use metric='latlon' in case location is more important than time.
 # results = cl.fit_transform(dir_path, black_list=['undouble'], recursive=True)
 results = cl.fit_transform(dir_path, metric='datetime', black_list=['undouble'], recursive=True)
+# -------------------------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------------------------
 # Show the cluster labels
 print(cl.results['labels'])
+# -------------------------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------------------------
 cl.scatter(img_mean=False, zoom=None)
+# -------------------------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------------------------
 # Show filenames from cluster 1
 cl.results['pathnames'][cl.results['labels']==5]
+# -------------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------------
 # Plot only files in cluster 1
 cl.plot(labels=1, blacklist=[-2, -1], min_samples=3, invert_colors=True)
+# -------------------------------------------------------------------------------------------
 
-# -------
+# -------------------------------------------------------------------------------------------
 # Step 2: Use the plot function to determine what event the cluster of photos represents.
-# -------
 # Make plot but exclude cluster 0, and only show when there are 4 or more photos in the group.
 cl.plot(blacklist=[-2, -1], min_samples=3, invert_colors=True)
+# -------------------------------------------------------------------------------------------
 
-# -------
+# -------------------------------------------------------------------------------------------
 # Step 3: Visualize photos on on map
-# -------
 # Now we have map where the photos are grouped together in clustere that we can visually inspect.
-cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polygon=True, save_path=os.path.join(dir_path, 'map_latlon.html'))
+cl.plot_map(cluster_icons=False, open_in_browser=True, polygon=True, save_path=os.path.join(dir_path, 'map_latlon.html'))
+# cl.plot_map(cluster_icons=False, open_in_browser=True, polygon=True, save_path=os.path.join(dir_path, 'map_latlon.html'), dim=(300, 300))
+# -------------------------------------------------------------------------------------------
 
-# -------
+# -------------------------------------------------------------------------------------------
 # Step 4: We can now easily re-organize our disk using the move functionality.
-# -------
 # We need to create a dictionary where we can define for each cluster number a subfolder name like this:
 # The first column is the cluster label and the second string is the destinated subfolder name. All files in the cluster will be moved to the subfolder.
 
@@ -115,6 +128,7 @@ target_labels = {
     0: 'group 1',
     -1: 'Rest groep',
 }
+# -------------------------------------------------------------------------------------------
 
 # Run the script to physically move the photos to the specified directories using the cluster labels.
 cl.move_to_dir(target_labels=target_labels, savedir=dir_path, user_input=False)
