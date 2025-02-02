@@ -395,7 +395,7 @@ def location(Xfeat, logger):
 
 
 #%%
-def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=True, thumbnail_size=400, blacklist_polygon=[-1], clutter_threshold=1e-4, logger=None):
+def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=True, blacklist_polygon=[-1], clutter_threshold=1e-4, store_to_disk=False, tempdir=None, dim=None, logger=None):
     """Plots a map using Folium to visualize clusters, with options to add markers and polygons for each cluster.
 
     Parameters
@@ -421,8 +421,8 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
         - False: Do not cluster icons and show the exact location on the map.
     polygon : bool, optional
         Whether to draw polygons around clusters. Default is True.
-    thumbnail_size : int, optional
-        Size of the thumbnail images to display in the marker popups. Set to None or <=10 to disable thumbnails. Default is 300.
+    dim : (int, int), optional
+        Size of the thumbnail images to display in the marker popups. Set to None or <=10 to disable thumbnails. Default is (300, 300).
     blacklist_polygon : list, optional
         List of cluster IDs for which polygons should not be drawn.
         [-1] are the samples that could not be matched in any of the clusters (the rest group in DBSCAN).
@@ -516,10 +516,17 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
             month_year = f"{dt_obj.year} {dt_obj.strftime('%B')} - {dt_obj.hour}:{dt_obj.strftime('%M')} ({dt_obj.strftime('%A')})"
             dirname = os.path.basename(os.path.split(row['pathnames'])[0])
 
-            # Generate thumbnail HTML
+            # Generate or load thumbnail
             thumbnail_base64 = ''
-            if thumbnail_size is not None and thumbnail_size > 10:
-                thumbnail_base64 = create_thumbnail(row['pathnames'], max_size=thumbnail_size, logger=logger)
+            if (dim is not None) and store_to_disk and (tempdir is not None):
+                thumbnail_path = get_thumbnail_path(row['pathnames'], tempdir, dim)
+                # The thumbnail can be loaded. which is smaller and thus faster to process.
+                if os.path.isfile(thumbnail_path):
+                    # Load thumbnail
+                    thumbnail_base64 = create_thumbnail(thumbnail_path, max_size=dim[0], store_to_disk=False, tempdir=None, logger=logger)
+                else:
+                    # Create new thumbnail
+                    thumbnail_base64 = create_thumbnail(row['pathnames'], max_size=dim[0], store_to_disk=store_to_disk, tempdir=tempdir, logger=logger)
 
             popup_content = f"""
                 <div>
@@ -576,6 +583,12 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
 
     return map_display
 
+#%%
+def get_thumbnail_path(pathname, tempdir, dim):
+    filename, ext = os.path.basename(pathname).split('.')
+    # filename = filename + '_' + f"{int(dim[0])}_{int(dim[1])}" + '.png'
+    filename = filename + '_' + f"{int(dim[0])}" + '.png'
+    return os.path.join(tempdir, filename)
 
 # %%
 def add_noise_to_close_points(cluster_data, lat_col='lat', lon_col='lon', clutter_threshold=1e-4, noise_scale=1e-4, logger=None):
@@ -715,12 +728,12 @@ def create_datetime_string(dt_strings):
 
 
 # %% Function to create a thumbnail and encode it in base64
-def create_thumbnail(image_path, max_size=300, logger=None):
+def create_thumbnail(filepath, max_size=300, store_to_disk=False, tempdir=None, logger=None):
     """Creates a thumbnail image from the provided image path and returns an HTML string containing the base64-encoded image.
 
     Parameters
     ----------
-    image_path : str
+    filepath : str
         Path to the image file to create a thumbnail for.
     max_size : int or tuple of int, optional
         The maximum size of the thumbnail. If an integer is provided, it is treated as 
@@ -736,8 +749,8 @@ def create_thumbnail(image_path, max_size=300, logger=None):
     Example
     -------
     >>> from your_module import create_thumbnail
-    >>> image_path = "example_image.jpg"
-    >>> html_thumbnail = create_thumbnail(image_path, max_size=150)
+    >>> filepath = "example_image.jpg"
+    >>> html_thumbnail = create_thumbnail(filepath, max_size=150)
     >>> print(html_thumbnail)
     '<img src="data:image/jpeg;base64,...encoded_image..." width="150" height="100">'
 
@@ -758,27 +771,37 @@ def create_thumbnail(image_path, max_size=300, logger=None):
     """
 
     try:
-        with Image.open(image_path) as img:
-            # Automatically set the thumbnail size if max_size is None or an int
-            if max_size is None:
-                max_size = [300, np.round(300 * img.size[1] / img.size[0], 0)]
-            if isinstance(max_size, int):
-                max_size = [max_size, np.round(max_size * (img.size[1] / img.size[0]), 0)]
+        # Read the image
+        img = Image.open(filepath)
 
-            # Resize the image while maintaining the aspect ratio
-            img = img.resize((int(max_size[0]), int(max_size[1])), Image.Resampling.LANCZOS)
+        # Automatically set the thumbnail size if max_size is None or an int
+        if max_size is None:
+            max_size = [300, np.round(300 * img.size[1] / img.size[0], 0)]
+        if isinstance(max_size, int):
+            max_size = [max_size, np.round(max_size * (img.size[1] / img.size[0]), 0)]
 
-            # Set the thumbnail size
-            img.thumbnail(max_size)
-            buffer = BytesIO()
-            img.save(buffer, format="JPEG")
-            encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        # Resize the image while maintaining the aspect ratio
+        # img = img.resize((int(max_size[0]), int(max_size[1])), Image.Resampling.LANCZOS)
 
-            # Return
-            return f'<img src="data:image/jpeg;base64,{encoded}" width="{max_size[0]}" height="{max_size[1]}">'
+        # Set the thumbnail size
+        img.thumbnail(max_size)
+
+        # Create format that can be used as thumbnail
+        buffer = BytesIO()
+        img.save(buffer, format="JPEG")
+        encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+        # Now save in temp directory but only if not yet exists.
+        if store_to_disk and (tempdir is not None):
+            thumbnail_path = get_thumbnail_path(filepath, tempdir, (max_size[0], max_size[0]))
+            if not os.path.isfile(thumbnail_path):
+                img.save(thumbnail_path)
+
+        # Return
+        return f'<img src="data:image/jpeg;base64,{encoded}" width="{max_size[0]}" height="{max_size[1]}">'
 
     except Exception as e:
-        logger.debug(f"File is not supported to create thumbnail: {image_path}: {e}")
+        logger.debug(f"File is not supported to create thumbnail: {filepath}: {e}")
         return ''
 
 
