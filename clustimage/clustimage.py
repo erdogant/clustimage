@@ -39,6 +39,8 @@ import shutil
 import random
 import imagehash
 from PIL import Image
+from io import BytesIO
+import base64
 
 import webbrowser
 
@@ -204,7 +206,8 @@ class Clustimage():
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
                  params_exif={'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None},
-                 verbose='info'):
+                 verbose='info',
+                 ):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean_init()
@@ -1272,7 +1275,7 @@ class Clustimage():
                     imghash = self.params_hash['hashfunc'](Image.fromarray(img)).segment_hashes[1].hash.ravel()
                 except:
                     imghash = self.params_hash['hashfunc'](Image.fromarray(img)).segment_hashes[0].hash.ravel()
-                self.params_hash['hash_size']=np.sqrt(len(imghash))
+                self.params_hash['hash_size'] = np.sqrt(len(imghash))
             else:
                 imghash = self.params_hash['hashfunc'](Image.fromarray(img), hash_size=hash_size).hash.ravel()
         except:
@@ -1466,6 +1469,8 @@ class Clustimage():
             Rescale images. This is required because the feature-space need to be the same across samples.
         flatten : Bool, (default: True)
             Flatten the processed NxMxC array to a 1D-vector
+        return_succes : Bool, (default: True)
+            Also return the succes state
 
         Returns
         -------
@@ -1494,9 +1499,21 @@ class Clustimage():
         >>>
 
         """
-        # logger.debug('[%s]' %(filepath))
         img = []
         readOK = False
+        save_thumbnail_to_disk = True
+
+        # Check whether file is available on disk
+        if self.params['store_to_disk']:
+            thumbnail_path = exif.get_thumbnail_path(filepath, self.params['tempdir'], dim)
+            # filename, ext = os.path.basename(filepath).split('.')
+            # filename = filename + '_' + f"{dim[0]}_{dim[1]}" + '.png'# + ext
+            # thumbnail_path = os.path.join(self.params['tempdir'], filename)
+            # The thumbnail can be loaded. which is smaller and thus faster to process.
+            if os.path.isfile(thumbnail_path):
+                filepath = thumbnail_path
+                save_thumbnail_to_disk = False
+
         try:
             # Read the image
             img = _imread(filepath, colorscale=colorscale)
@@ -1504,12 +1521,16 @@ class Clustimage():
             img = imscale(img)
             # Resize the image
             img = imresize(img, dim=dim)
+            # Now save in temp directory but only if not yet exists.
+            if self.params['store_to_disk'] and save_thumbnail_to_disk:
+                cv2.imwrite(thumbnail_path, img)
             # Flatten the image
             if flatten: img = img_flatten(img)
             # OK
             readOK = True
         except:
             logger.warning('Could not read: [%s]' %(filepath))
+
         # Return
         if return_succes:
             return img, readOK
@@ -2003,7 +2024,7 @@ class Clustimage():
         else:
             logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
-    def plot_map(self, cluster_icons=None, polygon=None, thumbnail_size=400, blacklist_polygon=[-1], clutter_threshold=1e-4, save_path=None, open_in_browser=True):
+    def plot_map(self, cluster_icons=None, polygon=None, dim=None, blacklist_polygon=[-1], clutter_threshold=1e-4, save_path=None, open_in_browser=True):
         """Plot a map with clustered images using their EXIF metadata.
 
         This function generates an interactive map using folium, where images are plotted
@@ -2023,8 +2044,8 @@ class Clustimage():
             - None: automaticaly set the boolean based on metric
             - True: Create polygon line
             - False: Do not create polygon line
-        thumbnail_size : int, optional
-            The size of the thumbnails (in pixels) to display on the map. Default is `400`.
+        dim : (int, int), optional
+            The size of the thumbnails (in pixels) to display on the map.
         blacklist_polygon : list, optional
             Shows the polygon line for all clusters except the blacklisted ones.
             [-1]: Default as these are the rest or noise images from DBSCAN.
@@ -2065,7 +2086,7 @@ class Clustimage():
         >>> cl.plot_map(
         ...     cluster_icons=False,
         ...     polygon=True,
-        ...     thumbnail_size=300,
+        ...     dim=(300, 300),
         ...     save_path="C:/temp/map.html",
         ...     open_in_browser=True
         ... )
@@ -2090,9 +2111,12 @@ class Clustimage():
             logger.error('No lat/lon coordinates available <return>')
             return None, None
 
+        # Set dim to params when None
+        if dim is None: dim = self.params['dim']
+
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')
-        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, thumbnail_size=thumbnail_size, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, logger=logger)
+        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, store_to_disk=self.params['store_to_disk'], dim=dim, tempdir=self.params['tempdir'], logger=logger)
 
         # Save to disk
         if save_path is None:
@@ -2584,8 +2608,6 @@ def _get_dim(Xraw, dim, grayscale=None):
     return dim
 
 # %% Store images to disk
-
-
 def store_to_disk(Xraw, dim, tempdir, files=None):
     """Store to disk."""
     # Determine the dimension based on the length of the vector.
@@ -2973,103 +2995,7 @@ def url2disk(urls, save_dir):
     """
     return dz.url2disk(urls, save_dir)
 
-
-#%% Find the indices of consecutive 1s separated by 0s
-# def cluster_on_datetime(df_datetime, timeframe=6, min_samples=2, window_length=5):
-#     """Cluster datetime events based on temporal proximity using smoothing and grouping.
-
-#     Parameters
-#     ----------
-#     df_datetime : pandas.Series
-#         A pandas Series containing datetime strings in the format '%Y:%m:%d %H:%M:%S'.
-#     timeframe : str, optional
-#         The timeframe for resampling and grouping, by default 6 (6-hour intervals).
-#         Acceptable values are Pandas-compatible frequency strings (e.g., 'H', 'D', 'W').
-#     min_samples : int, optional
-#         The minimum number of events required for a cluster to be valid, by default 2.
-#     window_length : int, optional
-#         The window length for the Savitzky-Golay filter used for smoothing. 
-#         The window length is automatically capped to the number of resampled timeframes, by default 5.
-
-#     Returns
-#     -------
-#     numpy.ndarray
-#         An array of cluster labels for each datetime in `df_datetime`. 
-#         Cluster labels are integers where 0 represents "no cluster" or "rest group."
-
-#     Notes
-#     -----
-#     - This function uses the Savitzky-Golay filter for smoothing temporal counts of events.
-#     - Clusters are formed by grouping consecutive resampled intervals with non-zero smoothed counts.
-#     - The function sorts the input Series and ensures proper resampling and grouping.
-#     - Ensure that the input `df_datetime` contains valid datetime strings that can be converted using 
-#       `pd.to_datetime`.
-
-#     Examples
-#     --------
-#     >>> import pandas as pd
-#     >>> df = pd.Series(['2023:12:01 12:00:00', '2023:12:01 13:00:00', '2023:12:01 18:00:00',
-#     ...                 '2023:12:02 09:00:00', '2023:12:02 10:00:00'])
-#     >>> cluster_labels = cluster_on_datetime(df, timeframe=6, min_samples=2, window_length=3)
-#     >>> cluster_labels
-#     array([1, 1, 0, 2, 2])
-
-#     """
-#     from scipy.signal import savgol_filter
-
-#     timeframe = str(timeframe)+'H'
-#     logger.info(f'Cluster on [datetime] using {timeframe} timeframe and smoothing window length of {window_length}')
-
-#     # Step 1: Convert datetime column from string to datetime
-#     df_datetime = pd.DataFrame(pd.to_datetime(df_datetime, format='%Y:%m:%d %H:%M:%S'))
-#     df_datetime = df_datetime.sort_values(by='datetime')
-
-#     # Create a new column for the hour
-#     df_datetime['hour'] = df_datetime['datetime'].dt.floor(timeframe)  # Rounds down to the nearest hour
-
-#     # Count the number of events per timeframe
-#     # events_per_hour = df_datetime.groupby('hour').size().reset_index(name='event_count')
-
-#     # Step 2: Set datetime as index and resample the data by hour, counting the photos
-#     datetime_proc = df_datetime.set_index('hour')
-#     # Resample and count the number of events per timeframe
-#     metadata_df_hourly = datetime_proc.resample(timeframe).size()
-
-#     # Step 3: Apply a 2nd-degree polynomial fit for smoothing (Savitzky-Golay filter)
-#     window_length = np.minimum(metadata_df_hourly.shape[0], window_length)
-#     metadata_df_hourly_smoothed = savgol_filter(metadata_df_hourly, window_length=window_length, polyorder=2)
-#     metadata_df_hourly_smoothed[metadata_df_hourly_smoothed < 0] = 0
-
-#     groups = []
-#     current_group = []
-#     for i, val in enumerate(metadata_df_hourly_smoothed):
-#         if val > 0:
-#             current_group.append(i)
-#         elif current_group:  # If we encounter a 0 and the current cluster is not empty
-#             groups.append(current_group)
-#             current_group = []
-#     # Add the last cluster if it exists
-#     if current_group:
-#         groups.append(current_group)
-
-#     # Set default clusterlabels where cluster 0 is the "rest" group.
-#     cluster_labels = np.zeros(len(df_datetime.values))
-#     df_datetime = df_datetime.sort_index()
-#     counter = 1
-
-#     for group in groups:
-#         timestart = metadata_df_hourly.index[group].min()
-#         timestop = metadata_df_hourly.index[group].max()
-#         # datetime_in_range = metadata_df_hourly.loc[timestart:timestop].index
-#         loc = (df_datetime['datetime'] >= timestart) & (df_datetime['datetime'] <= timestop)
-
-#         if sum(loc) >= min_samples:
-#             cluster_labels[loc] = counter
-#             counter = counter + 1
-
-#     return cluster_labels.astype(int)
-
-
+# %% Cluster on datetimes
 def cluster_datetimes(datetimes, eps_hours=1, min_samples=2, metric='euclidean', dt_format='%Y:%m:%d %H:%M:%S'):
     """
     Clusters datetime values in a DataFrame using a time-based window with DBSCAN.
