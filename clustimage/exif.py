@@ -585,10 +585,9 @@ def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, p
 
     return map_display
 
-#%%
+#%% Create thumbnail path
 def get_thumbnail_path(pathname, tempdir, dim):
     filename, ext = os.path.basename(pathname).split('.')
-    # filename = filename + '_' + f"{int(dim[0])}_{int(dim[1])}" + '.png'
     filename = filename + '_' + f"{int(dim[0])}" + '.png'
     return os.path.join(tempdir, filename)
 

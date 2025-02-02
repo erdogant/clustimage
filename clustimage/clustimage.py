@@ -2024,7 +2024,7 @@ class Clustimage():
         else:
             logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
-    def plot_map(self, cluster_icons=None, polygon=None, dim='default', blacklist_polygon=[-1], clutter_threshold=1e-4, save_path=None, open_in_browser=True):
+    def plot_map(self, cluster_icons=None, polygon=None, dim='default', blacklist_polygon=[-1], clutter_threshold=1e-4, save_path=None, open_in_browser=True, tempdir=None):
         """Plot a map with clustered images using their EXIF metadata.
 
         This function generates an interactive map using folium, where images are plotted
@@ -2059,6 +2059,10 @@ class Clustimage():
         open_in_browser : bool, optional
             True: automatically opens the generated map in the default web browser.
             False: Do not open in browser automatically.
+        tempdir : str, optional
+            The temp directory where thumbnails are stored. This will speed up loading times when multiple times the same image needs to be loaded.
+            * None : Use the default temporary directory that is used during initialization.
+            * r'c:/temp/clustimage/'
 
         Returns
         -------
@@ -2115,10 +2119,11 @@ class Clustimage():
 
         # Set dim to params when None
         if dim=='default': dim = self.params['dim']
+        if tempdir is None: tempdir = self.params['tempdir']
 
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')
-        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, store_to_disk=self.params['store_to_disk'], dim=dim, tempdir=self.params['tempdir'], logger=logger)
+        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, store_to_disk=self.params['store_to_disk'], dim=dim, tempdir=tempdir, logger=logger)
 
         # Save to disk
         if save_path is None:
