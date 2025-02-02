@@ -2024,7 +2024,7 @@ class Clustimage():
         else:
             logger.warning('No prediction results are found. Hint: Try to run the .find() functionality first.')
 
-    def plot_map(self, cluster_icons=None, polygon=None, dim=None, blacklist_polygon=[-1], clutter_threshold=1e-4, save_path=None, open_in_browser=True):
+    def plot_map(self, cluster_icons=None, polygon=None, dim='default', blacklist_polygon=[-1], clutter_threshold=1e-4, save_path=None, open_in_browser=True):
         """Plot a map with clustered images using their EXIF metadata.
 
         This function generates an interactive map using folium, where images are plotted
@@ -2045,7 +2045,9 @@ class Clustimage():
             - True: Create polygon line
             - False: Do not create polygon line
         dim : (int, int), optional
-            The size of the thumbnails (in pixels) to display on the map.
+            * 'default': The size of the thumbnails (in pixels) to display on the map.
+            * None: No thumbnails are created
+            * (200, 200): Thumbnail size
         blacklist_polygon : list, optional
             Shows the polygon line for all clusters except the blacklisted ones.
             [-1]: Default as these are the rest or noise images from DBSCAN.
@@ -2112,7 +2114,7 @@ class Clustimage():
             return None, None
 
         # Set dim to params when None
-        if dim is None: dim = self.params['dim']
+        if dim=='default': dim = self.params['dim']
 
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')

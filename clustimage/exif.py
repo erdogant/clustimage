@@ -395,7 +395,7 @@ def location(Xfeat, logger):
 
 
 #%%
-def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=True, blacklist_polygon=[-1], clutter_threshold=1e-4, store_to_disk=False, tempdir=None, dim=None, logger=None):
+def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, polygon=True, blacklist_polygon=[-1], clutter_threshold=1e-4, store_to_disk=False, tempdir=None, logger=None):
     """Plots a map using Folium to visualize clusters, with options to add markers and polygons for each cluster.
 
     Parameters
@@ -421,8 +421,10 @@ def plot_map(metadata_df, clusterlabels, metric, cluster_icons=True, polygon=Tru
         - False: Do not cluster icons and show the exact location on the map.
     polygon : bool, optional
         Whether to draw polygons around clusters. Default is True.
-    dim : (int, int), optional
-        Size of the thumbnail images to display in the marker popups. Set to None or <=10 to disable thumbnails. Default is (300, 300).
+    dim : (int, int), optional, Default is (300, 300)
+        Size of the thumbnail images to display in the marker popups. Set to None or <=10 to disable thumbnails.
+        * None: No thumbnails
+        * (300, 300)
     blacklist_polygon : list, optional
         List of cluster IDs for which polygons should not be drawn.
         [-1] are the samples that could not be matched in any of the clusters (the rest group in DBSCAN).
