@@ -1043,8 +1043,8 @@ class Clustimage():
 
         """
         # Check whether input is directory, list or array-like
-        if isinstance(Xraw, str) and not os.path.isdir(Xraw):
-            logger.warning(f'Input directory {Xraw} does not exists.')
+        if isinstance(Xraw, str) and (not os.path.isdir(Xraw)) and (not os.path.isfile(Xraw)):
+            logger.warning(f'Input directory or file {Xraw} does not exists.')
             return None
         elif isinstance(Xraw, str) and os.path.isdir(Xraw):
             # 1. Collect images from directory
@@ -2022,9 +2022,9 @@ class Clustimage():
                         if isinstance(input_img, str): input_img=[input_img]
                         if isinstance(find_img, str): find_img=[find_img]
                         # Input images
-                        I_input = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img, use_thumbnail_cache=self.params['use_thumbnail_cache']))
+                        I_input = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False, use_thumbnail_cache=self.params['use_thumbnail_cache']), input_img))
                         # Predicted label
-                        I_find = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img, use_thumbnail_cache=self.params['use_thumbnail_cache']))
+                        I_find = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False, use_thumbnail_cache=self.params['use_thumbnail_cache']), find_img))
                         # Combine input image with the detected images
                         imgs = I_input + I_find
                         input_txt = basename(self.results['predict'][key]['x_pathnames'][0])
