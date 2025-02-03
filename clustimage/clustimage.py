@@ -1500,6 +1500,10 @@ class Clustimage():
         readOK = False
         save_thumbnail_to_disk = True
 
+        # Return if the file is a movie
+        if np.isin(os.path.basename(filepath).split('.')[-1].lower(), ["mp4", "mkv", "avi", "mov", "wmv", "flv", "webm", "mpeg", "3gp", "mpg"]):
+            return img, readOK
+
         # Check whether file is available on disk
         if store_to_disk:
             thumbnail_path = exif.get_thumbnail_path(filepath, self.params['tempdir'], dim)
