@@ -1897,7 +1897,7 @@ class Clustimage():
                 logger.info('Plotting predicted results..')
 
                 # Scatter all points
-                fig, ax = self.pca.scatter(y=labels, legend=legend, label=False, figsize=figsize, s=dotsize, ax=ax)
+                fig, ax = self.pca.scatter(labels=labels, legend=legend, figsize=figsize, s=dotsize, ax=ax)
 
                 # Create unique colors
                 # colours = colourmap.fromlist(self.results['predict']['feat'].index)[1]
@@ -1908,11 +1908,14 @@ class Clustimage():
                         if len(self.results['predict']['feat'])>=2:
                             y = self.results['predict']['feat'].iloc[:, 1].loc[key]
                         else:
-                            y=0
+                            y = 0
 
                         # Color based on the most often seen cluster label
                         uiy, ycounts = np.unique(self.results['predict'][key]['labels'], return_counts=True)
-                        y_predict = uiy[np.argmax(ycounts)]
+                        if len(uiy) > 0:
+                            y_predict = uiy[np.argmax(ycounts)]
+                        else:
+                            y_predict = None
 
                         # Scatter
                         color = colours[1].get(y_predict, [0, 0, 0])

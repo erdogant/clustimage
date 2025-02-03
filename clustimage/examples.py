@@ -2,7 +2,6 @@
 # Import library
 # from clustimage import Clustimage
 
-
 # %%
 # import clustimage
 # print(dir(clustimage))
