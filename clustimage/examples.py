@@ -70,7 +70,7 @@ import os
 
 # Working directory
 dir_path = r'd://temp/'
-dir_path = r'\\NAS_SYNOLOGY\Photo\2024\Vluchten'
+# dir_path = r'\\NAS_SYNOLOGY\Photo\2024\Vluchten'
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
 
@@ -79,7 +79,7 @@ cl = Clustimage(method='exif',
                 params_exif = {'timeframe': 6, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
                 ext=allowed_ext,
                 verbose='info',
-                store_to_disk=True,
+                use_thumbnail_cache=True,
                 )
 
 # -------------------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ from undouble import Undouble
 model = Undouble(grayscale=False, method='phash', hash_size=8, ext=allowed_ext)
 
 # Import the re-structured data-folder
-model.import_data(dir_path)
+model.import_data(dir_path, use_thumbnail_cache=True)
 
 # Compute image-hash to determine which photos are very alike.
 model.compute_hash()
@@ -172,6 +172,7 @@ cl = Clustimage(method='pca',
                 dim=(128, 128),
                 params_pca={'n_components':0.95},
                 store_to_disk=True,
+                use_thumbnail_cache=True,
                 ext=['png', 'tiff', 'jpg', 'heic', 'jpeg'],
                 verbose='info')
 
@@ -784,6 +785,7 @@ cl = Clustimage(method='pca',
                 dim=(128, 128),
                 params_pca={'n_components':0.95},
                 store_to_disk=True,
+                use_thumbnail_cache=True,
                 verbose=50)
 
 path = cl.import_example(data='flowers')

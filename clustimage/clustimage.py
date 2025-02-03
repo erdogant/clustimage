@@ -132,6 +132,9 @@ class Clustimage():
         - 'radius_meters': The radius that is used to cluster the images when using metric='datetime'
         - 'min_samples': Minimun number of samples per cluster
         - 'exif_location': This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates.
+    use_thumbnail_cache : bool (Default: True)
+        True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+        False: Original images are used.
     verbose : int, (default: 'info')
         Print progress to screen. The default is 20.
         60: None, 40: error, 30: warning, 20: info, 10: debug
@@ -201,6 +204,7 @@ class Clustimage():
                  dim_face=(64, 64),
                  dirpath=None,
                  store_to_disk=True,
+                 use_thumbnail_cache=True,
                  ext=['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic'],
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
@@ -245,6 +249,7 @@ class Clustimage():
         self.params['filepath'] = os.path.join(_set_tempdir(None, show_logger=False), 'clustimage.pkl')
         self.params['ext'] = ext
         self.params['store_to_disk'] = store_to_disk
+        self.params['use_thumbnail_cache'] = use_thumbnail_cache
 
         # Hash parameters
         self.params_hash = get_params_hash(method, params_hash)
@@ -394,7 +399,7 @@ class Clustimage():
         # Cleaning
         self.clean_init()
         # Check whether in is dir, list of files or array-like
-        _ = self.import_data(X, black_list=black_list, recursive=recursive, store_to_disk=self.params['store_to_disk'])
+        _ = self.import_data(X, black_list=black_list, recursive=recursive, use_thumbnail_cache=self.params['use_thumbnail_cache'])
         # Extract features using method
         _ = self.extract_feat(self.results)
         # Embedding
@@ -621,7 +626,7 @@ class Clustimage():
             # Compute the average image by simply averaging the images
             img = []
             if (self.params['dim'] is not None) and (self.results['pathnames'] is not None):
-                img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, store_to_disk=self.params['store_to_disk']), np.array(self.results['pathnames'])[idx])))
+                img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, use_thumbnail_cache=self.params['use_thumbnail_cache']), np.array(self.results['pathnames'])[idx])))
             eigen_img.append(imscale(np.mean(img, axis=0)))
 
             # dim = self._get_dim(eigen_img)
@@ -820,7 +825,7 @@ class Clustimage():
         self.results_faces = faces
         return faces
 
-    def preprocessing(self, pathnames, grayscale, dim, flatten=True, store_to_disk=False):
+    def preprocessing(self, pathnames, grayscale, dim, flatten=True, use_thumbnail_cache=False):
         """Pre-processing the input images and returning consistent output.
 
         Parameters
@@ -833,6 +838,9 @@ class Clustimage():
             Rescale images. This is required because the feature-space need to be the same across samples.
         flatten : Bool, (default: True)
             Flatten the processed NxMxC array to a 1D-vector
+        use_thumbnail_cache : bool (Default: True)
+            True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+            False: Original images are used.
 
         Returns
         -------
@@ -865,7 +873,7 @@ class Clustimage():
             flatten=False
 
         # Read and preprocess data
-        imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True, store_to_disk=store_to_disk), tqdm(pathnames, disable=disable_tqdm(), desc='[clustimage]')))
+        imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True, use_thumbnail_cache=use_thumbnail_cache), tqdm(pathnames, disable=disable_tqdm(), desc='[clustimage]')))
         img, imgOK = zip(*imgs)
 
         # Exclude the images that could not be read (and thus are False)
@@ -986,7 +994,7 @@ class Clustimage():
         # Return
         return self.pca.results['PC'].values
 
-    def import_data(self, Xraw, flatten=True, black_list=None, recursive=True, store_to_disk=False):
+    def import_data(self, Xraw, flatten=True, black_list=None, recursive=True, use_thumbnail_cache=False):
         """Import images and return in an consistent manner.
 
         The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
@@ -1013,6 +1021,9 @@ class Clustimage():
             Exclude directory with all subdirectories from processing.
         recursive : bool, optional
             Whether to scan subdirectories recursively. Default is True.
+        use_thumbnail_cache : bool (Default: True)
+            True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+            False: Original images are used.
 
         Returns
         -------
@@ -1068,7 +1079,7 @@ class Clustimage():
             # Xraw = url2disk(Xraw, self.params['tempdir'])
             Xraw = dz.url2disk(Xraw, self.params['tempdir'])
             # Do not store in the object if the find functionality is used
-            X = self.preprocessing(Xraw['pathnames'], grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, store_to_disk=store_to_disk)
+            X = self.preprocessing(Xraw['pathnames'], grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, use_thumbnail_cache=use_thumbnail_cache)
             # Add the url location
             if Xraw['url'] is not None:
                 IA, IB = ismember(X['pathnames'], Xraw['pathnames'].astype(str))
@@ -1442,7 +1453,7 @@ class Clustimage():
         # Return
         return out
 
-    def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True, return_succes=False, store_to_disk=False):
+    def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True, return_succes=False, use_thumbnail_cache=False):
         """Read and pre-processing of images.
 
         The pre-processing has 4 steps and are exectued in this order.
@@ -1468,6 +1479,9 @@ class Clustimage():
             Flatten the processed NxMxC array to a 1D-vector
         return_succes : Bool, (default: True)
             Also return the succes state
+        use_thumbnail_cache : bool (Default: True)
+            True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+            False: Original images are used.
 
         Returns
         -------
@@ -1505,7 +1519,7 @@ class Clustimage():
             return img, readOK
 
         # Check whether file is available on disk
-        if store_to_disk:
+        if use_thumbnail_cache:
             thumbnail_path = exif.get_thumbnail_path(filepath, self.params['tempdir'], dim)
             if os.path.isfile(thumbnail_path):
                 filepath = thumbnail_path
@@ -1519,7 +1533,7 @@ class Clustimage():
             # Resize the image
             img = imresize(img, dim=dim)
             # Now save in temp directory but only if not yet exists.
-            if store_to_disk and save_thumbnail_to_disk:
+            if use_thumbnail_cache and save_thumbnail_to_disk:
                 cv2.imwrite(thumbnail_path, img)
             # Flatten the image
             if flatten: img = img_flatten(img)
@@ -1738,7 +1752,7 @@ class Clustimage():
         if zoom is not None and self.params['store_to_disk']:
             for i, pathname in enumerate(pathnames):
                 if isinstance(pathname, str):
-                    img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False, store_to_disk=self.params['store_to_disk'])
+                    img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False, use_thumbnail_cache=self.params['use_thumbnail_cache'])
                 else:
                     dim = self.get_dim(pathname)
                     # dim = self.get_dim(pathname)
@@ -1951,7 +1965,7 @@ class Clustimage():
                 # Collect all samples
                 subtitle='(most centroid image per cluster)'
                 for i, file in enumerate(self.results_unique['pathnames']):
-                    img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, store_to_disk=self.params['store_to_disk'])
+                    img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, use_thumbnail_cache=self.params['use_thumbnail_cache'])
                     imgs.append(img)
                     if show_hog and (self.params['method']=='hog'):
                         idx=self.results_unique['idx'][i]
@@ -2001,9 +2015,9 @@ class Clustimage():
                         if isinstance(input_img, str): input_img=[input_img]
                         if isinstance(find_img, str): find_img=[find_img]
                         # Input images
-                        I_input = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img, store_to_disk=self.params['store_to_disk']))
+                        I_input = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img, use_thumbnail_cache=self.params['use_thumbnail_cache']))
                         # Predicted label
-                        I_find = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img, store_to_disk=self.params['store_to_disk']))
+                        I_find = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img, use_thumbnail_cache=self.params['use_thumbnail_cache']))
                         # Combine input image with the detected images
                         imgs = I_input + I_find
                         input_txt = basename(self.results['predict'][key]['x_pathnames'][0])
@@ -2120,7 +2134,7 @@ class Clustimage():
 
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')
-        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, store_to_disk=self.params['store_to_disk'], dim=dim, tempdir=tempdir, logger=logger)
+        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, use_thumbnail_cache=self.params['use_thumbnail_cache'], dim=dim, tempdir=tempdir, logger=logger)
 
         # Save to disk
         if save_path is None:
@@ -2192,7 +2206,7 @@ class Clustimage():
 
                     if len(getfiles)>0:
                         # Get the images that cluster together
-                        imgs = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False, store_to_disk=self.params['store_to_disk']), getfiles))
+                        imgs = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False, use_thumbnail_cache=self.params['use_thumbnail_cache']), getfiles))
                         # Make subplots
                         if ncols is None:
                             ncol=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
@@ -2225,7 +2239,7 @@ class Clustimage():
                     # logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
                     pass
         else:
-            logger.warning('Plotting is not possible. Path locations can not be found (maybe deleted with the clean_files functions). Hint: try to set "store_to_disk=True" during initialization.')
+            logger.warning('Plotting is not possible. Path locations can not be found (maybe deleted with the clean_files functions). Try to set "store_to_disk=True" during initialization.')
 
     def _get_rows_cols(self, n, ncols=None):
         # Setup rows and columns

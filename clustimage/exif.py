@@ -395,7 +395,7 @@ def location(Xfeat, logger):
 
 
 #%%
-def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, polygon=True, blacklist_polygon=[-1], clutter_threshold=1e-4, store_to_disk=False, tempdir=None, logger=None):
+def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, polygon=True, blacklist_polygon=[-1], clutter_threshold=1e-4, use_thumbnail_cache=False, tempdir=None, logger=None):
     """Plots a map using Folium to visualize clusters, with options to add markers and polygons for each cluster.
 
     Parameters
@@ -428,6 +428,11 @@ def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, p
     blacklist_polygon : list, optional
         List of cluster IDs for which polygons should not be drawn.
         [-1] are the samples that could not be matched in any of the clusters (the rest group in DBSCAN).
+    use_thumbnail_cache : bool (Default: True)
+        True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+        False: Original images are used.
+    tempdir: String: Default:
+        User temp directory.
 
     Returns
     -------
@@ -520,15 +525,15 @@ def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, p
 
             # Generate or load thumbnail
             thumbnail_base64 = ''
-            if (dim is not None) and store_to_disk and (tempdir is not None):
+            if (dim is not None) and use_thumbnail_cache and (tempdir is not None):
                 thumbnail_path = get_thumbnail_path(row['pathnames'], tempdir, dim)
                 # The thumbnail can be loaded. which is smaller and thus faster to process.
                 if os.path.isfile(thumbnail_path):
                     # Load thumbnail
-                    thumbnail_base64 = create_thumbnail(thumbnail_path, max_size=dim[0], store_to_disk=False, tempdir=None, logger=logger)
+                    thumbnail_base64 = create_thumbnail(thumbnail_path, max_size=dim[0], use_thumbnail_cache=False, tempdir=None, logger=logger)
                 else:
                     # Create new thumbnail
-                    thumbnail_base64 = create_thumbnail(row['pathnames'], max_size=dim[0], store_to_disk=store_to_disk, tempdir=tempdir, logger=logger)
+                    thumbnail_base64 = create_thumbnail(row['pathnames'], max_size=dim[0], use_thumbnail_cache=use_thumbnail_cache, tempdir=tempdir, logger=logger)
 
             popup_content = f"""
                 <div>
@@ -729,7 +734,7 @@ def create_datetime_string(dt_strings):
 
 
 # %% Function to create a thumbnail and encode it in base64
-def create_thumbnail(filepath, max_size=300, store_to_disk=False, tempdir=None, logger=None):
+def create_thumbnail(filepath, max_size=300, use_thumbnail_cache=False, tempdir=None, logger=None):
     """Creates a thumbnail image from the provided image path and returns an HTML string containing the base64-encoded image.
 
     Parameters
@@ -740,6 +745,11 @@ def create_thumbnail(filepath, max_size=300, store_to_disk=False, tempdir=None, 
         The maximum size of the thumbnail. If an integer is provided, it is treated as 
         the width, and the height is scaled proportionally. If a tuple (width, height) 
         is provided, it specifies the exact dimensions. Defaults to 300.
+    use_thumbnail_cache : bool (Default: True)
+        True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+        False: Original images are used.
+    tempdir: String: Default:
+        User temp directory.
 
     Returns
     -------
@@ -793,7 +803,7 @@ def create_thumbnail(filepath, max_size=300, store_to_disk=False, tempdir=None, 
         encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
         # Now save in temp directory but only if not yet exists.
-        if store_to_disk and (tempdir is not None):
+        if use_thumbnail_cache and (tempdir is not None):
             thumbnail_path = get_thumbnail_path(filepath, tempdir, (max_size[0], max_size[0]))
             if not os.path.isfile(thumbnail_path):
                 img.save(thumbnail_path)
