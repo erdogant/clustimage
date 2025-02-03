@@ -394,7 +394,7 @@ class Clustimage():
         # Cleaning
         self.clean_init()
         # Check whether in is dir, list of files or array-like
-        _ = self.import_data(X, black_list=black_list, recursive=recursive)
+        _ = self.import_data(X, black_list=black_list, recursive=recursive, store_to_disk=self.params['store_to_disk'])
         # Extract features using method
         _ = self.extract_feat(self.results)
         # Embedding
@@ -621,7 +621,7 @@ class Clustimage():
             # Compute the average image by simply averaging the images
             img = []
             if (self.params['dim'] is not None) and (self.results['pathnames'] is not None):
-                img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True), np.array(self.results['pathnames'])[idx])))
+                img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, store_to_disk=self.params['store_to_disk']), np.array(self.results['pathnames'])[idx])))
             eigen_img.append(imscale(np.mean(img, axis=0)))
 
             # dim = self._get_dim(eigen_img)
@@ -820,7 +820,7 @@ class Clustimage():
         self.results_faces = faces
         return faces
 
-    def preprocessing(self, pathnames, grayscale, dim, flatten=True):
+    def preprocessing(self, pathnames, grayscale, dim, flatten=True, store_to_disk=False):
         """Pre-processing the input images and returning consistent output.
 
         Parameters
@@ -865,16 +865,13 @@ class Clustimage():
             flatten=False
 
         # Read and preprocess data
-        imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True), tqdm(pathnames, disable=disable_tqdm(), desc='[clustimage]')))
+        imgs = list(map(lambda x: self.imread(x, colorscale=grayscale, dim=dim, flatten=flatten, return_succes=True, store_to_disk=store_to_disk), tqdm(pathnames, disable=disable_tqdm(), desc='[clustimage]')))
         img, imgOK = zip(*imgs)
 
-        # Remove the images that could not be read (and thus are False)
+        # Exclude the images that could not be read (and thus are False)
         I_corrupt = ~np.array(imgOK)
         if np.any(I_corrupt):
-            logger.info("[%.0d] Corrupt image(s) removed.", (sum(I_corrupt)))
-            # filenames = np.array(filenames)[~I_corrupt]
-            # pathnames = np.array(pathnames)[~I_corrupt]
-            # img = img[np.flatnonzero(~I_corrupt).astype(int)]
+            logger.info("[%.0d] Image(s) could not be read and are excluded.", (sum(I_corrupt)))
             filenames = [filenames[i] for i in range(len(filenames)) if not I_corrupt[i]]
             pathnames = [pathnames[i] for i in range(len(pathnames)) if not I_corrupt[i]]
             img = [img[i] for i in range(len(img)) if not I_corrupt[i]]
@@ -989,7 +986,7 @@ class Clustimage():
         # Return
         return self.pca.results['PC'].values
 
-    def import_data(self, Xraw, flatten=True, black_list=None, recursive=True):
+    def import_data(self, Xraw, flatten=True, black_list=None, recursive=True, store_to_disk=False):
         """Import images and return in an consistent manner.
 
         The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
@@ -1071,7 +1068,7 @@ class Clustimage():
             # Xraw = url2disk(Xraw, self.params['tempdir'])
             Xraw = dz.url2disk(Xraw, self.params['tempdir'])
             # Do not store in the object if the find functionality is used
-            X = self.preprocessing(Xraw['pathnames'], grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten)
+            X = self.preprocessing(Xraw['pathnames'], grayscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=flatten, store_to_disk=store_to_disk)
             # Add the url location
             if Xraw['url'] is not None:
                 IA, IB = ismember(X['pathnames'], Xraw['pathnames'].astype(str))
@@ -1445,7 +1442,7 @@ class Clustimage():
         # Return
         return out
 
-    def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True, return_succes=False):
+    def imread(self, filepath, colorscale=1, dim=(128, 128), flatten=True, return_succes=False, store_to_disk=False):
         """Read and pre-processing of images.
 
         The pre-processing has 4 steps and are exectued in this order.
@@ -1504,12 +1501,8 @@ class Clustimage():
         save_thumbnail_to_disk = True
 
         # Check whether file is available on disk
-        if self.params['store_to_disk']:
+        if store_to_disk:
             thumbnail_path = exif.get_thumbnail_path(filepath, self.params['tempdir'], dim)
-            # filename, ext = os.path.basename(filepath).split('.')
-            # filename = filename + '_' + f"{dim[0]}_{dim[1]}" + '.png'# + ext
-            # thumbnail_path = os.path.join(self.params['tempdir'], filename)
-            # The thumbnail can be loaded. which is smaller and thus faster to process.
             if os.path.isfile(thumbnail_path):
                 filepath = thumbnail_path
                 save_thumbnail_to_disk = False
@@ -1522,7 +1515,7 @@ class Clustimage():
             # Resize the image
             img = imresize(img, dim=dim)
             # Now save in temp directory but only if not yet exists.
-            if self.params['store_to_disk'] and save_thumbnail_to_disk:
+            if store_to_disk and save_thumbnail_to_disk:
                 cv2.imwrite(thumbnail_path, img)
             # Flatten the image
             if flatten: img = img_flatten(img)
@@ -1741,7 +1734,7 @@ class Clustimage():
         if zoom is not None and self.params['store_to_disk']:
             for i, pathname in enumerate(pathnames):
                 if isinstance(pathname, str):
-                    img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False)
+                    img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False, store_to_disk=self.params['store_to_disk'])
                 else:
                     dim = self.get_dim(pathname)
                     # dim = self.get_dim(pathname)
@@ -1954,7 +1947,7 @@ class Clustimage():
                 # Collect all samples
                 subtitle='(most centroid image per cluster)'
                 for i, file in enumerate(self.results_unique['pathnames']):
-                    img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True)
+                    img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, store_to_disk=self.params['store_to_disk'])
                     imgs.append(img)
                     if show_hog and (self.params['method']=='hog'):
                         idx=self.results_unique['idx'][i]
@@ -2004,9 +1997,9 @@ class Clustimage():
                         if isinstance(input_img, str): input_img=[input_img]
                         if isinstance(find_img, str): find_img=[find_img]
                         # Input images
-                        I_input = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img))
+                        I_input = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), input_img, store_to_disk=self.params['store_to_disk']))
                         # Predicted label
-                        I_find = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img))
+                        I_find = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), find_img, store_to_disk=self.params['store_to_disk']))
                         # Combine input image with the detected images
                         imgs = I_input + I_find
                         input_txt = basename(self.results['predict'][key]['x_pathnames'][0])
@@ -2195,7 +2188,7 @@ class Clustimage():
 
                     if len(getfiles)>0:
                         # Get the images that cluster together
-                        imgs = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False), getfiles))
+                        imgs = list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=False, store_to_disk=self.params['store_to_disk']), getfiles))
                         # Make subplots
                         if ncols is None:
                             ncol=np.maximum(int(np.ceil(np.sqrt(len(imgs)))), 2)
