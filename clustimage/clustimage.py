@@ -132,6 +132,10 @@ class Clustimage():
         - 'radius_meters': The radius that is used to cluster the images when using metric='datetime'
         - 'min_samples': Minimun number of samples per cluster
         - 'exif_location': This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates.
+    use_image_cache : bool (Default: True)
+        In case a image array is provided as input. Images are then stored on disk which allows using all functionalities for plotting.
+        True: Image arrays are stored on disk.
+        False: Original images are used.
     use_thumbnail_cache : bool (Default: True)
         True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
         False: Original images are used.
@@ -203,7 +207,7 @@ class Clustimage():
                  dim=(128, 128),
                  dim_face=(64, 64),
                  dirpath=None,
-                 store_to_disk=True,
+                 use_image_cache=True,
                  use_thumbnail_cache=True,
                  ext=['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic'],
                  params_pca={'n_components': 0.95},
@@ -248,7 +252,7 @@ class Clustimage():
         self.params['tempdir'] = _set_tempdir(None, show_logger=False)
         self.params['filepath'] = os.path.join(_set_tempdir(None, show_logger=False), 'clustimage.pkl')
         self.params['ext'] = ext
-        self.params['store_to_disk'] = store_to_disk
+        self.params['use_image_cache'] = use_image_cache
         self.params['use_thumbnail_cache'] = use_thumbnail_cache
 
         # Hash parameters
@@ -1039,8 +1043,11 @@ class Clustimage():
 
         """
         # Check whether input is directory, list or array-like
-        # 1. Collect images from directory
-        if isinstance(Xraw, str) and os.path.isdir(Xraw):
+        if isinstance(Xraw, str) and not os.path.isdir(Xraw):
+            logger.warning(f'Input directory {Xraw} does not exists.')
+            return None
+        elif isinstance(Xraw, str) and os.path.isdir(Xraw):
+            # 1. Collect images from directory
             Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list, recursive=recursive)
 
         # In case of method datetime or location, we only need the pathnames for now.
@@ -1105,7 +1112,7 @@ class Clustimage():
             logger.info('Scaling images..')
             Xraw = np.vstack(list(map(lambda x: imscale(x), Xraw)))
             # Store to disk
-            if self.params['store_to_disk']:
+            if self.params['use_image_cache']:
                 pathnames, filenames = store_to_disk(Xraw, self.params['dim'], self.params['tempdir'], files=filenames)
                 pathnames = np.array(pathnames)
                 filenames = np.array(filenames)
@@ -1749,7 +1756,7 @@ class Clustimage():
 
     def _add_img_to_scatter(self, ax, pathnames, xycoord, cmap=None, zoom=0.2):
         # Plot the images on top of the scatterplot
-        if zoom is not None and self.params['store_to_disk']:
+        if zoom is not None and self.params['use_image_cache']:
             for i, pathname in enumerate(pathnames):
                 if isinstance(pathname, str):
                     img = self.imread(pathname, dim=self.params['dim'], colorscale=self.params['cv2_imread_colorscale'], flatten=False, use_thumbnail_cache=self.params['use_thumbnail_cache'])
@@ -2239,7 +2246,7 @@ class Clustimage():
                     # logger.error('The cluster clabel [%s] does not exsist! Skipping!', label)
                     pass
         else:
-            logger.warning('Plotting is not possible. Path locations can not be found (maybe deleted with the clean_files functions). Try to set "store_to_disk=True" during initialization.')
+            logger.warning('Plotting is not possible. Path locations can not be found (maybe deleted with the clean_files functions). Try to set "use_image_cache=True" during initialization.')
 
     def _get_rows_cols(self, n, ncols=None):
         # Setup rows and columns
@@ -2262,7 +2269,7 @@ class Clustimage():
         # Make figure
         fig, axs = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize)
 
-        if self.params['store_to_disk']:
+        if self.params['use_image_cache']:
             # Make the actual plots
             for i, ax in enumerate(axs.ravel()):
                 try:

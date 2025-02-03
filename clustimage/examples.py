@@ -171,12 +171,12 @@ cl = Clustimage(method='pca',
                 grayscale=False,
                 dim=(128, 128),
                 params_pca={'n_components':0.95},
-                store_to_disk=True,
+                use_image_cache=True,
                 use_thumbnail_cache=True,
                 ext=['png', 'tiff', 'jpg', 'heic', 'jpeg'],
                 verbose='info')
 
-path = cl.import_data('D://temp//Various//')
+path = cl.import_data(r'D://temp//')
 
 # Run the model to find the optimal clusters
 results = cl.fit_transform(path, min_clust=3)
@@ -784,7 +784,7 @@ cl = Clustimage(method='pca',
                 grayscale=False,
                 dim=(128, 128),
                 params_pca={'n_components':0.95},
-                store_to_disk=True,
+                use_image_cache=True,
                 use_thumbnail_cache=True,
                 verbose=50)
 
