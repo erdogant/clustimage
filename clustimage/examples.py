@@ -236,6 +236,8 @@ cl.scatter(dotsize=75, plt_all=True, zoom=0.1)
 # cl.plot();
 cl.dendrogram();
 
+cl.plot_unique(img_mean=False)
+
 # Find
 results_find = cl.find(Xraw[0], k=0, alpha=0.05)
 cl.plot_find()
@@ -362,7 +364,7 @@ results = cl.fit_transform(some_files, min_clust=4)
 # cl.clusteval.plot()
 # cl.clusteval.scatter()
 # cl.pca.plot()
-cl.plot_unique(img_mean=False)
+cl.plot_unique(img_mean=False, show_hog=False)
 cl.plot()
 cl.plot(cmap='binary')
 cl.scatter(zoom=None, dotsize=200, figsize=(25, 15), args_scatter={'fontsize':24, 'gradient':'#FFFFFF', 'cmap':'Set2', 'legend':True})
@@ -863,7 +865,7 @@ cl.scatter()
 # %% FACES
 from clustimage import Clustimage
 # Init
-cl = Clustimage(method='pca', grayscale=False, dim=(64,64))
+cl = Clustimage(method='pca', grayscale=False, dim=(64, 64))
 # Load example with faces
 X, y = cl.import_example(data='faces')
 # Preproceesing, cluster detection
@@ -876,7 +878,7 @@ cl.scatter(zoom=0.2, img_mean=False)
 cl.scatter(zoom=None)
 
 
-cl.plot_unique(img_mean=True)
+cl.plot_unique(img_mean=True, show_hog=False)
 cl.plot_unique(img_mean=False, show_hog=True)
 
 # Plot dendrogram
@@ -905,7 +907,7 @@ cl.load(filepath='clustimage.pkl')
 from clustimage import Clustimage
 
 # Init with default settings
-cl = Clustimage(method='hog', params_hog={'orientations':8, 'pixels_per_cell':(8,8)})
+cl = Clustimage(method='hog', params_hog={'orientations':8, 'pixels_per_cell':(8,8)}, use_thumbnail_cache=True)
 # cl = Clustimage(method='pca')
 # load example with flowers
 pathnames = cl.import_example(data='flowers')
