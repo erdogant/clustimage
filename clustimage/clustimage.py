@@ -2281,6 +2281,7 @@ class Clustimage():
                         if len(img.shape)==1:
                             img = img.reshape((dim[0], dim[1], dimlen))
                             img = img[:, :, : 3]
+                            ax.imshow(img, cmap=cmap)
                         elif len(img.shape)==3:
                             if invert_colors:
                                 ax.imshow(img[:, :, ::-1], cmap=cmap)  # RGB-> BGR
