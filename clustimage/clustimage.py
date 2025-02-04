@@ -1044,8 +1044,8 @@ class Clustimage():
         """
         # Check whether input is directory, list or array-like
         if isinstance(Xraw, str) and (not os.path.isdir(Xraw)) and (not os.path.isfile(Xraw)):
-            logger.warning(f'Input directory or file {Xraw} does not exists.')
-            return None
+            logger.error(f'Input directory or file does not exists: {Xraw} ')
+            return {'img': [], 'pathnames': [], 'filenames': []}
         elif isinstance(Xraw, str) and os.path.isdir(Xraw):
             # 1. Collect images from directory
             Xraw = listdir(Xraw, ext=self.params['ext'], black_list=black_list, recursive=recursive)
