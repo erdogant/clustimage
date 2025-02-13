@@ -515,6 +515,7 @@ class Clustimage():
             # Cluster based on the location from the images
             cluster, linkage, evaluate = 'dbscan', None, None
             labels = cluster_latlon(self.results['xycoord'], radius_meters=self.params_exif['radius_meters'], min_samples=self.params_exif['min_samples'])
+            if labels is None: labels = np.ones(self.results['feat'].shape[0]).astype(int) * -2
         else:
             if cluster_space=='low':
                 feat = self.results['xycoord']
@@ -3120,6 +3121,9 @@ def cluster_latlon(latlon, radius_meters=1000, min_samples=2):
     array([1, 1, 2, 3, 3])
 
     """
+    if latlon is None:
+        return None
+
     # Clusterlabels
     cluster_labels = np.ones(latlon.shape[0]).astype(int) * -2
 
