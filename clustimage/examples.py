@@ -68,8 +68,8 @@ from clustimage import Clustimage
 import os
 
 # Working directory
-dir_path = r'd://temp/'
-# dir_path = r'\\NAS_SYNOLOGY\Photo\2024\Vluchten'
+dir_path = r'd://temp/magweg'
+# dir_path = r'\\NAS_SYNOLOGY\Photo\2023\Various'
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
 
@@ -84,7 +84,7 @@ cl = Clustimage(method='exif',
 # -------------------------------------------------------------------------------------------
 # Run the model to find the clusters based on datetime method. Use metric='latlon' in case location is more important than time.
 # results = cl.fit_transform(dir_path, black_list=['undouble'], recursive=True)
-results = cl.fit_transform(dir_path, metric='datetime', black_list=['undouble'], recursive=True)
+results = cl.fit_transform(dir_path, metric='latlon', black_list=['undouble'], recursive=True)
 # -------------------------------------------------------------------------------------------
 # cl.clean_files(clean_tempdir=True)
 
