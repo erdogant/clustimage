@@ -49,8 +49,8 @@ from pillow_heif import register_heif_opener
 # Register HEIF opener for Pillow
 register_heif_opener()
 
-import clustimage.exif as exif
-# import exif
+# import clustimage.exif as exif
+import exif
 
 try:
     import cv2

@@ -56,7 +56,7 @@ def extract_metadata_from_single_image(pathname, ext_allowed):
     try:
         exif_data = piexif.load(pathname)
     except:
-        return None
+        exif_data = {}
 
     # Extract GPS latitude, longitude, and altitude data
     try:
