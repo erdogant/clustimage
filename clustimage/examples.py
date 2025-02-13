@@ -159,7 +159,7 @@ model.group(threshold=10)
 model.plot()
 
 # Move the images
-model.move(gui=True)
+model.move_to_dir(gui=True)
 
 
 # %% import from disk
