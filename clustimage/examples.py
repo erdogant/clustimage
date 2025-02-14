@@ -49,6 +49,21 @@
 # # plt.colorbar(label='Cluster ID')
 # # plt.show()
 
+#%%
+from clustimage import Clustimage
+import os
+
+# Working directory
+dir_path = r'd://temp/magweg'
+allowed_ext = ["jpg","jpeg","png","tiff","bmp","gif","webp","psd","raw","cr2","nef","heic","sr2","tif","mov","mp4"]
+
+# Initialize for datetime.
+cl = Clustimage(method='pca', ext=allowed_ext, use_thumbnail_cache=True)
+results = cl.fit_transform(dir_path, recursive=True)
+
+# -------------------------------------------------------------------------------------------
+# Show the cluster labels
+print(cl.results['labels'])
 
 #%% Workflow to clean your [personal] photo files
 # Suppose you have photos downloaded from whatsapp, your iphone and combined with the screenshots and selfies you have.
