@@ -7,6 +7,7 @@
 # print(dir(clustimage))
 # print(clustimage.__version__)
 
+
 # %%
 # import pandas as pd
 # import numpy as np
@@ -49,21 +50,6 @@
 # # plt.colorbar(label='Cluster ID')
 # # plt.show()
 
-#%%
-from clustimage import Clustimage
-import os
-
-# Working directory
-dir_path = r'd://temp/magweg'
-allowed_ext = ["jpg","jpeg","png","tiff","bmp","gif","webp","psd","raw","cr2","nef","heic","sr2","tif","mov","mp4"]
-
-# Initialize for datetime.
-cl = Clustimage(method='pca', ext=allowed_ext, use_thumbnail_cache=True)
-results = cl.fit_transform(dir_path, recursive=True)
-
-# -------------------------------------------------------------------------------------------
-# Show the cluster labels
-print(cl.results['labels'])
 
 #%% Workflow to clean your [personal] photo files
 # Suppose you have photos downloaded from whatsapp, your iphone and combined with the screenshots and selfies you have.
@@ -84,13 +70,13 @@ import os
 
 # Working directory
 dir_path = r'd://temp/magweg'
-# dir_path = r'\\NAS_SYNOLOGY\Photo\2023\Various'
+dir_path = r'\\NAS_SYNOLOGY\Photo\2023\TODO'
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
 
 # Initialize for datetime.
 cl = Clustimage(method='exif',
-                params_exif = {'timeframe': 6, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False},
+                params_exif = {'timeframe': 6, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None},
                 ext=allowed_ext,
                 verbose='info',
                 use_thumbnail_cache=True,

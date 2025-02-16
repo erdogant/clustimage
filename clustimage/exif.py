@@ -41,6 +41,25 @@ except ImportError:
         "The 'folium' library is not installed. Please install it using the following command:\n"
         "pip install folium")
 
+#%% Get EXIF data from image
+def get_exif(pathname):
+    # Get exif data directly without loading the image first.
+    try:
+        exif_data = piexif.load(pathname)
+    except:
+        exif_data = {}
+
+    if exif_data == {}:
+        try:
+            img = Image.open(pathname)
+            exif_data = piexif.load(img.info["exif"])
+        except:
+            # logger.info(f'File can not be opened. Maybe mp4 or another format that is not supported: {pathname}')
+            exif_data = {}
+
+    return exif_data
+
+
 # %% Extract Metadata using Exif information from the photos
 def extract_metadata_from_single_image(pathname, ext_allowed):
     """Extract EXIF metadata from a single image file."""
@@ -49,14 +68,20 @@ def extract_metadata_from_single_image(pathname, ext_allowed):
     if file_ext not in ext_allowed:
         return None
 
-    # Extract filename
-    filename = os.path.split(pathname)[-1]
+    # Get EXIF data
+    exif_data = get_exif(pathname)
 
-    # Try loading EXIF data
-    try:
-        exif_data = piexif.load(pathname)
-    except:
-        exif_data = {}
+    # # Open the image
+    # try:
+    #     img = Image.open(pathname)
+    # except:
+    #     pass
+
+    # # Try loading EXIF data
+    # try:
+    #     exif_data = piexif.load(pathname)
+    # except:
+    #     exif_data = {}
 
     # Extract GPS latitude, longitude, and altitude data
     try:
@@ -84,7 +109,7 @@ def extract_metadata_from_single_image(pathname, ext_allowed):
 
     # Create metadata for the photo
     metadata = {
-        'filenames': filename,
+        'filenames': os.path.split(pathname)[-1],
         'pathnames': pathname,
         'ext': file_ext,
         'datetime': datetime_created,
@@ -118,8 +143,8 @@ def extract_from_image_parallel(pathnames, ext_allowed=["jpg", "jpeg", "png", "t
             if result:
                 metadata_list.append(result)
 
-    if logger is not None:
-        logger.info(f'EXIF information is stored: {len(metadata_list)} out of {len(pathnames)} files')
+    # if logger is not None:
+        # logger.info(f'EXIF information is stored: {len(metadata_list)} out of {len(pathnames)} files')
     return metadata_list
 
 # %% Extract Metadata using Exif information from the photos
@@ -186,22 +211,9 @@ def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "ti
         # Check extension
         file_ext = pathname.lower().split('.')[-1]
         if np.isin(file_ext, ext_allowed):
-            # Extract filename
-            filename = os.path.split(pathname)[-1]
 
-            # Open the image
-            # try:
-            #     img = Image.open(pathname)
-            # except:
-            #     pass
-                # logger.info(f'File can not be opened. Maybe mp4 or another format that is not supported: {pathname}')
-
-            # Get exif data from image
-            try:
-                # exif_data = piexif.load(img.info["exif"])
-                exif_data = piexif.load(pathname)
-            except:
-                exif_data = {}
+            # Get EXIF
+            exif_data = get_exif(pathname)
 
             # Extract GPS latitude, longitude, and altitude data
             try:
@@ -230,7 +242,7 @@ def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "ti
 
             # Create metadata for the photo
             metadata = {
-                'filenames': filename,
+                'filenames': os.path.split(pathname)[-1],
                 'pathnames': pathname,
                 'ext': file_ext,
                 'datetime': datetime_created,
@@ -275,7 +287,7 @@ def extract_from_image(pathnames, ext_allowed=["jpg", "jpeg", "png", "tiff", "ti
             metadata_list.append(metadata)
 
     # Convert the metadata list to a pandas dataframe
-    logger.info(f'EXIF information is stored from {len(metadata)} out of {len(pathnames)} files')
+    # logger.info(f'EXIF information is stored from {len(metadata)} out of {len(pathnames)} files')
     # Return
     return metadata_list
 

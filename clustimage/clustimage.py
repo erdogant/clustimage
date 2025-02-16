@@ -1216,7 +1216,7 @@ class Clustimage():
 
         """
         # If the input is a directory, first collect the images from path
-        logger.info(f"Extracting features using [{self.params['method']}] method.")
+        logger.info(f"Fitting model and extracting features using [{self.params['method']}] method.")
         # Extract features
         if self.params['method']=='pca':
             Xfeat = self.extract_pca(Xraw)
