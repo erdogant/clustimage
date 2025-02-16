@@ -622,35 +622,41 @@ class Clustimage():
         # Unique labels
         uilabels = np.unique(self.results['labels'])
 
-        # Run over all cluster labels
-        for label in uilabels:
-            # Get cluster label
-            idx = np.where(self.results['labels']==label)[0]
-            # Compute center of cluster
-            xycoord_center = np.mean(self.results['xycoord'][idx, :], axis=0)
-            # Compute the average image by simply averaging the images
-            img = []
-            if (self.params['dim'] is not None) and (self.results['pathnames'] is not None):
-                img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, use_thumbnail_cache=self.params['use_thumbnail_cache']), np.array(self.results['pathnames'])[idx])))
-            eigen_img.append(imscale(np.mean(img, axis=0)))
+        if len(uilabels) >= 1:
+            # Run over all cluster labels
+            for label in uilabels:
+                # Get cluster label
+                idx = np.where(self.results['labels']==label)[0]
+                # Compute center of cluster
+                xycoord_center = np.mean(self.results['xycoord'][idx, :], axis=0)
+                # Compute the average image by simply averaging the images
+                img = []
+                if (self.params['dim'] is not None) and (self.results['pathnames'] is not None):
+                    img = np.vstack(list(map(lambda x: self.imread(x, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, use_thumbnail_cache=self.params['use_thumbnail_cache']), np.array(self.results['pathnames'])[idx])))
+                eigen_img.append(imscale(np.mean(img, axis=0)))
 
-            # dim = self._get_dim(eigen_img)
-            # plt.figure();plt.imshow(eigen_img.reshape(dim))
+                # dim = self._get_dim(eigen_img)
+                # plt.figure();plt.imshow(eigen_img.reshape(dim))
 
-            # Compute distance across all samples
-            dist = distance.cdist(self.results['xycoord'], xycoord_center.reshape(-1, 1).T, metric=metric)
-            # Take closest sample to the center
-            idx_closest = np.argmin(dist)
-            # Store
-            center_idx.append(idx_closest)
-            center_coord.append(xycoord_center)
-            if self.results.get('pathnames', None) is not None:
-                pathnames.append(self.results['pathnames'][idx_closest])
-            else:
-                pathnames.append('')
+                # Compute distance across all samples
+                dist = distance.cdist(self.results['xycoord'], xycoord_center.reshape(-1, 1).T, metric=metric)
+                # Take closest sample to the center
+                idx_closest = np.argmin(dist)
+                # Store
+                center_idx.append(idx_closest)
+                center_coord.append(xycoord_center)
+                if self.results.get('pathnames', None) is not None:
+                    pathnames.append(self.results['pathnames'][idx_closest])
+                else:
+                    pathnames.append('')
 
-        # Store and return
-        self.results_unique = {'labels': uilabels, 'idx': center_idx, 'xycoord_center': np.vstack(center_coord), 'pathnames': pathnames, 'img_mean': np.vstack(eigen_img)}
+            # Store and return
+            self.results_unique = {'labels': uilabels, 'idx': center_idx, 'xycoord_center': np.vstack(center_coord), 'pathnames': pathnames, 'img_mean': np.vstack(eigen_img)}
+        else:
+            # Default output
+            self.results_unique = {'labels': uilabels, 'idx': None, 'xycoord_center': None, 'pathnames': None, 'img_mean': None}
+
+        # Return
         return self.results_unique
 
     def find(self, Xnew, metric=None, k=None, alpha=0.05):
