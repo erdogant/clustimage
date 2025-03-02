@@ -404,6 +404,9 @@ class Clustimage():
         if self.params['method']=='pca' and np.isin(metric, ['datetime', 'latlon']):
             logger.error('metric can not be "datetime" or "location" when using method="pca"')
             return None
+        if isinstance(X, str) and not os.path.isdir(X):
+            logger.error(f'File path can not found: {X}')
+            return None
 
         # Cleaning
         self.clean_init()
