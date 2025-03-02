@@ -234,7 +234,7 @@ class Clustimage():
         if (np.any(np.isin(method, ['hog', 'pca-hog']))) and ~grayscale:
             logger.warning('Parameter grayscale is set to True because you are using method="%s"' %(method))
             grayscale=True
-        if (dim is None) or ((dim[0]>1024) or (dim[1]>1024)):
+        if (dim is None) or ((dim[0] > 1024) or (dim[1] > 1024)):
             logger.warning('Setting dim > (1024, 1024) is most often not needed and can cause memory and other issues.')
         if method=='crop-resistant-hash':
             logger.info('Hash size is set to 8 for crop-resistant and can not be changed.')
