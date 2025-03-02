@@ -61,15 +61,24 @@ except ImportError:
 
 
 # Configure the logger
+# logger = logging.getLogger('')
+# [logger.removeHandler(handler) for handler in logger.handlers[:]]
+# console = logging.StreamHandler()
+# formatter = logging.Formatter('[clustimage] >%(levelname)s> %(message)s')
+# console.setFormatter(formatter)
+# logger.addHandler(console)
+# logger = logging.getLogger()
+
+
 logger = logging.getLogger('')
 [logger.removeHandler(handler) for handler in logger.handlers[:]]
-console = logging.StreamHandler()
-formatter = logging.Formatter('[clustimage] >%(levelname)s> %(message)s')
-console.setFormatter(formatter)
-logger.addHandler(console)
-logger = logging.getLogger()
+logging.basicConfig(
+    format="%(asctime)s [%(name)-12s] >%(levelname)-8s %(message)s",
+    datefmt="%d-%m-%y %H:%M:%S",
+    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-
+#%%
 class Clustimage():
     """Clustering of images.
 
@@ -273,6 +282,13 @@ class Clustimage():
         set_logger(verbose=verbose)
         # This value is set to True when the find functionality (cl.find) is used to make sure specified subroutines are used.
         self.find_func = False
+
+    def check_verbosity(self):
+        """Check the verbosity."""
+        logger.debug('DEBUG')
+        logger.info('INFO')
+        logger.warning('WARNING')
+        logger.critical('CRITICAL')
 
     def fit_transform(self, X, cluster='agglomerative', evaluate='silhouette', metric='euclidean', linkage='ward', min_clust=3, max_clust=25, cluster_space='high', black_list=None, recursive=True):
         """Group samples into clusters that are similar in their feature space.
