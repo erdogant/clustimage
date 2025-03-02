@@ -59,10 +59,11 @@ except ImportError:
         "The 'opencv-python' library is not installed. Please install it manually using the following command:\n"
         ">pip install opencv-python or the lightweight version without GUI: >pip install opencv-python-headless")
 
+NAME_WIDTH = max(len(__name__), 12)  # Ensuring a minimum width of 12
 logger = logging.getLogger('')
 [logger.removeHandler(handler) for handler in logger.handlers[:]]
 logging.basicConfig(
-    format="%(asctime)s [%(name)-12s] > %(levelname)-8s > %(message)s",
+    format=f"%(asctime)s [%(name)-{NAME_WIDTH}s] > %(levelname)-8s > %(message)s",
     datefmt="%d-%m-%y %H:%M:%S",
     level=logging.INFO)
 logger = logging.getLogger(__name__)
