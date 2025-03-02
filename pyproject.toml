@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clustimage"
+dynamic = ["version"]
+authors = [{ name = "Erdogan Taskesen", email = "erdogant@gmail.com" },]
+description = "Python package clustimage is for unsupervised clustering of images."
+readme = "README.md"
+requires-python = ">=3"
+license = { file = "LICENSE" }
+keywords = ["clustering", "images", "unsupervised learning"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "datazets>=1.0.0",
+    "scatterd>=1.3.6",
+    "ismember",
+    "pypickle",
+    "pca>=2.0.4",
+    "distfit",
+    "clusteval>=2.1.5",
+    "colourmap>=1.1.16",
+    "numpy",
+    "pandas",
+    "tqdm",
+    "scikit-learn",
+    "scikit-image",
+    "matplotlib",
+    "scipy",
+    "piexif",
+    "imagehash",
+    "pillow-heif"
+]
+
+[project.urls]
+Homepage = "https://erdogant.github.io/clustimage"
+Download = "https://github.com/erdogant/clustimage/archive/{version}.tar.gz"
+
+[tool.setuptools]
+packages = ["clustimage"]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { attr = "clustimage.__version__" }
