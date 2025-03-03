@@ -42,10 +42,10 @@ import webbrowser
 
 # Support for Apple HEIC images
 from pillow_heif import register_heif_opener
-register_heif_opener() # Register HEIF opener for Pillow
+register_heif_opener()  # Register HEIF opener for Pillow
 
 import clustimage.exif as exif
-# import exif # Only for debugging
+# import exif  # Only for debugging
 
 try:
     import cv2
