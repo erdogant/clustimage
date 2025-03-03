@@ -1,12 +1,12 @@
-"""Python package clustimage is for unsupervised clustering of images."""
-# --------------------------------------------------
-# Name        : clustimage.py
-# Author      : E.Taskesen
-# Contact     : erdogant@gmail.com
-# github      : https://github.com/erdogant/clustimage
-# Licence     : See licences
-# --------------------------------------------------
+"""Python package clustimage is for unsupervised clustering of images.
 
+ Name        : clustimage.py
+ Author      : E.Taskesen
+ Contact     : erdogant@gmail.com
+ github      : https://github.com/erdogant/clustimage
+ Licence     : See licences
+
+"""
 from pca import pca
 from distfit import distfit
 from clusteval import clusteval
@@ -29,7 +29,6 @@ import matplotlib.pyplot as plt
 from matplotlib import offsetbox
 
 from scipy.spatial import distance
-
 from skimage.feature import hog
 from skimage import exposure
 
@@ -39,18 +38,14 @@ import shutil
 import random
 import imagehash
 from PIL import Image
-from io import BytesIO
-import base64
-
 import webbrowser
 
 # Support for Apple HEIC images
 from pillow_heif import register_heif_opener
-# Register HEIF opener for Pillow
-register_heif_opener()
+register_heif_opener() # Register HEIF opener for Pillow
 
 import clustimage.exif as exif
-# import exif
+# import exif # Only for debugging
 
 try:
     import cv2
