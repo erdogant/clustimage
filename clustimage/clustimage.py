@@ -1535,29 +1535,35 @@ class Clustimage():
         """
         img = []
         readOK = False
-        save_thumbnail_to_disk = True
+        read_resize_img = True
 
         # Return if the file is a movie
         if np.isin(os.path.basename(filepath).split('.')[-1].lower(), ["mp4", "mkv", "avi", "mov", "wmv", "flv", "webm", "mpeg", "3gp", "mpg"]):
             return img, readOK
 
-        # Check whether file is available on disk
-        if use_thumbnail_cache:
-            thumbnail_path = exif.get_thumbnail_path(filepath, self.params['tempdir'], dim)
-            if os.path.isfile(thumbnail_path):
-                filepath = thumbnail_path
-                save_thumbnail_to_disk = False
-
         try:
-            # Read the image
-            img = _imread(filepath, colorscale=colorscale)
-            # Scale the image
-            img = imscale(img)
-            # Resize the image
-            img = imresize(img, dim=dim)
-            # Now save in temp directory but only if not yet exists.
-            if use_thumbnail_cache and save_thumbnail_to_disk:
-                cv2.imwrite(thumbnail_path, img)
+            # Check whether file is available on disk
+            if use_thumbnail_cache:
+                thumbnail_path = exif.get_thumbnail_path(filepath, self.params['tempdir'], dim)
+                # Return the thumbnail path to speed up the reading proces
+                if os.path.isfile(thumbnail_path):
+                    filepath = thumbnail_path
+                    # Read the image
+                    img = _imread(filepath, colorscale=colorscale)
+                    # Do not again read and resize the image.
+                    read_resize_img = False
+
+            if read_resize_img:
+                # Read the image
+                img = _imread(filepath, colorscale=colorscale)
+                # Scale the image
+                img = imscale(img)
+                # Resize the image
+                img = imresize(img, dim=dim)
+                # Now save in temp directory but only if not yet exists.
+                if use_thumbnail_cache and read_resize_img:
+                    cv2.imwrite(thumbnail_path, img)
+
             # Flatten the image
             if flatten: img = img_flatten(img)
             # OK
