@@ -217,7 +217,7 @@ class Clustimage():
 
         if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog', 'exif'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
         # Check method types
-        if (np.any(np.isin(method, ['hog', 'pca-hog']))) and ~grayscale:
+        if (np.any(np.isin(method, ['hog', 'pca-hog']))) and (not grayscale):
             logger.warning('Parameter grayscale is set to True because you are using method="%s"' %(method))
             grayscale=True
         if (dim is None) or ((dim[0] > 1024) or (dim[1] > 1024)):
@@ -894,6 +894,8 @@ class Clustimage():
 
         # Exclude the images that could not be read (and thus are False)
         I_corrupt = ~np.array(imgOK)
+        # I_corrupt = np.logical_not(np.array(imgOK))
+
         if np.any(I_corrupt):
             logger.info("[%.0d] Image(s) could not be read and are excluded.", (sum(I_corrupt)))
             filenames = [filenames[i] for i in range(len(filenames)) if not I_corrupt[i]]
@@ -3145,7 +3147,7 @@ def cluster_latlon(latlon, radius_meters=1000, min_samples=2):
     cluster_labels = np.ones(latlon.shape[0]).astype(int) * -2
 
     # Catch rows with lat/lon
-    loc = np.logical_and(~latlon['lat'].isna(), ~latlon['lon'].isna())
+    loc = np.logical_and(latlon['lat'].notna(), latlon['lon'].notna())
 
     if np.sum(loc) <= 3:
         logger.warning('Clustering not executed. It requires more then 3 samples with lat/lon coordinates.')
