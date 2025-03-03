@@ -69,8 +69,7 @@ from clustimage import Clustimage
 import os
 
 # Working directory
-dir_path = r'd://temp/magweg'
-# dir_path = r'\\NAS_SYNOLOGY\Photo\2023\TODO'
+dir_path = r'd://temp/'
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
 
@@ -79,6 +78,7 @@ cl = Clustimage(method='exif',
                 params_exif = {'timeframe': 6, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None},
                 ext=allowed_ext,
                 verbose='info',
+                tempdir=r'C:/Users/beeld/AppData/Local/Temp/photosenseAI',
                 use_thumbnail_cache=True,
                 )
 
