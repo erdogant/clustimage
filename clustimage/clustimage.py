@@ -203,6 +203,7 @@ class Clustimage():
                  dirpath=None,
                  use_image_cache=True,
                  use_thumbnail_cache=True,
+                 tempdir=None,
                  ext=['png', 'tiff', 'tif', 'jpg', 'jpeg', 'heic'],
                  params_pca={'n_components': 0.95},
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
