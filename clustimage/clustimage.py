@@ -248,7 +248,7 @@ class Clustimage():
         self.params['dim_face'] = dim_face
 
         self.params['dirpath'] = _set_tempdir(dirpath, show_logger=True)
-        self.params['tempdir'] = _set_tempdir(None, show_logger=False)
+        self.params['tempdir'] = _set_tempdir(tempdir, show_logger=False)
         self.params['filepath'] = os.path.join(_set_tempdir(None, show_logger=False), 'clustimage.pkl')
         self.params['ext'] = ext
         self.params['use_image_cache'] = use_image_cache
