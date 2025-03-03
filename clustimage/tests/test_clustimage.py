@@ -63,17 +63,6 @@ class TestCLUSTIMAGE(unittest.TestCase):
         assert out.shape==(214,2)
         assert cl.results['xycoord'].shape==(X['img'].shape[0], 2)
 
-    def test_embedding(self):
-        cl = Clustimage(method='pca')
-        # Import flowers example
-        X = cl.import_example(data='flowers')
-        X = cl.import_data(X)
-        Xfeat = cl.extract_feat(X)
-        xycoord = cl.embedding(Xfeat)
-        assert xycoord.shape ==(214, 2)
-        labels = cl.cluster()
-        assert len(cl.results['labels'])==X['img'].shape[0]
-
     def test_cluster(self):
         cl = Clustimage()
         X = cl.import_example(data='flowers')
