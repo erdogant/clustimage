@@ -606,8 +606,8 @@ def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, p
 
 #%% Create thumbnail path
 def get_thumbnail_path(pathname, tempdir, dim):
-    filename, _ = os.path.splitext(pathname)
-    filename = filename + '_' + f"{int(dim[0])}" + '.png'
+    base = os.path.splitext(os.path.basename(pathname))[0]
+    filename = f"{base}_{int(dim[0])}.png"
     return os.path.join(tempdir, filename)
 
 # %%
@@ -819,6 +819,7 @@ def create_thumbnail(filepath, max_size=300, use_thumbnail_cache=False, tempdir=
         # Now save in temp directory but only if not yet exists.
         if use_thumbnail_cache and (tempdir is not None):
             thumbnail_path = get_thumbnail_path(filepath, tempdir, (max_size[0], max_size[0]))
+            logger.debug(thumbnail_path)
             if not os.path.isfile(thumbnail_path):
                 img.save(thumbnail_path)
 

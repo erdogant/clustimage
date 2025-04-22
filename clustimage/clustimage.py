@@ -2157,11 +2157,22 @@ class Clustimage():
 
         # Create folium map
         logger.info('Rescaling images to thumbnails to show in map..')
-        m = exif.plot_map(self.results['feat'], self.results['labels'], self.params['metric_find'], cluster_icons=cluster_icons, polygon=polygon, blacklist_polygon=blacklist_polygon, clutter_threshold=clutter_threshold, use_thumbnail_cache=self.params['use_thumbnail_cache'], dim=dim, tempdir=tempdir, logger=logger)
+        m = exif.plot_map(self.results['feat'],
+                          self.results['labels'],
+                          self.params['metric_find'],
+                          cluster_icons=cluster_icons,
+                          polygon=polygon,
+                          blacklist_polygon=blacklist_polygon,
+                          clutter_threshold=clutter_threshold,
+                          use_thumbnail_cache=self.params['use_thumbnail_cache'],
+                          dim=dim,
+                          tempdir=tempdir,
+                          logger=logger,
+                          )
 
         # Save to disk
         if save_path is None:
-            save_path = os.path.join(self.params['tempdir'], 'clustimage_map.html')
+            save_path = os.path.join(tempdir, 'clustimage_map.html')
 
         # Save map
         m.save(save_path)
