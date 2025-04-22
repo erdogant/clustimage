@@ -34,7 +34,11 @@ dependencies = [
     "scipy",
     "piexif",
     "imagehash",
-    "pillow-heif"
+    "pillow-heif",
+    "geopy",
+    "folium",
+    "opencv-python-headless",
+    
 ]
 
 [project.urls]

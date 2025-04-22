@@ -17,3 +17,7 @@ pypickle
 ismember
 pillow-heif
 piexif
+
+geopy
+folium
+opencv-python-headless
