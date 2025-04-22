@@ -11,12 +11,14 @@ from tqdm import tqdm
 from PIL import Image
 from io import BytesIO
 import base64
+import logging
 
 import numpy as np
 import os
 import time
 from datetime import datetime as dt
 import re
+logger = logging.getLogger(__name__)
 
 try:
     import piexif
