@@ -409,7 +409,18 @@ def location(Xfeat, logger):
 
 
 #%%
-def plot_map(metadata_df, clusterlabels, metric, dim=None, cluster_icons=True, polygon=True, blacklist_polygon=[-1], clutter_threshold=1e-4, use_thumbnail_cache=False, tempdir=None, logger=None):
+def plot_map(metadata_df,
+             clusterlabels,
+             metric,
+             dim=None,
+             cluster_icons=True,
+             polygon=True,
+             blacklist_polygon=[-1],
+             clutter_threshold=1e-4,
+             use_thumbnail_cache=False,
+             tempdir=None,
+             logger=None,
+             ):
     """Plots a map using Folium to visualize clusters, with options to add markers and polygons for each cluster.
 
     Parameters
