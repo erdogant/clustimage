@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Saving &mdash; clustimage clustimage documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
 
@@ -146,7 +146,7 @@
 In order to accomplish this, we created two functions: function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.save" title="clustimage.clustimage.Clustimage.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.save()</span></code></a>. and function <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.load" title="clustimage.clustimage.Clustimage.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.load()</span></code></a>.
 Below we illustrate how to save and load models.</p>
 <p>Saving the model with the results:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">)</span>
@@ -164,7 +164,7 @@ Below we illustrate how to save and load models.</p>
 <section id="loading">
 <h1>Loading<a class="headerlink" href="#loading" title="Link to this heading"></a></h1>
 <p>Loading a learned model can be done using the function <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.load()</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Load model</span>
 <span class="n">cl</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;clustimage_model&#39;</span><span class="p">)</span>

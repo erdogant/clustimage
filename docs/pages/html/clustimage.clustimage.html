@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API References &mdash; clustimage clustimage documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
 
@@ -112,6 +112,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.Clustimage"><code class="docutils literal notranslate"><span class="pre">Clustimage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.check_verbosity"><code class="docutils literal notranslate"><span class="pre">Clustimage.check_verbosity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.clean_files"><code class="docutils literal notranslate"><span class="pre">Clustimage.clean_files()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.clean_init"><code class="docutils literal notranslate"><span class="pre">Clustimage.clean_init()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#clustimage.clustimage.Clustimage.cluster"><code class="docutils literal notranslate"><span class="pre">Clustimage.cluster()</span></code></a></li>
@@ -144,7 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.basename"><code class="docutils literal notranslate"><span class="pre">basename()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.cluster_datetimes"><code class="docutils literal notranslate"><span class="pre">cluster_datetimes()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.cluster_latlon"><code class="docutils literal notranslate"><span class="pre">cluster_latlon()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.create_targetdir"><code class="docutils literal notranslate"><span class="pre">create_targetdir()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.create_dir"><code class="docutils literal notranslate"><span class="pre">create_dir()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.disable_tqdm"><code class="docutils literal notranslate"><span class="pre">disable_tqdm()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#clustimage.clustimage.get_params_hash"><code class="docutils literal notranslate"><span class="pre">get_params_hash()</span></code></a></li>
@@ -192,9 +193,14 @@
   <section id="module-clustimage.clustimage">
 <span id="api-references"></span><h1>API References<a class="headerlink" href="#module-clustimage.clustimage" title="Link to this heading"></a></h1>
 <p>Python package clustimage is for unsupervised clustering of images.</p>
+<p>Name        : clustimage.py
+Author      : E.Taskesen
+Contact     : <a class="reference external" href="mailto:erdogant&#37;&#52;&#48;gmail&#46;com">erdogant<span>&#64;</span>gmail<span>&#46;</span>com</a>
+github      : <a class="reference external" href="https://github.com/erdogant/clustimage">https://github.com/erdogant/clustimage</a>
+Licence     : See licences</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">Clustimage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tsne'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_face</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(64,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_to_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'tif',</span> <span class="pre">'jpg',</span> <span class="pre">'jpeg',</span> <span class="pre">'heic']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'n_components':</span> <span class="pre">0.95}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'cells_per_block':</span> <span class="pre">(1,</span> <span class="pre">1),</span> <span class="pre">'orientations':</span> <span class="pre">8,</span> <span class="pre">'pixels_per_cell':</span> <span class="pre">(8,</span> <span class="pre">8)}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'hash_size':</span> <span class="pre">8,</span> <span class="pre">'threshold':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_exif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'exif_location':</span> <span class="pre">False,</span> <span class="pre">'min_samples':</span> <span class="pre">2,</span> <span class="pre">'radius_meters':</span> <span class="pre">1000,</span> <span class="pre">'timeframe':</span> <span class="pre">5}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'info'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">Clustimage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tsne'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_face</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(64,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_image_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thumbnail_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['png',</span> <span class="pre">'tiff',</span> <span class="pre">'tif',</span> <span class="pre">'jpg',</span> <span class="pre">'jpeg',</span> <span class="pre">'heic']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'n_components':</span> <span class="pre">0.95}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'cells_per_block':</span> <span class="pre">(1,</span> <span class="pre">1),</span> <span class="pre">'orientations':</span> <span class="pre">8,</span> <span class="pre">'pixels_per_cell':</span> <span class="pre">(8,</span> <span class="pre">8)}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'hash_size':</span> <span class="pre">8,</span> <span class="pre">'threshold':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params_exif</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'exif_location':</span> <span class="pre">False,</span> <span class="pre">'max_workers':</span> <span class="pre">None,</span> <span class="pre">'min_samples':</span> <span class="pre">2,</span> <span class="pre">'radius_meters':</span> <span class="pre">1000,</span> <span class="pre">'timeframe':</span> <span class="pre">5}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'info'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage" title="Link to this definition"></a></dt>
 <dd><p>Clustering of images.</p>
 <p>Clustering input images after following steps of pre-processing, feature-extracting, feature-embedding and cluster-evaluation.
 Taking all these steps requires setting various input parameters. Not all input parameters can be changed across the different steps in clustimage.
@@ -266,11 +272,16 @@ Final step in pre-processing is resizing all images in the same dimension such a
 <li><p><strong>ext</strong> (<em>list</em><em>, </em><em>(</em><em>default:</em><em> [</em><em>'png'</em><em>, </em><em>'tiff'</em><em>, </em><em>'tif'</em><em>, </em><em>'jpg'</em><em>, </em><em>'jpeg'</em><em>, </em><em>'heic'</em><em>]</em><em>)</em>) – Images with the file extentions are used.</p></li>
 <li><p><strong>params_pca</strong> (<em>dict</em><em>, </em><em>default: {'n_components':50</em><em>, </em><em>'detect_outliers':None}</em>) – Parameters to initialize the pca model.</p></li>
 <li><p><strong>params_hog</strong> (<em>dict</em><em>, </em><em>default: {'orientations':9</em><em>, </em><em>'pixels_per_cell':</em><em>(</em><em>16</em><em>,</em><em>16</em><em>)</em><em>, </em><em>'cells_per_block':</em><em>(</em><em>1</em><em>,</em><em>1</em><em>)</em><em>}</em>) – Parameters to extract hog features.</p></li>
-<li><p><strong>params_exif</strong> (<em>dict</em><em>, </em><em>default: {'timeframe': 5</em><em>, </em><em>'radius_meters': 1000</em><em>, </em><em>'min_samples': 2</em><em>, </em><em>'exif_location': False}</em>) – Parameters to proces exif information.
+<li><p><strong>params_exif</strong> (<em>dict</em><em>, </em><em>default: {'timeframe': 5</em><em>, </em><em>'radius_meters': 1000</em><em>, </em><em>'min_samples': 2</em><em>, </em><em>'exif_location': False</em><em>, </em><em>'max_workers': None}</em>) – Parameters to proces exif information.
 - ‘timeframe’: Timeframe in hours that a photo is grouped together.
 - ‘radius_meters’: The radius that is used to cluster the images when using metric=’datetime’
 - ‘min_samples’: Minimun number of samples per cluster
 - ‘exif_location’: This function makes requests to derive the location such as streetname etc. Note that the request rate per photo limited to 1 sec to prevent time-outs. It requires photos with lat/lon coordinates.</p></li>
+<li><p><strong>use_image_cache</strong> (<em>bool</em><em> (</em><em>Default: True</em><em>)</em>) – In case a image array is provided as input. Images are then stored on disk which allows using all functionalities for plotting.
+True: Image arrays are stored on disk.
+False: Original images are used.</p></li>
+<li><p><strong>use_thumbnail_cache</strong> (<em>bool</em><em> (</em><em>Default: True</em><em>)</em>) – True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+False: Original images are used.</p></li>
 <li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>(</em><em>default: 'info'</em><em>)</em>) – Print progress to screen. The default is 20.
 60: None, 40: error, 30: warning, 20: info, 10: debug</p></li>
 </ul>
@@ -299,7 +310,7 @@ feat : array-like.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
@@ -337,6 +348,12 @@ feat : array-like.</p>
 <span class="gp">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.check_verbosity">
+<span class="sig-name descname"><span class="pre">check_verbosity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.check_verbosity" title="Link to this definition"></a></dt>
+<dd><p>Check the verbosity.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.clean_files">
 <span class="sig-name descname"><span class="pre">clean_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clean_tempdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.clean_files" title="Link to this definition"></a></dt>
@@ -432,7 +449,7 @@ feat : array-like.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">)</span>
@@ -582,7 +599,7 @@ pathnames : list of str.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">grayscale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -640,8 +657,8 @@ filenames : list of str.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;hog&#39;</span><span class="p">)</span>
@@ -746,7 +763,7 @@ Note that the metric can be changed in this function but this may lead to confus
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
@@ -845,7 +862,7 @@ Based on the clustering results, the unique images are also gathered.</p>
 </dl>
 </p></li>
 <li><p><strong>black_list</strong> (<em>list</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Exclude directory with all subdirectories from processing.
-* example: [‘undouble’]</p></li>
+* [‘undouble’]</p></li>
 <li><p><strong>recursive</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to scan subdirectories recursively. Default is True.</p></li>
 </ul>
 </dd>
@@ -873,7 +890,7 @@ feat : array-like.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">grayscale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -934,7 +951,7 @@ feat : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.import_data">
-<span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xraw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.import_data" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">import_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Xraw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">black_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thumbnail_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.import_data" title="Link to this definition"></a></dt>
 <dd><p>Import images and return in an consistent manner.</p>
 <p>The input for the import_data() can have multiple forms; path to directory, list of strings and and array-like input.
 This requires that each of the input needs to be processed in its own manner but each should return the same structure to make it compatible across all functions.
@@ -964,6 +981,8 @@ The following steps are used for the import:</p>
 <li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
 <li><p><strong>black_list</strong> (<em>list</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Exclude directory with all subdirectories from processing.</p></li>
 <li><p><strong>recursive</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to scan subdirectories recursively. Default is True.</p></li>
+<li><p><strong>use_thumbnail_cache</strong> (<em>bool</em><em> (</em><em>Default: True</em><em>)</em>) – True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+False: Original images are used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1024,7 +1043,7 @@ img : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.imread">
-<span class="sig-name descname"><span class="pre">imread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_succes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.imread" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">imread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_succes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thumbnail_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.imread" title="Link to this definition"></a></dt>
 <dd><p>Read and pre-processing of images.</p>
 <dl class="simple">
 <dt>The pre-processing has 4 steps and are exectued in this order.</dt><dd><ul class="simple">
@@ -1059,6 +1078,9 @@ img : array-like.</p>
 * -1: cv2.IMREAD_UNCHANGED</p></li>
 <li><p><strong>dim</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>128</em><em>,</em><em>128</em><em>)</em><em>)</em>) – Rescale images. This is required because the feature-space need to be the same across samples.</p></li>
 <li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
+<li><p><strong>return_succes</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Also return the succes state</p></li>
+<li><p><strong>use_thumbnail_cache</strong> (<em>bool</em><em> (</em><em>Default: True</em><em>)</em>) – True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+False: Original images are used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1070,8 +1092,8 @@ img : array-like.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Import libraries</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
@@ -1110,15 +1132,28 @@ img : array-like.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.move_to_dir">
-<span class="sig-name descname"><span class="pre">move_to_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.move_to_dir" title="Link to this definition"></a></dt>
-<dd><p>Move image files into directories based on cluster labels.</p>
+<span class="sig-name descname"><span class="pre">move_to_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'move'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.move_to_dir" title="Link to this definition"></a></dt>
+<dd><p>Move or copy image files into directories based on cluster labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target_labels</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary where keys are cluster labels, and values are the target folder names.
 None: folders are automatically generated with names such as “group_&lt;label&gt;”.</p></li>
-<li><p><strong>targetdir</strong> (<em>str</em><em>, </em><em>optional</em>) – The base directory where the images will be moved. If None, the images will be moved
-to the parent directory of their current location.</p></li>
+<li><p><strong>savedir</strong> (<em>str</em><em>, </em><em>optional</em>) – The base directory where the images will be moved. If None, the images will be moved
+* ‘c:/temp/’
+* None: to the parent directory of their current location.</p></li>
+<li><p><strong>action</strong> (<em>str</em><em>, </em><em>'copy' default</em>) – <ul>
+<li><p>‘copy’: copy files</p></li>
+<li><p>’move’: move files</p></li>
+</ul>
+</p></li>
+<li><p><strong>overwrite</strong> (<em>Bool</em><em>, </em><em>False default</em>) – <ul>
+<li><p>True: Overwrite files</p></li>
+<li><p>False: Do not overwrite files</p></li>
+</ul>
+</p></li>
+<li><p><strong>user_input</strong> (<em>bool</em><em>, </em><em>default: True</em>) – True: The user should decide for each directory whether to proceed.
+False: All files are moved without questions.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1139,7 +1174,7 @@ to the parent directory of their current location.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blacklist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_hog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blacklist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot" title="Link to this definition"></a></dt>
 <dd><p>Plot the results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1148,7 +1183,7 @@ to the parent directory of their current location.</p></li>
 <li><p><strong>ncols</strong> (<em>int</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Number of columns to use in the subplot. The number of rows are estimated based on the columns.</p></li>
 <li><p><strong>images.</strong> (<em>Colorscheme for the</em>) – ‘gray’, ‘binary’,  None (uses rgb colorscheme)</p></li>
 <li><p><strong>show_hog</strong> (<em>bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Plot the hog features next to the input image.</p></li>
-<li><p><strong>min_clust</strong> (<em>int</em><em>, </em><em>(</em><em>default: 1</em><em>)</em>) – Plots are created for clusters with &gt;= min_clust samples</p></li>
+<li><p><strong>min_samples</strong> (<em>int</em><em>, </em><em>(</em><em>default: 1</em><em>)</em>) – Plots are created for clusters with &gt;= min_samples</p></li>
 <li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>15</em><em>, </em><em>10</em><em>)</em><em>.</em>) – Size of the figure (height,width).</p></li>
 <li><p><strong>blacklist</strong> (<em>list</em>) – None: Show all cluster labels
 [-2]: do not show the samples without lat/lon coordinates (when using exif method)
@@ -1212,7 +1247,7 @@ False: Keep as is</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.plot_map">
-<span class="sig-name descname"><span class="pre">plot_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_icons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thumbnail_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">400</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blacklist_polygon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clutter_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">open_in_browser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot_map" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_icons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polygon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blacklist_polygon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clutter_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">open_in_browser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.plot_map" title="Link to this definition"></a></dt>
 <dd><p>Plot a map with clustered images using their EXIF metadata.</p>
 <p>This function generates an interactive map using folium, where images are plotted
 based on their geographic coordinates extracted from EXIF data. Images are rescaled
@@ -1229,7 +1264,12 @@ optionally opening it in a web browser.</p>
 - None: automaticaly set the boolean based on metric
 - True: Create polygon line
 - False: Do not create polygon line</p></li>
-<li><p><strong>thumbnail_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the thumbnails (in pixels) to display on the map. Default is <cite>400</cite>.</p></li>
+<li><p><strong>dim</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>)</em><em>, </em><em>optional</em>) – <ul>
+<li><p>‘default’: The size of the thumbnails (in pixels) to display on the map.</p></li>
+<li><p>None: No thumbnails are created</p></li>
+<li><p>(200, 200): Thumbnail size</p></li>
+</ul>
+</p></li>
 <li><p><strong>blacklist_polygon</strong> (<em>list</em><em>, </em><em>optional</em>) – Shows the polygon line for all clusters except the blacklisted ones.
 [-1]: Default as these are the rest or noise images from DBSCAN.</p></li>
 <li><p><strong>clutter_threshold</strong> (<em>float: 1e-4</em>) – The maximum distance below which points are considered overlapping. So this will prevent that icons are exactly on top of each other.</p></li>
@@ -1237,6 +1277,9 @@ optionally opening it in a web browser.</p>
 If <cite>None</cite>, the map is saved in a temporary directory. Default is <cite>None</cite>.</p></li>
 <li><p><strong>open_in_browser</strong> (<em>bool</em><em>, </em><em>optional</em>) – True: automatically opens the generated map in the default web browser.
 False: Do not open in browser automatically.</p></li>
+<li><p><strong>tempdir</strong> (<em>str</em><em>, </em><em>optional</em>) – The temp directory where thumbnails are stored. This will speed up loading times when multiple times the same image needs to be loaded.
+* None : Use the default temporary directory that is used during initialization.
+* r’c:/temp/clustimage/’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1268,7 +1311,7 @@ or the directory does not exist, an error is logged, and the function returns <c
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span><span class="o">.</span><span class="n">plot_map</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">cluster_icons</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">polygon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">thumbnail_size</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">save_path</span><span class="o">=</span><span class="s2">&quot;C:/temp/map.html&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">open_in_browser</span><span class="o">=</span><span class="kc">True</span>
 <span class="gp">... </span><span class="p">)</span>
@@ -1300,7 +1343,7 @@ False: Keep as is</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="clustimage.clustimage.Clustimage.preprocessing">
-<span class="sig-name descname"><span class="pre">preprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.preprocessing" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">preprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grayscale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_thumbnail_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.Clustimage.preprocessing" title="Link to this definition"></a></dt>
 <dd><p>Pre-processing the input images and returning consistent output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1309,6 +1352,8 @@ False: Keep as is</p></li>
 <li><p><strong>grayscale</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: False</em><em>)</em>) – Colorscaling the image to gray. This can be usefull when clustering e.g., faces.</p></li>
 <li><p><strong>dim</strong> (<em>tuple</em><em>, </em><em>(</em><em>default:</em><em> (</em><em>128</em><em>,</em><em>128</em><em>)</em><em>)</em>) – Rescale images. This is required because the feature-space need to be the same across samples.</p></li>
 <li><p><strong>flatten</strong> (<em>Bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Flatten the processed NxMxC array to a 1D-vector</p></li>
+<li><p><strong>use_thumbnail_cache</strong> (<em>bool</em><em> (</em><em>Default: True</em><em>)</em>) – True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
+False: Original images are used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1365,7 +1410,7 @@ None : Do not plot the image.</p></li>
 ‘fontcolor’: [0, 0, 0],
 ‘xlabel’: ‘x-axis’,
 ‘ylabel’: ‘y-axis’,
-‘cmap’: cmap,
+‘cmap’: ‘Set2’,
 ‘density’: False,
 ‘gradient’: None,
 }</p></li>
@@ -1377,7 +1422,7 @@ None : Do not plot the image.</p></li>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Import library</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize with default settings.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
@@ -1441,7 +1486,7 @@ None : Do not plot the image.</p></li>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
@@ -1470,14 +1515,15 @@ None : Do not plot the image.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.cluster_datetimes">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">cluster_datetimes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.cluster_datetimes" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">cluster_datetimes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datetimes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps_hours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%Y:%m:%d</span> <span class="pre">%H:%M:%S'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.cluster_datetimes" title="Link to this definition"></a></dt>
 <dd><p>Clusters datetime values in a DataFrame using a time-based window with DBSCAN.
 The time window is given in hours.</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><p>df (pd.DataFrame): Input DataFrame containing the datetime column.
 datetime_column (str): The name of the column containing datetime values.
 eps_hours (float): The maximum time gap (in hours) to consider points in the same cluster.
-min_samples (int): The minimum number of samples in a neighborhood to form a cluster.</p>
+min_samples (int): The minimum number of samples in a neighborhood to form a cluster.
+dt_format: ‘%Y:%m:%d %H:%M:%S’</p>
 </dd>
 <dt>Returns:</dt><dd><p>pd.DataFrame: DataFrame with an added column for cluster labels.</p>
 </dd>
@@ -1531,7 +1577,7 @@ Rows without valid latitude or longitude will have a label of 0.</p>
 <li><p>DBSCAN assigns cluster labels starting from -1 for noise points. This implementation labels rows without valid coordinates as -2.</p></li>
 </ul>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">latlon</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
 <span class="gp">... </span>    <span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">52.5200</span><span class="p">,</span> <span class="mf">52.5201</span><span class="p">,</span> <span class="mf">52.5300</span><span class="p">,</span> <span class="mf">48.8566</span><span class="p">,</span> <span class="mf">48.8567</span><span class="p">],</span>
 <span class="gp">... </span>    <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">13.4050</span><span class="p">,</span> <span class="mf">13.4051</span><span class="p">,</span> <span class="mf">13.4060</span><span class="p">,</span> <span class="mf">2.3522</span><span class="p">,</span> <span class="mf">2.3523</span><span class="p">]</span>
@@ -1544,14 +1590,14 @@ Rows without valid latitude or longitude will have a label of 0.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="clustimage.clustimage.create_targetdir">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">create_targetdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.create_targetdir" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="clustimage.clustimage.create_dir">
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">create_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.create_dir" title="Link to this definition"></a></dt>
 <dd><p>Create directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pathname</strong> (<em>str</em>) – Absolute path location of the image of interest.</p></li>
-<li><p><strong>targetdir</strong> (<em>str</em>) – Target directory.</p></li>
+<li><p><strong>savedir</strong> (<em>str</em>) – Target directory.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1678,7 +1724,8 @@ Rows without valid latitude or longitude will have a label of 0.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dirpath</strong> (<em>str</em>) – Path to directory; “/tmp” or “c://temp/”</p></li>
 <li><p><strong>ext</strong> (<em>list</em><em>, </em><em>default:</em><em> [</em><em>'png'</em><em>, </em><em>'tiff'</em><em>, </em><em>'tif'</em><em>, </em><em>'jpg'</em><em>, </em><em>'jpeg'</em><em>, </em><em>'heic'</em><em>]</em>) – extentions to collect form directories.</p></li>
-<li><p><strong>black_list</strong> (<em>list</em><em>, </em><em>(</em><em>default:</em><em> [</em><em>'undouble'</em><em>]</em><em>)</em>) – Exclude directory with all subdirectories from processing.</p></li>
+<li><p><strong>black_list</strong> (<em>list</em><em>, </em><em>(</em><em>default: None</em><em>)</em>) – Exclude directory with all subdirectories from processing.
+* [‘undouble’]</p></li>
 <li><p><strong>recursive</strong> (<em>bool</em><em>, </em><em>(</em><em>default: True</em><em>)</em>) – Walk recursively trhough all subdirectories</p></li>
 </ul>
 </dd>
@@ -1690,7 +1737,7 @@ Rows without valid latitude or longitude will have a label of 0.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cl</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;c://temp//flower_images&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1698,8 +1745,30 @@ Rows without valid latitude or longitude will have a label of 0.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.move_files">
-<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">move_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetdir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.move_files" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">clustimage.clustimage.</span></span><span class="sig-name descname"><span class="pre">move_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savedir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'move'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#clustimage.clustimage.move_files" title="Link to this definition"></a></dt>
+<dd><p>Move or copy image files into directories based on cluster labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathnames</strong> (<em>list</em><em> or </em><em>numpy array</em>) – A list or numpy array with files that needs to be moved.
+[‘c:/temp/file.jpg’, ‘c:/file2.jpg’]</p></li>
+<li><p><strong>savedir</strong> (<em>str</em><em>, </em><em>optional</em>) – The base directory where the images will be moved. If None, the images will be moved
+* ‘c:/my_new_dir/’
+* None: to the parent directory of their current location.</p></li>
+<li><p><strong>action</strong> (<em>str</em><em>, </em><em>'copy' default</em>) – <ul>
+<li><p>‘copy’: copy files</p></li>
+<li><p>’move’: move files</p></li>
+</ul>
+</p></li>
+<li><p><strong>overwrite</strong> (<em>Bool</em><em>, </em><em>False default</em>) – <ul>
+<li><p>True: Overwrite files</p></li>
+<li><p>False: Do not overwrite files</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="clustimage.clustimage.seperate_path">
@@ -1784,7 +1853,7 @@ In this example we will download 5 images from url locations. Note that url imag
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cl</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Importing the files files from disk, cleaning and pre-processing</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">url_to_images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_orange.png&#39;</span><span class="p">,</span>

@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Core functionalities &mdash; clustimage clustimage documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
 
@@ -327,9 +327,9 @@ For each new (unseen) input image, the probability of similarity is computed acr
 If case both <em>k</em> and <em>alpha</em> are specified, the union of detected samples is taken.
 Note that the metric can be changed in this function but this may lead to confusions as the results will not intuitively match with the scatter plots as these are determined using metric in the fit_transform() function.</p>
 <p>Example to find similar images using 1D vector as input image.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="c1"># Init with default settings</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
@@ -382,7 +382,7 @@ Note that the metric can be changed in this function but this may lead to confus
 </tbody>
 </table>
 <p>** Example to find similar images based on the pathname as input.**</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Init with default settings</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
@@ -419,7 +419,7 @@ Note that the metric can be changed in this function but this may lead to confus
 <h2>unique<a class="headerlink" href="#unique" title="Link to this heading"></a></h2>
 <p>The unique images can be computed using the unique <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.Clustimage.unique" title="clustimage.clustimage.Clustimage.unique"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.Clustimage.unique()</span></code></a> and are detected by first computing the center of the cluster, and then taking the image closest to the center.
 Lets demonstrate this by example and the digits dataset.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Init with default settings</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
@@ -479,8 +479,8 @@ If <code class="docutils literal notranslate"><span class="pre">grayscale</span>
 </ul>
 </div></blockquote>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import libraries</span>
-<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="c1"># Init</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
@@ -531,7 +531,7 @@ The function depends on the functionality of <code class="docutils literal notra
 </div>
 <p>For demonstration purposes I will load the flowers dataset and cluster the images.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="c1"># Initialize</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
 <span class="c1"># Import data</span>
@@ -554,7 +554,7 @@ The function depends on the functionality of <code class="docutils literal notra
 <span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;pathnames&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
 
 <span class="c1"># Extracting xy-coordinates for the scatterplot for cluster 0:</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="n">xycoord</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xycoord</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">xycoord</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
@@ -580,7 +580,7 @@ The function depends on the functionality of <code class="docutils literal notra
 <p>Download files from the internet and store on disk.
 Examples can be found here: <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.wget()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cl</span>
 <span class="c1"># Download</span>
 <span class="n">images</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">wget</span><span class="p">(</span><span class="s1">&#39;https://erdogant.github.io/datasets/flower_images.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;c://temp//flower_images.zip&#39;</span><span class="p">)</span>
 </pre></div>
@@ -591,7 +591,7 @@ Examples can be found here: <code class="xref py py-func docutils literal notran
 <p>Unzip files into a destination directory.
 Examples can be found here: <code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.unzip()</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cl</span>
 <span class="c1"># Unzip to path</span>
 <span class="n">dirpath</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">unzip</span><span class="p">(</span><span class="s1">&#39;c://temp//flower_images.zip&#39;</span><span class="p">)</span>
 </pre></div>
@@ -602,7 +602,7 @@ Examples can be found here: <code class="xref py py-func docutils literal notran
 <p>Recusively list the files in the directory.
 Examples can be found here: <a class="reference internal" href="clustimage.clustimage.html#clustimage.clustimage.listdir" title="clustimage.clustimage.listdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">clustimage.clustimage.listdir()</span></code></a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cl</span>
 <span class="c1"># Unzip to path</span>
 <span class="n">dirpath</span> <span class="o">=</span> <span class="s1">&#39;c://temp//flower_images&#39;</span>
 <span class="n">pathnames</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;png&#39;</span><span class="p">])</span>
@@ -629,9 +629,9 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 <p>The number of clusters are optimized using the clusteval library. However, when desired it is also possible to manually merge of expand the number of clusters.</p>
 <section id="optimized-clusters">
 <h2>Optimized Clusters<a class="headerlink" href="#optimized-clusters" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
@@ -733,14 +733,14 @@ Examples: <a class="reference internal" href="clustimage.clustimage.html#clustim
 </section>
 <section id="move-files-based-on-clusterlabels">
 <h1>Move files based on clusterlabels<a class="headerlink" href="#move-files-based-on-clusterlabels" title="Link to this heading"></a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">move_to_dir</span></code> function moves files physically files into subdirectories based on cluster labels.
-First perform the desired clustering approach and with the following steps it allows you to organize the images by physically moving them into subdirectories.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">move_to_dir</span></code> function moves files physically files into subdirectories based on duplicates.
+First perform the desired undoubling approach and with the following steps it allows you to organize the images by physically moving them into subdirectories.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Show the cluster labels</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
 
 <span class="c1"># Step 1. Use the plot function to determine what event the cluster of photos represents.</span>
 <span class="c1"># Do not plot cluster 0 (rest group), and only plot when a cluster contain 3 or more images.</span>
-<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">blacklist</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">min_clust</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">cl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">blacklist</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="c1"># 2. Create a dict that specifies the cluster number with its folder names.</span>
 <span class="c1"># The first column is the cluster label and the second string is the destinated subfolder name.</span>

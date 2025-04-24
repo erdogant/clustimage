@@ -170,7 +170,7 @@ This approach will therefore help you to easily organize your directory of image
     
     # Make plot but exclude cluster 0 (rest group).
     # Only create a plot when the cluster contains 4 or more images.
-    cl.plot(blacklist=[0], min_clust=4)
+    cl.plot(blacklist=[0], min_samples=4)
     
     # plot on Map
     # polygon: See the lines in which order the photos were created
@@ -210,7 +210,7 @@ This approach extract GPS latitude and longitude Coordinates from EXIF Metadata 
     
     # Make plot but exclude cluster 0 (rest group).
     # Only create a plot when the cluster contains 4 or more images.
-    cl.plot(blacklist=[0], min_clust=4)
+    cl.plot(blacklist=[0], min_samples=4)
     
     # plot on Map
     # polygon: Disable the lines in which order the photos were created because it will likely not make sense here.

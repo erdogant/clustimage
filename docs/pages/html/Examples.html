@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mnist dataset &mdash; clustimage clustimage documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
 
@@ -171,8 +171,8 @@
 <section id="load-dataset">
 <h2>Load dataset<a class="headerlink" href="#load-dataset" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load library</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="c1"># init</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
 <span class="c1"># Load example digit data</span>
@@ -340,7 +340,7 @@ The pictures of objects belonging to 101 categories. About 40 to 800 images per 
 Download the dataset over here: <a class="reference external" href="http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download">http://www.vision.caltech.edu/Image_Datasets/Caltech101/#Download</a></p>
 <section id="id1">
 <h2>Cluster the images<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># init</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">params_pca</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span><span class="mi">250</span><span class="p">})</span>
@@ -441,7 +441,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <section id="id4">
 <h2>Load dataset<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load library</span>
-<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># init</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
@@ -562,7 +562,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 </section>
 <section id="clustering-of-faces">
 <h1>Clustering of faces<a class="headerlink" href="#clustering-of-faces" title="Link to this heading"></a></h1>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="c1"># Initialize with PCA</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">grayscale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># Load example with faces</span>
@@ -620,7 +620,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <section id="extract-images-belonging-to-clusters">
 <h1>Extract images belonging to clusters<a class="headerlink" href="#extract-images-belonging-to-clusters" title="Link to this heading"></a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import library</span>
-<span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 <span class="c1"># Initialize</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
 <span class="c1"># Import data</span>
@@ -640,7 +640,7 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;pathnames&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
 
 <span class="c1"># Extracting xy-coordinates for the scatterplot for cluster 0:</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="n">xycoord</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;xycoord&#39;</span><span class="p">][</span><span class="n">Iloc</span><span class="p">]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xycoord</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">xycoord</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
 
@@ -660,9 +660,9 @@ Download the dataset over here: <a class="reference external" href="http://www.v
 <section id="set-image-filenames-using-pandas-dataframes">
 <h1>Set image filenames using pandas dataframes<a class="headerlink" href="#set-image-filenames-using-pandas-dataframes" title="Link to this heading"></a></h1>
 <p>In case a datamatrix is provided as an input to the model, the default setting is that random filenames are generated and stored in the tempdirectory. However, with a pandas dataframe as input you can provide the desired filenames by changing the index names!</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">()</span>
@@ -736,7 +736,7 @@ In this example we will download 5 images from url locations. Note that url imag
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Init with default settings</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">clustimage</span> <span class="k">as</span> <span class="nn">cl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cl</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Importing the files files from disk, cleaning and pre-processing</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">url_to_images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://erdogant.github.io/datasets/images/flower_images/flower_orange.png&#39;</span><span class="p">,</span>
@@ -754,7 +754,7 @@ In this example we will download 5 images from url locations. Note that url imag
 <section id="breaking-up-the-steps">
 <h1>Breaking up the steps<a class="headerlink" href="#breaking-up-the-steps" title="Link to this heading"></a></h1>
 <p>Instead of using the all-in-one functionality: fit_transform(), it is also possible to break-up the steps.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">clustimage</span> <span class="kn">import</span> <span class="n">Clustimage</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">clustimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clustimage</span>
 
 <span class="c1"># Initialize</span>
 <span class="n">cl</span> <span class="o">=</span> <span class="n">Clustimage</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">)</span>
