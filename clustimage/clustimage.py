@@ -895,15 +895,33 @@ class Clustimage():
             pathnames = [pathnames[i] for i in range(len(pathnames)) if not I_corrupt[i]]
             img = [img[i] for i in range(len(img)) if not I_corrupt[i]]
 
-        # Create array
-        img = np.array(img)
-
+        # Create array (keep ragged images as objects)
+        img = np.array(img, dtype=object)
+        
+        # Safely compute total number of elements (pixels * channels if present)
+        pixel_counts = np.array([
+            (im.size if (im is not None and hasattr(im, "size")) else 0)
+            for im in img
+        ], dtype=np.int64)
+        
         # Remove the images that are too small
-        if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
-            logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
-
-        idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
+        too_small = pixel_counts < min_nr_pixels
+        if np.any(too_small):
+            logger.info("Images with < %d pixels are detected and excluded.", min_nr_pixels)
+        
+        idx = np.where(~too_small)[0]
         img = img[idx]
+
+        # # Create array
+        # img = np.array(img)
+
+        # # Remove the images that are too small
+        # if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
+        #     logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
+
+        # idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
+        # img = img[idx]
+
         try:
             if flatten: img = np.vstack(img)
         except:
