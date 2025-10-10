@@ -9,12 +9,17 @@ authors = [{ name = "Erdogan Taskesen", email = "erdogant@gmail.com" },]
 description = "Python package clustimage is for unsupervised clustering of images."
 readme = "README.md"
 requires-python = ">=3"
-license = { file = "LICENSE" }
+license = "MIT"
 keywords = ["clustering", "images", "unsupervised learning"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
     "datazets>=1.0.0",
