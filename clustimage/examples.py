@@ -1,4 +1,14 @@
+# %% issue 29: Value error when loading dataset
+from clustimage import Clustimage
+import os
+
+cl = Clustimage(method='pca')
+impaths = [os.path.join('dataset_crops', fname) for fname in crop_paths]
+
+X = cl.import_data(impaths)
+
 # %%
+
 # Import library
 # from clustimage import Clustimage
 
@@ -70,6 +80,7 @@ import os
 
 # Working directory
 dir_path = r'd://temp/'
+
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
 

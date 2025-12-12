@@ -917,6 +917,8 @@ class Clustimage():
 
         # # Remove the images that are too small
         # if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
+
+        # if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0].size > 0:
         #     logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
 
         # idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
