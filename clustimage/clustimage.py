@@ -1016,6 +1016,8 @@ class Clustimage():
             NxF array for which N are the samples and F the reduced feature space.
 
         """
+        if X['img'] == []:
+            return
         # Check whether n_components is ok
         if self.params_pca['n_components']>X['img'].shape[0]:
             logger.warning('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(X['img'].shape[0], self.params_pca['n_components'], X['img'].shape[0]))
@@ -1297,7 +1299,8 @@ class Clustimage():
         if not self.find_func:
             self.results['feat'] = Xfeat
         # Message
-        logger.info("Extracted features using [%s]: samples=%g, features=%g" %(self.params['method'], Xfeat.shape[0], Xfeat.shape[1]))
+        if Xfeat is not None:
+            logger.info("Extracted features using [%s]: samples=%g, features=%g" %(self.params['method'], Xfeat.shape[0], Xfeat.shape[1]))
         # Return
         return Xfeat
 
