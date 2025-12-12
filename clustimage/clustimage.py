@@ -1016,8 +1016,8 @@ class Clustimage():
             NxF array for which N are the samples and F the reduced feature space.
 
         """
-        if X['img'] == []:
-            return
+        # if X['img'] == []:
+            # return
         # Check whether n_components is ok
         if self.params_pca['n_components']>X['img'].shape[0]:
             logger.warning('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(X['img'].shape[0], self.params_pca['n_components'], X['img'].shape[0]))
