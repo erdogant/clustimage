@@ -17,11 +17,14 @@
 <!---[![BuyMeCoffee](https://img.shields.io/badge/buymea-coffee-yellow.svg)](https://www.buymeacoffee.com/erdogant)-->
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
+<div>
+<a href="https://erdogant.github.io/distfit/"><img src="https://github.com/erdogant/distfit/blob/master/docs/figs/logo.png" width="250" align="left" /></a>
+``clustimage`` is a Python library to detect natural groups or clusters of images. Multiple steps are pipelined where images are processed, features extracted, and the clusters evaluated across the feature space.
+The optimal number of clusters is determined using methods such as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
+``clustimage`` allows you to determine the most robust clustering by efficiently searching across the parameters and by evaluating the clusters.
+Besides clustering of images, the ``clustimage`` library can also find the most similar images for a new, unseen sample. ⭐️Star it if you like it⭐️
+</div>
 
-The aim of ``clustimage`` is to detect natural groups or clusters of images. It works using a multi-step proces of carefully pre-processing the images, extracting the features, and evaluating the optimal number of clusters across the feature space.
-The optimal number of clusters can be determined using well known methods suchs as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
-With ``clustimage`` we aim to determine the most robust clustering by efficiently searching across the parameter and evaluation the clusters.
-Besides clustering of images, the ``clustimage`` model can also be used to find the most similar images for a new unseen sample.
 
 A schematic overview is as following:
 
