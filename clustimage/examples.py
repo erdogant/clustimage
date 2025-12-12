@@ -1,3 +1,97 @@
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Initialize with HOG
+cl = Clustimage(method='hog', params_hog={'orientations':8, 'pixels_per_cell':(8,8), 'cells_per_block':(1,1)})
+
+# Load example data
+X, y = cl.import_example(data='mnist')
+
+# Check whether in is dir, list of files or array-like
+X = cl.import_data(X)
+# Extract features using method
+Xfeat = cl.extract_feat(X)
+# Alternatively, the features are also stored in the results dict
+cl.results['feat']
+
+# Take one image and show the hog features
+Xhog = cl.results['feat'][55]
+Ximg = cl.results['img'][55]
+
+plt.figure()
+fig,axs=plt.subplots(1,2, figsize=(15,10))
+axs[0].imshow(Ximg.reshape(8, 8))
+axs[0].axis('off')
+axs[0].set_title('Preprocessed image', fontsize=12)
+axs[1].imshow(Xhog.reshape(8, 8), cmap='gray')
+axs[1].axis('off')
+axs[1].set_title('HOG', fontsize=12)
+
+# %%
+
+
+from clustimage import Clustimage
+import os
+
+# Init
+cl = Clustimage(method='exif',
+                params_exif = {'timeframe': 6, 'min_samples': 2, 'exif_location': False},
+                ext=["mp4", "mov", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"],
+                verbose='info')
+
+# Path to your images or photos
+dir_path = r'c:/temp/'
+
+# Run the model to find Clusters of photos within the same timeframe
+# blacklist does block the images in the "undouble" directory
+# recursive will search for images in also all subdirectories
+results = cl.fit_transform(dir_path, metric='datetime', min_clust=3, black_list=['undouble'], recursive=True)
+
+# Show the cluster labels.
+# Note that cluster 0 is the "rest" group
+print(cl.results['labels'])
+
+# Make plot but exclude cluster 0 (rest group).
+# Only create a plot when the cluster contains 4 or more images.
+cl.plot(blacklist=[0], min_samples=4)
+cl.plot()
+
+# plot on Map
+# polygon: See the lines in which order the photos were created
+# cluster_icons: automatically groups icons when zooming in/out. When enabled, the exact lat/lon is not used but an approximate.
+# save_path: Store path. When not used, it will be stored in the temp directory
+cl.plot_map(cluster_icons=False, open_in_browser=True, polygon=True, save_path=os.path.join(dir_path, 'map.html'))
+
+
+
+# %%
+
+# Import libraries
+import matplotlib.pyplot as plt
+from clustimage import Clustimage
+
+# Initialize
+cl = Clustimage(method='hog', grayscale=False)
+
+# Load example data
+pathnames = cl.import_example(data='flowers')
+
+# Read image according the preprocessing steps
+img = cl.imread(pathnames[10], dim=(128,128))
+
+# Extract HOG features
+img_hog = cl.extract_hog(img, pixels_per_cell=(8,8), orientations=8, flatten=False)
+
+plt.figure()
+fig,axs=plt.subplots(1,2, figsize=(15,10))
+axs[0].imshow(img.reshape(128,128,3))
+axs[0].axis('off')
+axs[0].set_title('Preprocessed image', fontsize=12)
+axs[1].imshow(img_hog, cmap='gray')
+# axs[1].imshow(img_hog.reshape(dim), cmap='gray')
+axs[1].axis('off')
+axs[1].set_title('HOG', fontsize=12)
+
 # %% import from disk
 from clustimage import Clustimage
 
@@ -11,7 +105,7 @@ cl = Clustimage(method='pca',
                 ext=['png', 'tiff', 'jpg', 'heic', 'jpeg'],
                 verbose='info')
 
-path = cl.import_data(r'D://temp//')
+path = cl.import_data(r'C://temp//')
 
 # Run the model to find the optimal clusters
 results = cl.fit_transform(path, min_clust=3)
@@ -33,47 +127,6 @@ cl.dendrogram();
 # cl.plot_find()
 # cl.scatter()
 
-
-# %%
-from clustimage import Clustimage
-import itertools as it
-
-# Example data
-cl = Clustimage()
-Xflowers = cl.import_example(data='flowers')
-Xflowers=Xflowers[0:50]
-Xdigits, y = cl.import_example(data='mnist')
-Xdigits=Xdigits[0:50,:]
-Xfaces, y = cl.import_example(data='faces')
-Xfaces=Xfaces[0:50,:]
-
-# Parameters combinations to check
-param_grid = {
-	'method':['ahash', 'pca', 'hog', None],
-	'embedding':['tsne', None],
-	'cluster_space' : ['high', 'low'],
-	'grayscale' : [True, False],
-    'dim' : [(8,8), (128,128), (256,256)],
-    'data' : [Xflowers, Xdigits]
-	}
-# Make the combinatinos
-allNames = param_grid.keys()
-combinations = list(it.product(*(param_grid[Name] for Name in allNames)))
-# Iterate over all combinations
-for i, combination in enumerate(combinations):
-    # combination = combinations[168]
-    print(i)
-    # init
-    cl = Clustimage(method=combination[0],
-                    embedding=combination[1],
-                    grayscale=combination[3],
-                    dim=combination[4],
-                    verbose='debug',
-                    params_pca={'n_components': 50},
-                    )
-    # Preprocessing and feature extraction
-    assert cl.fit_transform(combination[5], cluster_space=combination[2])
-    
 # %%
 
 # Import library
@@ -146,7 +199,7 @@ from clustimage import Clustimage
 import os
 
 # Working directory
-dir_path = r'd://temp/'
+dir_path = r'path_to_your_photos'
 
 # When using method is EXIF and metric is datetime, extentions such as .mp4, .txt etc can also be clustered.
 allowed_ext = ["mov", "mp4", "jpg", "jpeg", "png", "tiff", "bmp", "gif", "webp", "psd", "raw", "cr2", "nef", "heic", "sr2", "tif"]
@@ -156,7 +209,7 @@ cl = Clustimage(method='exif',
                 params_exif = {'timeframe': 6, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None},
                 ext=allowed_ext,
                 verbose='info',
-                tempdir=r'C:/Users/beeld/AppData/Local/Temp/photosenseAI',
+                tempdir=r'C:/Temp/',
                 use_thumbnail_cache=True,
                 )
 
@@ -1045,7 +1098,7 @@ cl = Clustimage()
 path_to_imgs = cl.import_example(data='flowers')
 # Read image according the preprocessing steps
 dim=(128,128)
-X = cl.imread(path_to_imgs[0], dim=dim, flatten=True, colorscale=0)
+X = cl.imread(path_to_imgs[0], dim=dim, flatten=True, colorscale=0, use_thumbnail_cache=False)
 # Extract HOG features
 img_hog = cl.extract_hog(X)
 

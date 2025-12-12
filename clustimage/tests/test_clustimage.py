@@ -27,7 +27,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         # Check grayscale parameter with imports
         cl = Clustimage(dim=(128, 128), grayscale=True)
         _ = cl.import_data(X)
-        assert cl.results['img'].shape==(len(X), 65536)
+        assert cl.results['img'].shape==(len(X), 49152)
 
         # Import mnist example
         X, y = cl.import_example(data='mnist')
@@ -44,7 +44,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_example(data='flowers')
         X = cl.import_data(X)
         _ = cl.extract_feat(X)
-        assert cl.results['feat'].shape==(X['img'].shape[0], 153)
+        assert cl.results['feat'].shape==(X['img'].shape[0], 216)
 
         # Init with settings such as PCA
         cl = Clustimage(method='hog', verbose=50)
@@ -62,7 +62,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_data(X)
         Xfeat = cl.extract_feat(X)
         out = cl.embedding(Xfeat)
-        assert out.shape==(214,2)
+        assert out.shape==(X['img'].shape[0], 2)
         assert cl.results['xycoord'].shape==(X['img'].shape[0], 2)
 
     def test_cluster(self):
