@@ -18,10 +18,10 @@
 <!---[![Coffee](https://img.shields.io/badge/coffee-black-grey.svg)](https://erdogant.github.io/donate/?currency=USD&amount=5)-->
 
 <div>
-<a href="https://erdogant.github.io/clustimage/"><img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/logo.png" width="250" align="left" /></a>
-``clustimage`` is a Python library to detect natural groups or clusters of images. Multiple steps are pipelined where images are processed, features extracted, and the clusters evaluated across the feature space.
+<a href="https://erdogant.github.io/clustimage/"><img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/logo.png" width="75" align="left" /></a>
+clustimage is a Python library to detect natural groups or clusters of images. Multiple steps are pipelined where images are processed, features extracted, and the clusters evaluated across the feature space.
 The optimal number of clusters is determined using methods such as *silhouette, dbindex, and derivatives* in combination with clustering methods, such as *agglomerative, kmeans, dbscan and hdbscan*.
-``clustimage`` allows you to determine the most robust clustering by efficiently searching across the parameters and by evaluating the clusters.
+clustimage allows you to determine the most robust clustering by efficiently searching across the parameters and by evaluating the clusters.
 Besides clustering of images, the ``clustimage`` library can also find the most similar images for a new, unseen sample. ⭐️Star it if you like it⭐️
 </div>
 
