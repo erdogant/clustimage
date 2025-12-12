@@ -25,29 +25,30 @@ The optimal number of clusters is determined using methods such as *silhouette, 
 Besides clustering of images, the ``clustimage`` library can also find the most similar images for a new, unseen sample. ⭐️Star it if you like it⭐️
 </div>
 
-
-A schematic overview is as following:
+---
 
 <p align="center">
   <img src="https://github.com/erdogant/clustimage/blob/main/docs/figs/schematic_overview.png" width="1000" />
 </p>
 
+---
+
 ``clustimage`` overcomes the following challenges: 
 
     * 1. Robustly groups similar images.
     * 2. Returns the unique images.
-    * 3. Finds higly similar images for a given input image.
+    * 3. Finds highly similar images for a given input image.
     * 4. Cluster on datetime or latlon coordinates when using photos.
 
 ``clustimage`` is fun because:
 
-    * It does not require a learning proces.
+    * It does not require a learning process.
     * It can group any set of images.
     * It can return only the unique() images.
-    * it can find highly similar images given an input image.
-    * it can map photos on an interactive map with thumbnails and clusterlabels so that you easily structure your photos.
-    * It provided many plots to improve understanding of the feature-space and sample-sample relationships
-    * It is build on core statistics, such as PCA, HOG, EXIF data and many more, and therefore it does not has a dependency block.
+    * It can find highly similar images given an input image.
+    * It can map photos on an interactive map with thumbnails and cluster labels so that you can easily structure your photos.
+    * It provided many plots to improve the  understanding of the feature-space and sample-sample relationships
+    * It is built on core statistics, such as PCA, HOG, EXIF data, and many more, and therefore it does not have a dependency block.
     * It works out of the box.
 
 
@@ -82,7 +83,7 @@ pip install clustimage            # new install
 pip install -U clustimage         # update to latest version
 ```
 
-##### Directly install from github source
+##### Directly install from GitHub source
 ```bash
 pip install git+https://github.com/erdogant/clustimage
 ```  
