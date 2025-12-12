@@ -63,17 +63,27 @@ The input parameters for the HOG function :func:`clustimage.clustimage.Clustimag
 
 	# Check whether in is dir, list of files or array-like
 	X = cl.import_data(X)
+
 	# Extract features using method
 	Xfeat = cl.extract_feat(X)
-	# Alternatively, the features are also stored in the results dict
-	cl.results['feat']
 
-	# Alternatively, the features are also stored in the results dict using the run-at-once function.
-	X, y = cl.import_example(data='mnist')
-	# Fit and transform
-	results = cl.fit_transform(X)
-	# Extracted PC features
-	results['feat']
+	# The features are also stored in the results dict
+	cl.results['feat']
+	
+	# Take one image and show the hog features
+    Xhog = cl.results['feat'][55]
+    Ximg = cl.results['img'][55]
+
+    plt.figure()
+    fig,axs=plt.subplots(1,2, figsize=(15,10))
+    axs[0].imshow(Ximg.reshape(8, 8))
+    axs[0].axis('off')
+    axs[0].set_title('Preprocessed image', fontsize=12)
+    axs[1].imshow(Xhog.reshape(8, 8), cmap='gray')
+    axs[1].axis('off')
+    axs[1].set_title('HOG', fontsize=12)
+
+
 
 
 Another approach to extract HOG features by directly using the extract_hog functionality:
@@ -88,20 +98,21 @@ Another approach to extract HOG features by directly using the extract_hog funct
     
     # Load example data
     pathnames = cl.import_example(data='flowers')
+    
     # Read image according the preprocessing steps
-    img = cl.imread(pathnames[0], dim=(128,128), colorscale=0)
+    img = cl.imread(pathnames[10], dim=(128,128))
     
     # Extract HOG features
-    img_hog = cl.extract_hog(img)
+    img_hog = cl.extract_hog(img, pixels_per_cell=(8,8), orientations=8, flatten=False)
     
-    plt.figure();
-    fig,axs=plt.subplots(1,2)
-    axs[0].imshow(img.reshape(128,128))
+    plt.figure()
+    fig,axs=plt.subplots(1,2, figsize=(15,10))
+    axs[0].imshow(img.reshape(128,128,3))
     axs[0].axis('off')
-    axs[0].set_title('Preprocessed image', fontsize=10)
-    axs[1].imshow(img_hog.reshape(128,128), cmap='binary')
+    axs[0].set_title('Preprocessed image', fontsize=12)
+    axs[1].imshow(img_hog, cmap='gray')
     axs[1].axis('off')
-    axs[1].set_title('HOG', fontsize=10)
+    axs[1].set_title('HOG', fontsize=12)
 
 
 .. |figF1| image:: ../figs/hog_example.png
@@ -174,10 +185,9 @@ This approach will therefore help you to easily organize your directory of image
     
     # plot on Map
     # polygon: See the lines in which order the photos were created
-    # thumbnail_size: size of the thumbnail when hovering over the image
     # cluster_icons: automatically groups icons when zooming in/out. When enabled, the exact lat/lon is not used but an approximate.
     # save_path: Store path. When not used, it will be stored in the temp directory
-    cl.plot_map(cluster_icons=False, open_in_browser=True, thumbnail_size=400, polygon=True, save_path=os.path.join(dir_path, 'map.html'))
+    cl.plot_map(cluster_icons=False, open_in_browser=True, polygon=True, save_path=os.path.join(dir_path, 'map.html'))
     
 
 Clustering by Latlon
@@ -214,10 +224,9 @@ This approach extract GPS latitude and longitude Coordinates from EXIF Metadata 
     
     # plot on Map
     # polygon: Disable the lines in which order the photos were created because it will likely not make sense here.
-    # thumbnail_size: size of the thumbnail when hovering over the image
     # cluster_icons: automatically groups icons when zooming in/out. When enabled, the exact lat/lon is not used but an approximate.
     # save_path: Store path. When not used, it will be stored in the temp directory
-    cl.plot_map(cluster_icons=True, open_in_browser=True, thumbnail_size=400, polygon=False, save_path=os.path.join(dir_path, 'map.html'))
+    cl.plot_map(cluster_icons=True, open_in_browser=True, polygon=False, save_path=os.path.join(dir_path, 'map.html'))
     
 
 
