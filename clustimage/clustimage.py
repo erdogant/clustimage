@@ -44,8 +44,10 @@ import webbrowser
 from pillow_heif import register_heif_opener
 register_heif_opener()  # Register HEIF opener for Pillow
 
-import clustimage.exif as exif
-# import exif  # Only for debugging
+try:
+    import clustimage.exif as exif
+except:
+    import exif  # Only for debugging
 
 try:
     import cv2
@@ -918,8 +920,8 @@ class Clustimage():
         # # Remove the images that are too small
         # if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
 
-        # if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0].size > 0:
-        #     logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
+        if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0].size > 0:
+            logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
 
         # idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
         # img = img[idx]
@@ -1311,6 +1313,10 @@ class Clustimage():
         """
         imghash=[]
         if hash_size is None: hash_size=self.params_hash['hash_size']
+        # Objects needs to be converted into uint8
+        # img = np.array(img.tolist(), dtype=np.uint8)
+        img = img.astype(np.uint8)
+
         try:
             if self.params['method']=='crop-resistant-hash':
                 try:
@@ -2822,7 +2828,8 @@ def _imread(filepath, colorscale=1):
     # else:
     #     logger.warning('File does not exists: %s', filepath)
     # plt.imshow(img, cmap=plt.get_cmap('gray'), vmin=0, vmax=1)
-    return cv2.cvtColor(img, colorscale)
+    img = cv2.cvtColor(img, colorscale)
+    return img 
 
 # %%
 def get_logger():
