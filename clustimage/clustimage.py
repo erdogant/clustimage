@@ -954,51 +954,141 @@ class Clustimage():
 
         Examples
         --------
+        >>> # Import libraries
         >>> import matplotlib.pyplot as plt
         >>> from clustimage import Clustimage
-        >>>
-        >>> # Init
-        >>> cl = Clustimage(method='hog')
-        >>>
+        >>> 
+        >>> # Initialize
+        >>> cl = Clustimage(method='hog', grayscale=True)
+        >>> 
         >>> # Load example data
         >>> pathnames = cl.import_example(data='flowers')
+        >>> 
         >>> # Read image according the preprocessing steps
-        >>> img = cl.imread(pathnames[0], dim=(128,128))
-        >>>
+        >>> img = cl.imread(pathnames[10], dim=(128,128))
+        >>> 
         >>> # Extract HOG features
-        >>> img_hog = cl.extract_hog(img)
-        >>>
-        >>> plt.figure();
-        >>> fig,axs=plt.subplots(1,2)
+        >>> img_hog = cl.extract_hog(img, pixels_per_cell=(8,8), orientations=8, flatten=False)
+        >>> 
+        >>> plt.figure()
+        >>> fig,axs=plt.subplots(1,2, figsize=(15,10))
         >>> axs[0].imshow(img.reshape(128,128,3))
         >>> axs[0].axis('off')
-        >>> axs[0].set_title('Preprocessed image', fontsize=10)
-        >>> axs[1].imshow(img_hog.reshape(128,128), cmap='binary')
+        >>> axs[0].set_title('Preprocessed image', fontsize=12)
+        >>> axs[1].imshow(img_hog, cmap='gray')
         >>> axs[1].axis('off')
-        >>> axs[1].set_title('HOG', fontsize=10)
+        >>> axs[1].set_title('HOG', fontsize=12)
 
         """
         # Must be flattend array
-        # if len(X.shape)>1:
-        # raise Exception(logger.error('Input must be flattend grayscale image. Hint: During init set "grayscale=True" or imread(colorscale=0, flatten=True)'))
         # If 1D-vector, make 2D-array
         if len(X.shape)==1:
             X = X.reshape(-1, 1).T
 
         # Set dim correctly for reshaping image
         dim = self.get_dim(X)
-
-        # Reshape data
-        # if len(X.shape)==1:
-        # X = X.reshape(dim)
+        feat = []
 
         # Extract hog features per image
         if flatten:
-            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1].flatten(), tqdm(X, disable=disable_tqdm(), desc='[clustimage]')))
-            # Stack all hog features in NxM array
+            for x in tqdm(X, disable=disable_tqdm(), desc='[clustimage]'):
+                # Reshape the flattened image into its original shape
+                img = x.reshape(dim)
+            
+                # Detect grayscale vs color
+                # grayscale > img.ndim == 2
+                # color     > img.ndim == 3 and img.shape[-1] == 3
+                is_color = (img.ndim == 3 and img.shape[-1] == 3)
+            
+                if is_color:
+                    # Use channel_axis for RGB images
+                    fd, hog_image = hog(
+                        img,
+                        orientations=orientations,
+                        pixels_per_cell=pixels_per_cell,
+                        cells_per_block=cells_per_block,
+                        visualize=True,
+                        channel_axis=-1
+                    )
+                else:
+                    # Grayscale — NO channel_axis allowed
+                    fd, hog_image = hog(
+                        img,
+                        orientations=orientations,
+                        pixels_per_cell=pixels_per_cell,
+                        cells_per_block=cells_per_block,
+                        visualize=True
+                    )
+            
+                # Store the flattened visualization image
+                feat.append(hog_image.flatten())
+            
+            # Stack into NxM array
             feat = np.vstack(feat)
+
+            # feat = [
+            #     hog(
+            #         x.reshape(dim),
+            #         orientations=orientations,
+            #         pixels_per_cell=pixels_per_cell,
+            #         cells_per_block=cells_per_block,
+            #         visualize=True,
+            #         channel_axis=-1
+            #     )[1].flatten()
+            #     for x in tqdm(X, disable=disable_tqdm(), desc='[clustimage]')
+            # ]
+            
+            # # Stack all hog features in NxM array
+            # feat = np.vstack(feat)
         else:
-            feat = list(map(lambda x: hog(x.reshape(dim), orientations=orientations, pixels_per_cell=pixels_per_cell, cells_per_block=cells_per_block, visualize=True)[1], tqdm(X, disable=disable_tqdm(), desc='[clustimage]')))[0]
+            # feat = list(map(
+            #     lambda x: hog(
+            #         x.reshape(dim),
+            #         orientations=orientations,
+            #         pixels_per_cell=pixels_per_cell,
+            #         cells_per_block=cells_per_block,
+            #         visualize=True,
+            #         channel_axis=-1
+            #     )[1],
+            #     tqdm(X, disable=disable_tqdm(), desc='[clustimage]')
+            # ))
+            # feat = feat[0]
+
+            for x in tqdm(X, disable=disable_tqdm(), desc='[clustimage]'):
+                # Reshape flattened image
+                img = x.reshape(dim)
+            
+                # Detect grayscale vs color
+                # grayscale > img.ndim == 2
+                # color     > img.ndim == 3 and img.shape[-1] == 3
+                is_color = (img.ndim == 3 and img.shape[-1] == 3)
+            
+                if is_color:
+                    # RGB image → must use channel_axis
+                    _, hog_image = hog(
+                        img,
+                        orientations=orientations,
+                        pixels_per_cell=pixels_per_cell,
+                        cells_per_block=cells_per_block,
+                        visualize=True,
+                        channel_axis=-1
+                    )
+                else:
+                    # Grayscale → NO channel_axis
+                    _, hog_image = hog(
+                        img,
+                        orientations=orientations,
+                        pixels_per_cell=pixels_per_cell,
+                        cells_per_block=cells_per_block,
+                        visualize=True
+                    )
+            
+                feat.append(hog_image)
+            
+            # Match original behavior: keep only the first item
+            feat = feat[0]
+
+            
         # Return
         return feat
 
@@ -1016,8 +1106,6 @@ class Clustimage():
             NxF array for which N are the samples and F the reduced feature space.
 
         """
-        # if X['img'] == []:
-            # return
         # Check whether n_components is ok
         if self.params_pca['n_components']>X['img'].shape[0]:
             logger.warning('n_components should be smaller then the number of samples: %s<%s. Set as following during init: params_pca={"n_components":%s} ' %(X['img'].shape[0], self.params_pca['n_components'], X['img'].shape[0]))
@@ -1211,11 +1299,11 @@ class Clustimage():
         if self.params['method']=='exif':
             xycoord = self.results['feat'][['lat', 'lon']]
         elif self.params['embedding']=='tsne':
-            logger.info('Compute [%s] embedding', self.params['embedding'])
+            logger.info(f"Compute [{self.params['embedding']}] embedding")
             perplexity = np.minimum(X.shape[0] - 1, 30)
             xycoord = TSNE(n_components=2, init='random', metric=metric, perplexity=perplexity).fit_transform(X)
         elif self.params['embedding']=='umap':
-            logger.info('Compute [%s] embedding', self.params['embedding'])
+            logger.info("Compute [{self.params['embedding']}] embedding")
             logger.info('Due to a "numba" error, UMAP is temporarily disabled.')
             # um = UMAP(densmap=True)
             # xycoord = um.fit_transform(X)
@@ -1574,6 +1662,10 @@ class Clustimage():
                     filepath = thumbnail_path
                     # Read the image
                     img = _imread(filepath, colorscale=colorscale)
+                    # Set to 3 channels
+                    if len(img.shape)>2 and img.shape[2] == 4:
+                        img = img[:, :, 0:3]
+                    
                     # Do not again read and resize the image.
                     read_resize_img = False
 
@@ -1584,6 +1676,9 @@ class Clustimage():
                 img = imscale(img)
                 # Resize the image
                 img = imresize(img, dim=dim)
+                # Set to 3 channels
+                if len(img.shape)>2 and img.shape[2] == 4:
+                    img = img[:, :, 0:3]
                 # Now save in temp directory but only if not yet exists.
                 if use_thumbnail_cache and read_resize_img:
                     cv2.imwrite(thumbnail_path, img)
@@ -2022,9 +2117,11 @@ class Clustimage():
                 subtitle='(most centroid image per cluster)'
                 for i, file in enumerate(self.results_unique['pathnames']):
                     img = self.imread(file, colorscale=self.params['cv2_imread_colorscale'], dim=self.params['dim'], flatten=True, use_thumbnail_cache=self.params['use_thumbnail_cache'])
+                    # dim = np.append(self.params['dim'], 3)
                     imgs.append(img)
                     if show_hog and (self.params['method']=='hog'):
                         idx=self.results_unique['idx'][i]
+                        # dim = np.append(self.params['dim'], 3)
                         hogtmp = exposure.rescale_intensity(self.results['feat'][idx, :].reshape(self.params['dim']), in_range=(0, 10))
                         imgshog.append(hogtmp)
 
@@ -2319,10 +2416,8 @@ class Clustimage():
         # Get appropriate dimension
         if self.params['grayscale']:
             dim = self.params['dim']
-            dimlen=4
         else:
             dim = np.append(self.params['dim'], 3)
-            dimlen=3
 
         # Setup rows and columns
         nrows, ncols = self._get_rows_cols(len(imgs), ncols=ncols)
@@ -2334,9 +2429,15 @@ class Clustimage():
             for i, ax in enumerate(axs.ravel()):
                 try:
                     if i < len(imgs):
+                        # Get image
                         img = imgs[i]
+                        # Compute the total number of pixels
+                        total_pixels = dim[0] * dim[1]
+                        # Determine the number of channels automatically
+                        num_channels = img.size // total_pixels
+
                         if len(img.shape)==1:
-                            img = img.reshape((dim[0], dim[1], dimlen))
+                            img = img.reshape((dim[0], dim[1], num_channels))
                             img = img[:, :, : 3]
                             ax.imshow(img, cmap=cmap)
                         elif len(img.shape)==3:
@@ -3100,20 +3201,20 @@ def cluster_datetimes(datetimes, eps_hours=1, min_samples=2, metric='euclidean',
 
     Examples
     --------
-    # Example usage:
-    data = {
-        "datetime": [
-            "2024:02:16 19:35:38", "2023:12:17 13:54:10", "2023:12:17 11:27:52",
-            "2023:12:17 11:40:22", "2023:12:16 20:11:36", "2024:02:16 19:37:00",
-            "2024:02:16 19:37:34", "2024:02:16 19:36:52", "2024:02:16 19:37:34",
-            "2024:02:16 19:37:16"
-        ]
-    }
-    df = pd.DataFrame(data)
-
-    # Cluster with a 1-hour window and minimum of 2 samples per cluster
-    clustered_df = cluster_datetimes(df, "datetime", eps_hours=1, min_samples=2)
-    print(clustered_df)
+    >>> # Example usage:
+    >>> data = {
+    ...     "datetime": [
+    ...         "2024:02:16 19:35:38", "2023:12:17 13:54:10", "2023:12:17 11:27:52",
+    ...         "2023:12:17 11:40:22", "2023:12:16 20:11:36", "2024:02:16 19:37:00",
+    ...         "2024:02:16 19:37:34", "2024:02:16 19:36:52", "2024:02:16 19:37:34",
+    ...         "2024:02:16 19:37:16"
+    ...     ]
+    ... }
+    >>> df = pd.DataFrame(data)
+    >>> 
+    >>> # Cluster with a 1-hour window and minimum of 2 samples per cluster
+    >>> clustered_df = cluster_datetimes(df, min_samples=2)
+    >>> print(clustered_df)
 
     """
     logger.info('Cluster on datetime using DBSCAN..')
