@@ -523,10 +523,10 @@ class Clustimage():
         else:
             if cluster_space=='low':
                 feat = self.results['xycoord']
-                logger.info('Cluster evaluation using the [%s] feature space of the [%s] coordinates.', cluster_space, self.params['embedding'])
+                logger.info(f"Cluster evaluation using the [{cluster_space}] feature space of the [{self.params['embedding']}] coordinates.")
             else:
                 feat = self.results['feat']
-                logger.info('Cluster evaluation using the [%s] feature space of the [%s] features.', cluster_space, self.params['method'])
+                logger.info(f"Cluster evaluation using the [{cluster_space}] feature space of the [{self.params['method']}] features.")
 
             # Initialize clusteval
             ce = clusteval(cluster=cluster, evaluate=evaluate, metric=metric, linkage=linkage, min_clust=min_clust, max_clust=max_clust, verbose=get_logger())
@@ -534,7 +534,7 @@ class Clustimage():
             _ = ce.fit(feat)
             # Get cluster labels
             labels = ce.results['labx']
-            logger.info('Updating cluster-labels and cluster-model based on the %s feature-space.', str(feat.shape))
+            logger.info(f'Updating cluster-labels and cluster-model based on the {str(feat.shape)} feature-space.')
 
         # Store results and params
         self.results['labels'] = labels
@@ -741,7 +741,7 @@ class Clustimage():
         if (k is None) and (alpha is None):
             raise Exception(logger.error('Nothing to collect! input parameter "k" and "alpha" can not be None at the same time.'))
         if metric is None: metric=self.params_clusteval['metric']
-        logger.info('Find similar images with metric [%s], k-nearest neighbors: %s and under alpha: %s ' %(metric, str(k), str(alpha)))
+        logger.info(f'Find similar images with metric [{metric}], k-nearest neighbors: {str(k)} and under alpha: {str(alpha)}')
 
         # Check whether in is dir, list of files or array-like
         Xnew = self.import_data(Xnew)
@@ -896,7 +896,7 @@ class Clustimage():
         # I_corrupt = np.logical_not(np.array(imgOK))
 
         if np.any(I_corrupt):
-            logger.info("[%.0d] Image(s) could not be read and are excluded.", (sum(I_corrupt)))
+            logger.info(f"[{sum(I_corrupt)}] Image(s) could not be read and are excluded.")
             filenames = [filenames[i] for i in range(len(filenames)) if not I_corrupt[i]]
             pathnames = [pathnames[i] for i in range(len(pathnames)) if not I_corrupt[i]]
             img = [img[i] for i in range(len(img)) if not I_corrupt[i]]
@@ -913,7 +913,7 @@ class Clustimage():
         # Remove the images that are too small
         too_small = pixel_counts < min_nr_pixels
         if np.any(too_small):
-            logger.info("Images with < %d pixels are detected and excluded.", min_nr_pixels)
+            logger.info(f"Images with < {min_nr_pixels} pixels are detected and excluded.")
         
         idx = np.where(~too_small)[0]
         img = img[idx]
@@ -925,7 +925,7 @@ class Clustimage():
         # if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0]:
 
         if np.where(np.array(list(map(len, img)))<min_nr_pixels)[0].size > 0:
-            logger.info("Images with < %.0d pixels are detected and excluded.", (min_nr_pixels))
+            logger.info(f"Images with < {min_nr_pixels} pixels are detected and excluded.")
 
         # idx = np.where(np.array(list(map(len, img)))>=min_nr_pixels)[0]
         # img = img[idx]
@@ -1392,7 +1392,7 @@ class Clustimage():
             self.results['feat'] = Xfeat
         # Message
         if Xfeat is not None:
-            logger.info("Extracted features using [%s]: samples=%g, features=%g" %(self.params['method'], Xfeat.shape[0], Xfeat.shape[1]))
+            logger.info(f"Extracted features using [{self.params['method']}]: samples={Xfeat.shape[0]}, features={Xfeat.shape[1]}")
         # Return
         return Xfeat
 
@@ -1412,9 +1412,9 @@ class Clustimage():
         """
         imghash=[]
         if hash_size is None: hash_size=self.params_hash['hash_size']
-        # Objects needs to be converted into uint8 for color pixels 0-255
-        img = np.array(img.tolist(), dtype=np.uint8)
-        # img = img.astype(np.uint8)
+        # Objects needs to be converted into uint8 for color pixels 0-255. Convert only if dtype is object
+        if isinstance(img, np.ndarray) and img.dtype == object:
+            img = np.array(img.tolist(), dtype=np.uint8)
 
         try:
             if self.params['method']=='crop-resistant-hash':
@@ -1473,7 +1473,7 @@ class Clustimage():
 
         # Sanity check
         if np.any(np.isnan(Y)):
-            logger.warning('The metric [%s] results in NaN! Please change metric for appropriate results!', metric)
+            logger.warning(f'The metric [{metric}] results in NaN! Please change metric for appropriate results!')
 
         # Fit distribution to emperical data and compute probability of the distances of interest
         if (alpha is not None) and ((not hasattr(self, 'distfit')) or (self.distfit is None) or (self.params['metric_find'] != metric)):
@@ -1529,6 +1529,8 @@ class Clustimage():
         X = self.preprocessing(pathname, grayscale=self.params['cv2_imread_colorscale'], dim=None, flatten=False)
         # Get the image and Convert into grayscale if required
         img = X['img'][0]
+        if isinstance(img, np.ndarray) and img.dtype == object:
+            img = np.array(img.tolist(), dtype=np.uint8)
 
         # Detect faces using the face_cascade
         face_cascade = eval(self.params['face_cascade'])
@@ -1584,7 +1586,7 @@ class Clustimage():
             # Combine the unique k-nearest samples and probabilities.
             idx = unique_no_sort(np.append(idx_dist, idx_k))
             # Store in dict
-            logger.info('[%d] similar images found for [%s]' %(len(idx), filename))
+            logger.info(f'[{len(idx)}] similar images found for [{filename}]')
             store_key = {**store_key, 'y_idx': idx, 'distance': Y[idx, i], 'y_proba': dist_results['y_proba'][idx], 'labels': np.array(self.results['labels'])[idx].tolist(), 'y_filenames': np.array(self.results['filenames'])[idx].tolist(), 'y_pathnames': np.array(self.results['pathnames'])[idx].tolist(), 'x_pathnames': X['pathnames'][i]}
             if todf: store_key = pd.DataFrame(store_key)
             out[filename] = store_key
@@ -1692,7 +1694,7 @@ class Clustimage():
             # OK
             readOK = True
         except:
-            logger.warning('Could not read: [%s]' %(filepath))
+            logger.warning(f'Could not read: [{filepath}]')
 
         # Return
         if return_succes:
@@ -2186,7 +2188,7 @@ class Clustimage():
                         title = 'Find similar images for [%s].' %(input_txt)
                         # Make the subplot
                         self._make_subplots(imgs, None, cmap, figsize, title=title, labels=labels, invert_colors=invert_colors)
-                        logger.info('[%d] similar images detected for input image: [%s]' %(len(find_img), key))
+                        logger.info(f'[{len(find_img)}] similar images detected for input image: [{key}]')
                 except:
                     pass
         else:
@@ -2491,18 +2493,18 @@ class Clustimage():
             dirpath = str(p.parent)
 
             if os.path.isdir(dirpath):
-                logger.info('Removing directory with all content: %s', dirpath)
+                logger.info(f'Removing directory with all content: {dirpath}')
                 shutil.rmtree(dirpath)
                 self.results['pathnames'] = None
                 self.results['filenames'] = None
 
         # Cleaning temp directory
         if os.path.isdir(self.params['tempdir']):
-            logger.info('Removing temp directory %s', self.params['tempdir'])
+            logger.info(f"Removing temp directory {self.params['tempdir']}")
 
             files_in_tempdir = os.listdir(self.params['tempdir'])
             _, idx = ismember(files_in_tempdir, self.results['filenames'])
-            logger.info('Removing images in temp directory %s', self.params['tempdir'])
+            logger.info(f"Removing images in temp directory {self.params['tempdir']}")
             for i in idx:
                 logger.debug('remove: %s', self.results['pathnames'][i])
                 os.remove(self.results['pathnames'][i])
@@ -2510,7 +2512,7 @@ class Clustimage():
                 self.results['pathnames'][i]=None
 
             if clean_tempdir:
-                logger.info('Removing the entire temp directory %s', self.params['tempdir'])
+                logger.info("Removing the entire temp directory {self.params['tempdir']}")
                 shutil.rmtree(self.params['tempdir'])
                 self.results['filenames'] = None
                 self.results['pathnames'] = None
@@ -2716,7 +2718,7 @@ def create_dir(pathname, savedir=None):
         movedir = savedir
 
     if not os.path.isdir(movedir):
-        logger.debug('Create dir: <%s>' %(movedir))
+        logger.debug(f'Create dir: <{movedir}>')
         os.makedirs(movedir, exist_ok=True)
     # Return
     return movedir, dirname, filename, ext
@@ -2806,7 +2808,7 @@ def store_to_disk(Xraw, dim, tempdir, files=None):
     # Store images to disk
     filenames, pathnames = [], []
 
-    logger.info('Writing images to tempdir [%s]', tempdir)
+    logger.info(f'Writing images to tempdir [{tempdir}]')
     for i in tqdm(np.arange(0, Xraw.shape[0]), disable=disable_tqdm(), desc='[clustimage]'):
         if files is not None:
             filename = files[i]
@@ -3332,13 +3334,13 @@ def _set_tempdir(dirpath, show_logger=True):
         # Check existence dir and start clean by removing the directory.
         if not os.path.isdir(dirpath):
             # Create directory
-            if show_logger: logger.info('Creating directory: [%s]' %(dirpath))
+            if show_logger: logger.info(f'Creating directory: [{dirpath}]')
             os.mkdir(dirpath)
     except:
-        raise Exception(logger.error('[%s] does not exists or can not be created.', dirpath))
+        raise Exception(logger.error(f'[{dirpath}] does not exists or can not be created.'))
 
     dirpath = os.path.abspath(dirpath)
-    if show_logger: logger.info("filepath is set to [%s]" %(dirpath))
+    if show_logger: logger.info(f"filepath is set to [{dirpath}]")
 
     return dirpath
 
