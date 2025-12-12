@@ -637,7 +637,7 @@ class Clustimage():
 
                 # dim = self._get_dim(eigen_img)
                 # plt.figure();plt.imshow(eigen_img.reshape(dim))
-
+                
                 # Compute distance across all samples
                 dist = distance.cdist(self.results['xycoord'], xycoord_center.reshape(-1, 1).T, metric=metric)
                 # Take closest sample to the center
@@ -1221,6 +1221,10 @@ class Clustimage():
         else:
             xycoord = X[:, 0:2]
 
+        # Convert only if dtype is object
+        if isinstance(xycoord, np.ndarray) and xycoord.dtype == object:
+            xycoord = np.asarray(xycoord.tolist(), dtype=np.float32)
+
         # Store
         self.results['xycoord'] = xycoord
 
@@ -1313,9 +1317,9 @@ class Clustimage():
         """
         imghash=[]
         if hash_size is None: hash_size=self.params_hash['hash_size']
-        # Objects needs to be converted into uint8
-        # img = np.array(img.tolist(), dtype=np.uint8)
-        img = img.astype(np.uint8)
+        # Objects needs to be converted into uint8 for color pixels 0-255
+        img = np.array(img.tolist(), dtype=np.uint8)
+        # img = img.astype(np.uint8)
 
         try:
             if self.params['method']=='crop-resistant-hash':
