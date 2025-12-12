@@ -128,6 +128,8 @@ class Clustimage():
     use_thumbnail_cache : bool (Default: True)
         True: To speed up the proces of image plotting and comparison, thumbnails are stored in the temp directory and used when available.
         False: Original images are used.
+    ncores : int, (default: 4)
+        Number of cores to be used for computations. Default: 4
     verbose : int, (default: 'info')
         Print progress to screen. The default is 20.
         60: None, 40: error, 30: warning, 20: info, 10: debug
@@ -204,16 +206,18 @@ class Clustimage():
                  params_hog={'orientations': 8, 'pixels_per_cell': (8, 8), 'cells_per_block': (1, 1)},
                  params_hash={'threshold': 0, 'hash_size': 8},
                  params_exif={'timeframe': 5, 'radius_meters': 1000, 'min_samples': 2, 'exif_location': False, 'max_workers': None},
+                 ncores=4,
                  verbose='info',
                  ):
         """Initialize clustimage with user-defined parameters."""
         # Clean readily fitted models to ensure correct results
         self.clean_init()
+        os.environ["LOKY_MAX_CPU_COUNT"] = str(ncores)
 
-        if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog', 'exif'])) or ('hash' in method)): raise Exception(logger.error('method: "%s" is unknown', method))
+        if not (np.any(np.isin(method, [None, 'pca', 'hog', 'pca-hog', 'exif'])) or ('hash' in method)): raise Exception(logger.error(f'method: "{method}" is unknown'))
         # Check method types
         if (np.any(np.isin(method, ['hog', 'pca-hog']))) and (not grayscale):
-            logger.warning('Parameter grayscale is set to True because you are using method="%s"' %(method))
+            logger.warning(f'Parameter grayscale is set to True because you are using method="{method}"')
             grayscale=True
         if (dim is None) or ((dim[0] > 1024) or (dim[1] > 1024)):
             logger.warning('Setting dim > (1024, 1024) is most often not needed and can cause memory and other issues.')
