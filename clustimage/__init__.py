@@ -16,7 +16,7 @@ from clustimage.clustimage import (
 
 __author__ = 'Erdogan Tasksen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '1.6.25'
+__version__ = '1.7.0'
 
 # Setup root logger
 _logger = logging.getLogger('clustimage')
