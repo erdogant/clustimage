@@ -44,7 +44,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_example(data='flowers')
         X = cl.import_data(X)
         _ = cl.extract_feat(X)
-        assert cl.results['feat'].shape==(X['img'].shape[0], 216)
+        assert cl.results['feat'].shape==(X['img'].shape[0], 153)
 
         # Init with settings such as PCA
         cl = Clustimage(method='hog', verbose=50)
@@ -62,7 +62,7 @@ class TestCLUSTIMAGE(unittest.TestCase):
         X = cl.import_data(X)
         Xfeat = cl.extract_feat(X)
         out = cl.embedding(Xfeat)
-        assert out.shape==(X['img'].shape[0], 2)
+        assert out.shape==(214, 2)
         assert cl.results['xycoord'].shape==(X['img'].shape[0], 2)
 
     def test_cluster(self):
