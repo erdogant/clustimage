@@ -2,6 +2,8 @@ from clustimage import Clustimage
 import itertools as it
 import numpy as np
 import unittest
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend for tests
 
 class TestCLUSTIMAGE(unittest.TestCase):
 

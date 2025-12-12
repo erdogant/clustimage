@@ -1,12 +1,79 @@
-# %% issue 29: Value error when loading dataset
+# %% import from disk
 from clustimage import Clustimage
-import os
 
-cl = Clustimage(method='pca')
-impaths = [os.path.join('dataset_crops', fname) for fname in crop_paths]
+cl = Clustimage(method='pca',
+                embedding='tsne',
+                grayscale=False,
+                dim=(128, 128),
+                params_pca={'n_components':0.95},
+                use_image_cache=True,
+                use_thumbnail_cache=True,
+                ext=['png', 'tiff', 'jpg', 'heic', 'jpeg'],
+                verbose='info')
 
-X = cl.import_data(impaths)
+path = cl.import_data(r'D://temp//')
 
+# Run the model to find the optimal clusters
+results = cl.fit_transform(path, min_clust=3)
+
+# Scatter
+cl.scatter()
+cl.scatter(zoom=1, img_mean=False)
+
+# Scatter
+cl.scatter(plt_all=True)
+
+
+cl.plot();
+cl.dendrogram();
+
+
+# Predict which image is closests to input image.
+# predict = cl.find(path[0])
+# cl.plot_find()
+# cl.scatter()
+
+
+# %%
+from clustimage import Clustimage
+import itertools as it
+
+# Example data
+cl = Clustimage()
+Xflowers = cl.import_example(data='flowers')
+Xflowers=Xflowers[0:50]
+Xdigits, y = cl.import_example(data='mnist')
+Xdigits=Xdigits[0:50,:]
+Xfaces, y = cl.import_example(data='faces')
+Xfaces=Xfaces[0:50,:]
+
+# Parameters combinations to check
+param_grid = {
+	'method':['ahash', 'pca', 'hog', None],
+	'embedding':['tsne', None],
+	'cluster_space' : ['high', 'low'],
+	'grayscale' : [True, False],
+    'dim' : [(8,8), (128,128), (256,256)],
+    'data' : [Xflowers, Xdigits]
+	}
+# Make the combinatinos
+allNames = param_grid.keys()
+combinations = list(it.product(*(param_grid[Name] for Name in allNames)))
+# Iterate over all combinations
+for i, combination in enumerate(combinations):
+    # combination = combinations[168]
+    print(i)
+    # init
+    cl = Clustimage(method=combination[0],
+                    embedding=combination[1],
+                    grayscale=combination[3],
+                    dim=combination[4],
+                    verbose='debug',
+                    params_pca={'n_components': 50},
+                    )
+    # Preprocessing and feature extraction
+    assert cl.fit_transform(combination[5], cluster_space=combination[2])
+    
 # %%
 
 # Import library
@@ -174,40 +241,6 @@ model.plot()
 model.move_to_dir(gui=True)
 
 
-# %% import from disk
-from clustimage import Clustimage
-
-cl = Clustimage(method='pca',
-                embedding='tsne',
-                grayscale=False,
-                dim=(128, 128),
-                params_pca={'n_components':0.95},
-                use_image_cache=True,
-                use_thumbnail_cache=True,
-                ext=['png', 'tiff', 'jpg', 'heic', 'jpeg'],
-                verbose='info')
-
-path = cl.import_data(r'D://temp//')
-
-# Run the model to find the optimal clusters
-results = cl.fit_transform(path, min_clust=3)
-
-# Scatter
-cl.scatter()
-cl.scatter(zoom=1, img_mean=False)
-
-# Scatter
-cl.scatter(plt_all=True)
-
-
-cl.plot();
-cl.dendrogram();
-
-
-# Predict which image is closests to input image.
-# predict = cl.find(path[0])
-# cl.plot_find()
-# cl.scatter()
 
 
 # %%
