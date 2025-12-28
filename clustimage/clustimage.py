@@ -903,6 +903,8 @@ class Clustimage():
 
         # Create array (store all as uint8 because 0-255)
         img = np.array(img, dtype=np.uint8)
+        # img = np.array(img, dtype=object)
+
         
         # Safely compute total number of elements (pixels * channels if present)
         pixel_counts = np.array([

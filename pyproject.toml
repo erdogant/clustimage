@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [{ name = "Erdogan Taskesen", email = "erdogant@gmail.com" },]
 description = "Python package clustimage is for unsupervised clustering of images."
 readme = "README.md"
-requires-python = ">=3"
+requires-python = ">=3.8,<3.14"
 license = "MIT"
 keywords = ["clustering", "images", "unsupervised learning"]
 classifiers = [
