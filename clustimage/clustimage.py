@@ -901,8 +901,8 @@ class Clustimage():
             pathnames = [pathnames[i] for i in range(len(pathnames)) if not I_corrupt[i]]
             img = [img[i] for i in range(len(img)) if not I_corrupt[i]]
 
-        # Create array (keep ragged images as objects)
-        img = np.array(img, dtype=object)
+        # Create array (store all as uint8 because 0-255)
+        img = np.array(img, dtype=np.uint8)
         
         # Safely compute total number of elements (pixels * channels if present)
         pixel_counts = np.array([
